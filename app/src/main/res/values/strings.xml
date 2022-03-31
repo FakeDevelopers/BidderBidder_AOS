@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">DDangDDangMarket_AOS</string>
+    <string name="app_name">DDangDDangMarket</string>
+    <!-- Strings related to loginType -->
+    <string name="logintype_logo">땅땅마켓 로고</string>
+    <string name="logintype_welcometext">로그인 하시오. 당신도.</string>
+    <string name="logintype_kakaologin">카카오 로그인</string>
+    <string name="logintype_naverlogin">네이버 로그인</string>
+    <string name="logintype_commonlogin">이메일 로그인</string>
+    <!-- Strings related to login -->
+    <string name="login_email">이메일</string>
+    <string name="login_password">비밀번호</string>
+    <string name="login_signin">시작하기</string>
 </resources>
