@@ -1,4 +1,4 @@
-package com.fakedevelopers.ddangddangmarket_aos
+package com.fakedevelopers.ddangddangmarket
 
 import org.junit.Test
 

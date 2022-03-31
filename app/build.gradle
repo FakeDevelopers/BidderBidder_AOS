@@ -1,14 +1,13 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-android-extensions'
 }
 
 android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.fakedevelopers.ddangddangmarket_aos"
+        applicationId "com.fakedevelopers.ddangddangmarket"
         minSdk 23
         targetSdk 31
         versionCode 1

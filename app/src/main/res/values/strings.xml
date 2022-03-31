@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DDangDDangMarket_AOS</string>
+    <string name="app_name">DDangDDangMarket</string>
     <!-- Strings related to loginType -->
     <string name="logintype_logo">땅땅마켓 로고</string>
     <string name="logintype_welcometext">로그인 하시오. 당신도.</string>
@@ -10,9 +10,4 @@
     <string name="login_email">이메일</string>
     <string name="login_password">비밀번호</string>
     <string name="login_signin">시작하기</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
 </resources>

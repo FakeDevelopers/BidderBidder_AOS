@@ -1,9 +1,9 @@
-package com.fakedevelopers.ddangddangmarket_aos
+package com.fakedevelopers.ddangddangmarket
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.fakedevelopers.ddangddangmarket_aos.ui.login_type.LoginTypeFragment
-import com.fakedevelopers.ddangddangmarket_aos.ui.login.LoginFragment
+import com.fakedevelopers.ddangddangmarket.ui.login_type.LoginTypeFragment
+import com.fakedevelopers.ddangddangmarket.ui.login.LoginFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -13,16 +13,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setFragment("LoginType")
+        setFragment(FragmentList.LOGINTYPE)
     }
 
-    fun setFragment(name : String) {
+    fun setFragment(name : FragmentList) {
         val transition = supportFragmentManager.beginTransaction()
         when(name){
-            "LoginType" -> {
+            FragmentList.LOGINTYPE -> {
                 transition.replace(R.id.mainContainer, loginTypeFragment)
             }
-            "Login" -> {
+            FragmentList.LOGIN -> {
                 transition.replace(R.id.mainContainer, loginFragment)
                 transition.addToBackStack(null)
             }

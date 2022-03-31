@@ -1,11 +1,11 @@
-package com.fakedevelopers.ddangddangmarket_aos.ui.login
+package com.fakedevelopers.ddangddangmarket.ui.login
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.fakedevelopers.ddangddangmarket_aos.R
+import com.fakedevelopers.ddangddangmarket.R
 
 class LoginFragment : Fragment() {
     override fun onCreateView(
