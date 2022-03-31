@@ -13,16 +13,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setFragment(FragmentList.LOGINTYPE)
+        setFragment(FragmentType.LOGINTYPE)
     }
 
-    fun setFragment(name : FragmentList) {
+    fun setFragment(name : FragmentType) {
         val transition = supportFragmentManager.beginTransaction()
         when(name){
-            FragmentList.LOGINTYPE -> {
+            FragmentType.LOGINTYPE -> {
                 transition.replace(R.id.mainContainer, loginTypeFragment)
             }
-            FragmentList.LOGIN -> {
+            FragmentType.LOGIN -> {
                 transition.replace(R.id.mainContainer, loginFragment)
                 transition.addToBackStack(null)
             }

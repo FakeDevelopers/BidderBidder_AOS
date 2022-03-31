@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fakedevelopers.ddangddangmarket.FragmentList
+import com.fakedevelopers.ddangddangmarket.FragmentType
 import com.fakedevelopers.ddangddangmarket.MainActivity
 import com.fakedevelopers.ddangddangmarket.databinding.FragmentLoginTypeBinding
 
@@ -28,7 +28,7 @@ class LoginTypeFragment : Fragment() {
         val mainActivity = activity as MainActivity
         // 로그인 버튼을 누르면 로그인 프래그먼트로 넘어갑니다.
         binding.buttonLogintypeCommonlogin.setOnClickListener {
-            mainActivity.setFragment(FragmentList.LOGIN)
+            mainActivity.setFragment(FragmentType.LOGIN)
         }
     }
 
