@@ -1,5 +1,5 @@
 package com.fakedevelopers.ddangddangmarket
 
-enum class FragmentList {
+enum class FragmentType {
     LOGIN, LOGINTYPE
 }
