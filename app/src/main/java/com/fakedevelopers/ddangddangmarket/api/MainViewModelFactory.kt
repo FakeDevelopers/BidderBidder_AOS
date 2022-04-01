@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.fakedevelopers.ddangddangmarket.api.repository.Repository
 
 class MainViewModelFactory(private val repository: Repository): ViewModelProvider.Factory {
-    override fun <MainViewModal : ViewModel> create(modelClass: Class<MainViewModal>): MainViewModal {
-        return MainViewModel(repository) as MainViewModal
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return MainViewModel(repository) as T
     }
 }
