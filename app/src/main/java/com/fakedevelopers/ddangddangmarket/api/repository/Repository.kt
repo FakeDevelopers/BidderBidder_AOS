@@ -8,6 +8,6 @@ import retrofit2.Response
 // 리턴값은 String
 class Repository {
     suspend fun loginRequest(email: String, passwd: String) : Response<String> {
-        return RetrofitInstance.loginRequestApi.loginRequest(email, passwd)
+        return RetrofitInstance.RETROFIT_API.loginRequest(email, passwd)
     }
 }
