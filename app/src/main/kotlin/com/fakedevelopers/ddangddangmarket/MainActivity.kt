@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
     fun setFragment(name : FragmentType) {
         val transition = supportFragmentManager.beginTransaction()
-        transition.replace(R.id.mainContainer, name.get())
+        transition.replace(R.id.mainContainer, name.fragment)
         if(name != FragmentType.LOGINTYPE)
             transition.addToBackStack(null)
         transition.commit()
