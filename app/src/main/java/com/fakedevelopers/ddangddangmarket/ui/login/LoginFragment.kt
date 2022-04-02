@@ -13,6 +13,9 @@ import com.fakedevelopers.ddangddangmarket.api.MainViewModel
 import com.fakedevelopers.ddangddangmarket.api.MainViewModelFactory
 import com.fakedevelopers.ddangddangmarket.api.repository.Repository
 import com.fakedevelopers.ddangddangmarket.databinding.FragmentLoginBinding
+import com.orhanobut.logger.AndroidLogAdapter
+import com.orhanobut.logger.BuildConfig
+import com.orhanobut.logger.Logger
 
 class LoginFragment : Fragment() {
 
@@ -33,23 +36,27 @@ class LoginFragment : Fragment() {
     // 버튼 클릭 시 로그인 확인 API를 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Logger.addLogAdapter(AndroidLogAdapter())
+
         binding.buttonLoginSignin.setOnClickListener {
             // 리포지토리와 ViewModel 연결
             val repository = Repository()
             val viewModelFactory = MainViewModelFactory(repository)
+            // 다른 ViewModel을 사용할거면 클래스만 바꾸면 된다.
             viewModel = ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
             // api 요청
             viewModel.loginRequest(binding.inputLoginEmail.text.toString(), binding.inputLoginPassword.text.toString())
             // 결과 처리
             viewModel.loginResponse.observe(viewLifecycleOwner) {
                 if(it.isSuccessful){
-                    Log.d("Login", it.body().toString())
+                    Logger.t("Login").i(it.body().toString())
                     if(it.body().toString() == "success"){
                         val mainActivity = activity as MainActivity
                         mainActivity.setFragment(FragmentType.MAIN)
                     }
                 } else {
-                    Log.d("Login", it.errorBody().toString())
+                    Logger.e(it.errorBody().toString())
                 }
             }
         }
