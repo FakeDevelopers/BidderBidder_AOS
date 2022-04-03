@@ -1,9 +1,9 @@
-package com.fakedevelopers.ddangddangmarket.api
+package com.fakedevelopers.bidderbidder.api
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.ddangddangmarket.api.repository.Repository
+import com.fakedevelopers.bidderbidder.api.repository.Repository
 import kotlinx.coroutines.launch
 import retrofit2.Response
 

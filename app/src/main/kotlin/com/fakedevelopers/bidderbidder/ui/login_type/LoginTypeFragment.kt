@@ -1,13 +1,13 @@
-package com.fakedevelopers.ddangddangmarket.ui.login_type
+package com.fakedevelopers.bidderbidder.ui.login_type
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fakedevelopers.ddangddangmarket.FragmentType
-import com.fakedevelopers.ddangddangmarket.MainActivity
-import com.fakedevelopers.ddangddangmarket.databinding.FragmentLoginTypeBinding
+import com.fakedevelopers.bidderbidder.FragmentType
+import com.fakedevelopers.bidderbidder.MainActivity
+import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 
 class LoginTypeFragment : Fragment() {
 
