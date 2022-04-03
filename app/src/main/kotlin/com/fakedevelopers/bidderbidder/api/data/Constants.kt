@@ -1,4 +1,4 @@
-package com.fakedevelopers.ddangddangmarket.api.data
+package com.fakedevelopers.bidderbidder.api.data
 
 class Constants {
     companion object{

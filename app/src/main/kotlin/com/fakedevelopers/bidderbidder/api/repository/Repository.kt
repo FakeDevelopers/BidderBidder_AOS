@@ -1,6 +1,6 @@
-package com.fakedevelopers.ddangddangmarket.api.repository
+package com.fakedevelopers.bidderbidder.api.repository
 
-import com.fakedevelopers.ddangddangmarket.api.instance.RetrofitInstance
+import com.fakedevelopers.bidderbidder.api.instance.RetrofitInstance
 import retrofit2.Response
 
 // 데이터 통신을 하는 Repository

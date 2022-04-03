@@ -1,4 +1,4 @@
-package com.fakedevelopers.ddangddangmarket
+package com.fakedevelopers.bidderbidder
 
 import org.junit.Test
 

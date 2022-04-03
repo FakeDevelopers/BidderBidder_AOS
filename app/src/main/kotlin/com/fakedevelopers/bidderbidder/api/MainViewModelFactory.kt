@@ -1,8 +1,8 @@
-package com.fakedevelopers.ddangddangmarket.api
+package com.fakedevelopers.bidderbidder.api
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.fakedevelopers.ddangddangmarket.api.repository.Repository
+import com.fakedevelopers.bidderbidder.api.repository.Repository
 
 class MainViewModelFactory(private val repository: Repository): ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
