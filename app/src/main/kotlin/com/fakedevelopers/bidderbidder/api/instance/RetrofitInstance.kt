@@ -1,7 +1,7 @@
-package com.fakedevelopers.ddangddangmarket.api.instance
+package com.fakedevelopers.bidderbidder.api.instance
 
-import com.fakedevelopers.ddangddangmarket.api.data.Constants.Companion.BASE_URL
-import com.fakedevelopers.ddangddangmarket.api.service.RetrofitService
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.bidderbidder.api.service.RetrofitService
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 

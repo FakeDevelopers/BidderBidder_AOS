@@ -1,4 +1,4 @@
-package com.fakedevelopers.ddangddangmarket
+package com.fakedevelopers.bidderbidder
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle

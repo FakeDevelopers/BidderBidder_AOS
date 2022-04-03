@@ -1,20 +1,18 @@
-package com.fakedevelopers.ddangddangmarket.ui.login
+package com.fakedevelopers.bidderbidder.ui.login
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.fakedevelopers.ddangddangmarket.FragmentType
-import com.fakedevelopers.ddangddangmarket.MainActivity
-import com.fakedevelopers.ddangddangmarket.api.MainViewModel
-import com.fakedevelopers.ddangddangmarket.api.MainViewModelFactory
-import com.fakedevelopers.ddangddangmarket.api.repository.Repository
-import com.fakedevelopers.ddangddangmarket.databinding.FragmentLoginBinding
+import com.fakedevelopers.bidderbidder.FragmentType
+import com.fakedevelopers.bidderbidder.MainActivity
+import com.fakedevelopers.bidderbidder.api.MainViewModel
+import com.fakedevelopers.bidderbidder.api.MainViewModelFactory
+import com.fakedevelopers.bidderbidder.api.repository.Repository
+import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
-import com.orhanobut.logger.BuildConfig
 import com.orhanobut.logger.Logger
 
 class LoginFragment : Fragment() {
