@@ -10,4 +10,6 @@
     <string name="login_email">이메일</string>
     <string name="login_password">비밀번호</string>
     <string name="login_signin">시작하기</string>
+    <!-- Strings related to main -->
+    <string name="main_loginSuccessText">로그인 성공!</string>
 </resources>
