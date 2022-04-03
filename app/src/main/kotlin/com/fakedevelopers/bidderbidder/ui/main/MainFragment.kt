@@ -1,11 +1,11 @@
-package com.fakedevelopers.ddangddangmarket.ui.main
+package com.fakedevelopers.bidderbidder.ui.main
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.fakedevelopers.ddangddangmarket.databinding.FragmentMainBinding
+import com.fakedevelopers.bidderbidder.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
 
