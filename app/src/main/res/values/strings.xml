@@ -10,6 +10,16 @@
     <string name="login_email">이메일</string>
     <string name="login_password">비밀번호</string>
     <string name="login_signin">시작하기</string>
+    <string name="login_registertext">아직도 회원이 아니세요?!</string>
+    <string name="login_registerbutton">즉시 가입하기</string>
+    <!-- Strings related to PhoneAuth-->
+    <string name="phoneauth_authtext">휴대폰 번호를\n인증해주세요</string>
+    <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
+    <string name="phoneauth_hint_authcode">인증 번호</string>
+    <string name="phoneauth_getauthcode">인증 번호 받기</string>
+    <string name="phoneauth_nextstep">다음</string>
+    <!-- Strings related to Register -->
+    <string name="register_welcometext">통과!</string>
     <!-- Strings related to main -->
     <string name="main_loginSuccessText">로그인 성공!</string>
 </resources>
