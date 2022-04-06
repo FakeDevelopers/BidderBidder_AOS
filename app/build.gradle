@@ -43,7 +43,7 @@ dependencies {
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:29.2.1')
     implementation 'com.google.firebase:firebase-analytics-ktx'
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
+    implementation 'com.google.firebase:firebase-auth-ktx'
     // Logger
     implementation 'com.orhanobut:logger:2.2.0'
     // REST API 통신
