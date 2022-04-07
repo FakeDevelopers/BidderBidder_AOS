@@ -15,7 +15,8 @@ class MainFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -25,7 +26,7 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }

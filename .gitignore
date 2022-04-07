@@ -1,3 +1,16 @@
+
+# Created by https://www.toptal.com/developers/gitignore/api/kotlin,androidstudio,firebase,intellij,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=kotlin,androidstudio,firebase,intellij,windows
+
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
+
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -31,13 +44,13 @@
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
 # since they will be recreated, and may cause churn.  Uncomment if using
-# auto-import.
-# .idea/artifacts
-# .idea/compiler.xml
-# .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
-# .idea/modules
+auto-import.
+#.idea/artifacts
+#.idea/compiler.xml
+#.idea/jarRepositories.xml
+#.idea/modules.xml
+#.idea/*.iml
+#.idea/modules
 # *.iml
 # *.ipr
 
@@ -82,7 +95,7 @@ fabric.properties
 
 # *.iml
 # modules.xml
-# .idea/misc.xml
+#.idea/misc.xml
 # *.ipr
 
 # Sonarlint plugin
@@ -225,7 +238,6 @@ obj/
 /out/
 
 # User-specific configurations
-.idea/deploymentTargetDropDown.xml
 .idea/caches/
 .idea/libraries/
 .idea/shelf/
@@ -278,4 +290,4 @@ obj/
 
 !/gradle/wrapper/gradle-wrapper.jar
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,intellij,kotlin,androidstudio
+# End of https://www.toptal.com/developers/gitignore/api/kotlin,androidstudio,firebase,intellij,windows
