@@ -1,4 +1,4 @@
-# DDangDDangMarket - 중고 경매 플랫폼
+# BidderBidder - 전국 중고 경매 플랫폼
 
 <div align=center><h1>📚 STACKS</h1></div>
 <div align=center>
