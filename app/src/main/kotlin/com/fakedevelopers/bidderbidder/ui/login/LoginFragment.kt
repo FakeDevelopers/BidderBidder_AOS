@@ -25,7 +25,8 @@ class LoginFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,8 +36,7 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         Logger.addLogAdapter(AndroidLogAdapter())
-        val mainActivity = activity as MainActivity
-        // 로그인 버튼
+
         binding.buttonLoginSignin.setOnClickListener {
             // 리포지토리와 ViewModel 연결
             val repository = Repository()
@@ -50,6 +50,7 @@ class LoginFragment : Fragment() {
                 if(it.isSuccessful){
                     Logger.t("Login").i(it.body().toString())
                     if(it.body().toString() == "success"){
+                        val mainActivity = activity as MainActivity
                         mainActivity.setFragment(FragmentType.MAIN)
                     }
                 } else {
@@ -57,15 +58,10 @@ class LoginFragment : Fragment() {
                 }
             }
         }
-
-        // 회원가입 버튼
-        binding.buttonLoginResgister.setOnClickListener {
-            mainActivity.setFragment(FragmentType.PHONEAUTH)
-        }
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }
