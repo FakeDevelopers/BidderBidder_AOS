@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.fakedevelopers.bidderbidder.FragmentType
-import com.fakedevelopers.bidderbidder.MainActivity
+import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.LoginViewModel
 import com.fakedevelopers.bidderbidder.api.MainViewModelFactory
@@ -20,7 +19,6 @@ import com.orhanobut.logger.Logger
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
-    private lateinit var mainActivity: MainActivity
     private val loginViewModel: LoginViewModel by lazy {
         ViewModelProvider(this, MainViewModelFactory(LoginRepository()))[LoginViewModel::class.java]
     }
@@ -29,21 +27,9 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-        mainActivity = activity as MainActivity
         binding = DataBindingUtil.inflate<FragmentLoginBinding?>(inflater, R.layout.fragment_login, container, false).also {
             it.vm = loginViewModel
             it.lifecycleOwner = this
-        }
-        // 결과 처리
-        loginViewModel.loginResponse.observe(viewLifecycleOwner) {
-            if(it.isSuccessful){
-                Logger.t("Login").i(it.body().toString())
-                if(it.body().toString() == "success"){
-                    mainActivity.setFragment(FragmentType.MAIN)
-                }
-            } else {
-                Logger.e(it.errorBody().toString())
-            }
         }
         return binding.root
     }
@@ -52,6 +38,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val navController = Navigation.findNavController(view)
         Logger.addLogAdapter(AndroidLogAdapter())
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
@@ -62,7 +49,19 @@ class LoginFragment : Fragment() {
         }
         // 회원가입 버튼
         binding.buttonLoginResgister.setOnClickListener {
-            mainActivity.setFragment(FragmentType.PHONEAUTH)
+            navController.navigate(R.id.action_loginFragment_to_phoneAuthFragment)
+        }
+
+        // 결과 처리
+        loginViewModel.loginResponse.observe(viewLifecycleOwner) {
+            if(it.isSuccessful){
+                Logger.t("Login").i(it.body().toString())
+                if(it.body().toString() == "success"){
+                    navController.navigate(R.id.action_loginFragment_to_mainFragment)
+                }
+            } else {
+                Logger.e(it.errorBody().toString())
+            }
         }
     }
 }

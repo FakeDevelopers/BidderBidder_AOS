@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.fakedevelopers.bidderbidder.FragmentType
-import com.fakedevelopers.bidderbidder.MainActivity
+import androidx.navigation.Navigation
+import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 
 class LoginTypeFragment : Fragment() {
@@ -25,10 +25,10 @@ class LoginTypeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mainActivity = activity as MainActivity
+        val navController = Navigation.findNavController(view)
         // 로그인 버튼을 누르면 로그인 프래그먼트로 넘어갑니다.
         binding.buttonLogintypeCommonlogin.setOnClickListener {
-            mainActivity.setFragment(FragmentType.LOGIN)
+            navController.navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
     }
 
