@@ -11,6 +11,7 @@ import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.LoginViewModel
 import com.fakedevelopers.bidderbidder.api.MainViewModelFactory
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.api.repository.LoginRepository
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -56,7 +57,7 @@ class LoginFragment : Fragment() {
         loginViewModel.loginResponse.observe(viewLifecycleOwner) {
             if(it.isSuccessful){
                 Logger.t("Login").i(it.body().toString())
-                if(it.body().toString() == "success"){
+                if(it.body().toString() == LOGIN_SUCCESS){
                     navController.navigate(R.id.action_loginFragment_to_mainFragment)
                 }
             } else {
