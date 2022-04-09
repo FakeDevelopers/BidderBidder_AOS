@@ -31,7 +31,7 @@ class PhoneAuthFragment : Fragment() {
             it.vm = registerViewModel
             it.lifecycleOwner = this
         }
-        initObserve()
+        initObserver()
         return binding.root
     }
 
@@ -42,7 +42,7 @@ class PhoneAuthFragment : Fragment() {
             with(registerViewModel){
                 if(isCodeSending.value!!){
                     // 인증 번호 확인
-                    signInWithPhoneAuthCredential(mainActivity)
+                    signInWithPhoneAuthCredential(mainActivity, view)
                 } else {
                     // 인증 번호 전송
                     sendPhoneAuthCode(mainActivity)
@@ -51,7 +51,7 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
-    private fun initObserve() {
+    private fun initObserver() {
         // 코드 발송 상태에 따라 버튼 메세지가 바뀜
         registerViewModel.isCodeSending.observe(viewLifecycleOwner) {
             with(binding){

@@ -1,10 +1,12 @@
 package com.fakedevelopers.bidderbidder.ui.register
 
 import android.app.Application
+import android.view.View
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import com.fakedevelopers.bidderbidder.FragmentType
+import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.MainActivity
+import com.fakedevelopers.bidderbidder.R
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.PhoneAuthProvider.getCredential
@@ -59,7 +61,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
     }
 
     // 인증 번호 검사
-    fun signInWithPhoneAuthCredential(mainActivity: MainActivity) {
+    fun signInWithPhoneAuthCredential(mainActivity: MainActivity, view: View) {
         getCredential(verificationId.value!!, authCode.value!!).let {
             auth.signInWithCredential(it)
                 .addOnCompleteListener(mainActivity) { task ->
@@ -67,7 +69,7 @@ class RegisterViewModel(application: Application) : AndroidViewModel(application
                         Logger.t("Auth").i("인증 성공")
                         // 아직 어디 사용할지 모르겟슴
                         currentUser.value = task.result?.user
-                        mainActivity.setFragment(FragmentType.REGISTER)
+                        Navigation.findNavController(view).navigate(R.id.action_phoneAuthFragment_to_registerFragment)
                     }
                     else {
                         if (task.exception is FirebaseAuthInvalidCredentialsException) {
