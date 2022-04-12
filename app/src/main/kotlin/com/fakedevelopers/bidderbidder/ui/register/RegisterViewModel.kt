@@ -1,82 +1,37 @@
 package com.fakedevelopers.bidderbidder.ui.register
 
-import android.app.Application
-import android.view.View
-import androidx.lifecycle.AndroidViewModel
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.navigation.Navigation
-import com.fakedevelopers.bidderbidder.MainActivity
-import com.fakedevelopers.bidderbidder.R
-import com.google.firebase.FirebaseException
-import com.google.firebase.auth.*
-import com.google.firebase.auth.PhoneAuthProvider.getCredential
-import com.orhanobut.logger.Logger
-import java.util.concurrent.TimeUnit
+import androidx.lifecycle.ViewModel
 
-class RegisterViewModel(application: Application) : AndroidViewModel(application) {
+class RegisterViewModel : ViewModel() {
 
-    private lateinit var auth: FirebaseAuth
-    private var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
-    private val currentUser = MutableLiveData<FirebaseUser>()
-    val phoneNumber = MutableLiveData<String>()
-    val authCode = MutableLiveData<String>()
-    val isCodeSending = MutableLiveData<Boolean>()
-    val verificationId = MutableLiveData<String>()
+    val firebaseToken = MutableLiveData("")
+    val birth = MutableLiveData("")
+    val isBirthCheck = MutableLiveData(false)
+    val id = MutableLiveData("")
+    private val confirmedId = MutableLiveData("")
+    val isIdCheck = MutableLiveData(false)
+    val password = MutableLiveData("")
+    val passwordAgain = MutableLiveData("")
+    val isPasswordCheck = MutableLiveData(false)
 
-    init {
-        isCodeSending.value = false
-        // 콜백 초기화
-        callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-            // 인증이 끝난 상태
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                Logger.t("Auth").i("onVerificationCompleted")
-            }
-            // 인증 실패 상태
-            override fun onVerificationFailed(p0: FirebaseException) {
-                Logger.t("Auth").i("onVerificationFailed")
-            }
-            // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
-            override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
-                Logger.t("Auth").i("onCodeSent")
-                // 인증 id 저장
-                verificationId.value = p0
-                super.onCodeSent(p0, p1)
-            }
+    fun idDuplicationCheck() {
+        // 여기서 id.value와 중복되는 id가 있는지 서버에 요청해야한다.
+        confirmedId.value = id.value
+        if(!isIdCheck.value!!){
+            isIdCheck.value = true
         }
+        Log.d("register", confirmedId.value.toString())
     }
 
-    // 인증 번호 보내기
-    fun sendPhoneAuthCode(mainActivity: MainActivity) {
-        auth = FirebaseAuth.getInstance().apply {
-            setLanguageCode("ko")
-        }
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber("+82${phoneNumber.value}")
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setActivity(mainActivity)
-            .setCallbacks(callbacks)
-            .build()
-        PhoneAuthProvider.verifyPhoneNumber(options)
-        isCodeSending.value = true
+    fun samePasswordCheck() {
+        isPasswordCheck.value = password.value == passwordAgain.value
     }
 
-    // 인증 번호 검사
-    fun signInWithPhoneAuthCredential(mainActivity: MainActivity, view: View) {
-        getCredential(verificationId.value!!, authCode.value!!).let {
-            auth.signInWithCredential(it)
-                .addOnCompleteListener(mainActivity) { task ->
-                    if (task.isSuccessful) {
-                        Logger.t("Auth").i("인증 성공")
-                        // 아직 어디 사용할지 모르겟슴
-                        currentUser.value = task.result?.user
-                        Navigation.findNavController(view).navigate(R.id.action_phoneAuthFragment_to_registerFragment)
-                    }
-                    else {
-                        if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                            Logger.t("Auth").i("코드가 맞지 않음")
-                        }
-                    }
-                }
-        }
+    fun requestSignUp(): Boolean {
+        //여기서 정보가 올바른지 검사하고 토큰, birth, confirmedId, confirmedPassword를 서버로 보낸다.
+        //지금은 값만 다적었는지 검사한다.
+        return isBirthCheck.value!! && isIdCheck.value!! && isPasswordCheck.value!!
     }
 }

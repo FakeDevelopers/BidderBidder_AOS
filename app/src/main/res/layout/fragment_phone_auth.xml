@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.register.PhoneAuthViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
             app:layout_constraintVertical_bias="0.3" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textinputlayout_phoneauth_phonenumber"
+            android:id="@+id/textinputlayout_register_birth"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -43,7 +43,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textview_phoneauth_authtext">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edittext_phoneauth_phonenumber"
+                android:id="@+id/edittext_register_birth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -65,7 +65,7 @@
             android:visibility="invisible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textinputlayout_phoneauth_phonenumber">
+            app:layout_constraintTop_toBottomOf="@+id/textinputlayout_register_birth">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edittext_phoneauth_authcode"

@@ -16,9 +16,10 @@ import com.google.android.gms.common.GoogleApiAvailability
 class PhoneAuthFragment : Fragment() {
 
     private lateinit var mainActivity: MainActivity
-    private lateinit var binding: FragmentPhoneAuthBinding
-    private val registerViewModel: RegisterViewModel by lazy {
-        ViewModelProvider(this)[RegisterViewModel::class.java]
+    private lateinit var _binding: FragmentPhoneAuthBinding
+    private val binding get() = _binding
+    private val phoneAuthViewModel: PhoneAuthViewModel by lazy {
+        ViewModelProvider(this)[PhoneAuthViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -26,9 +27,9 @@ class PhoneAuthFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?): View {
         mainActivity = activity as MainActivity
-        binding = DataBindingUtil.inflate<FragmentPhoneAuthBinding?>(inflater, R.layout.fragment_phone_auth, container, false).also {
+        _binding = DataBindingUtil.inflate<FragmentPhoneAuthBinding>(inflater, R.layout.fragment_phone_auth, container, false).also {
             // 뷰 모델과 데이터 바인딩 합체
-            it.vm = registerViewModel
+            it.vm = phoneAuthViewModel
             it.lifecycleOwner = this
         }
         initObserver()
@@ -39,7 +40,7 @@ class PhoneAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthNextstep.setOnClickListener {
-            with(registerViewModel){
+            with(phoneAuthViewModel){
                 if(isCodeSending.value!!){
                     // 인증 번호 확인
                     signInWithPhoneAuthCredential(mainActivity, view)
@@ -53,7 +54,7 @@ class PhoneAuthFragment : Fragment() {
 
     private fun initObserver() {
         // 코드 발송 상태에 따라 버튼 메세지가 바뀜
-        registerViewModel.isCodeSending.observe(viewLifecycleOwner) {
+        phoneAuthViewModel.isCodeSending.observe(viewLifecycleOwner) {
             with(binding){
                 if(it) {
                     buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
