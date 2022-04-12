@@ -21,18 +21,14 @@
     <!-- Strings related to Register -->
     <string name="register_text_your_birth">생년월일을\n입력해주세요</string>
     <string name="register_text_your_id">아이디를\n입력해주세요</string>
-    <string name="register_text_your_nickname">닉네임을\n입력해주세요</string>
     <string name="register_text_your_password">비밀번호를\n입력해주세요</string>
     <string name="register_hint_birth">생년월일</string>
     <string name="register_hint_id">아이디</string>
-    <string name="register_hint_nickname">닉네임</string>
     <string name="register_hint_password">비밀번호</string>
     <string name="register_hint_password_check">비밀번호 확인</string>
     <string name="register_button_duplicate_check">중복확인</string>
     <string name="register_text_duplicate_id">이미 사용 중인 아이디 입니다!</string>
     <string name="register_text_no_duplicate_id">사용 가능한 아이디 입니다!</string>
-    <string name="register_text_duplicate_nickname">이미 사용 중인 닉네임 입니다!</string>
-    <string name="register_text_no_duplicate_nickname">사용 가능한 닉네임 입니다!</string>
     <string name="register_text_password_condition">8~16자 영문, 숫자, 특수문자를 조합하여 구성</string>
     <string name="register_text_password_safe">안전한 비밀번호 입니다!</string>
     <string name="register_text_password_check_fail">설정한 비밀번호와 다릅니다!</string>
