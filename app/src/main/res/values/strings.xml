@@ -23,7 +23,6 @@
     <string name="register_text_your_id">아이디를\n입력해주세요</string>
     <string name="register_text_your_password">비밀번호를\n입력해주세요</string>
     <string name="register_hint_birth">생년월일</string>
-    <string name="register_hint_birth_low_version">생년월일 8자리 ex) 20220615</string>
     <string name="register_hint_id">아이디</string>
     <string name="register_hint_password">비밀번호</string>
     <string name="register_hint_password_check">비밀번호 확인</string>
