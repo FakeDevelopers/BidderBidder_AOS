@@ -46,12 +46,13 @@
                 android:id="@+id/edittext_register_birth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/register_hint_birth"
-                android:inputType="none"
-                android:minHeight="48dp"
+                android:afterTextChanged="@{(text) -> vm.birthFormCheck(text)}"
                 android:clickable="true"
-                android:focusable="false"
+                android:ems="10"
+                android:focusable="@{vm.birthFocusable}"
+                android:hint="@string/register_hint_birth"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp"
                 android:text="@{vm.birth}"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>

@@ -19,6 +19,7 @@ import com.orhanobut.logger.Logger
 
 class RegisterFragment : Fragment() {
 
+    private lateinit var datePicker: DatePickerDialog
     private lateinit var _binding: FragmentRegisterBinding
     private val binding get() = _binding
     private val registerViewModel: RegisterViewModel by lazy {
@@ -34,26 +35,35 @@ class RegisterFragment : Fragment() {
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val args: RegisterFragmentArgs by navArgs()
         registerViewModel.firebaseToken.value = args.token
         Logger.t("Register").i(registerViewModel.firebaseToken.value.toString())
-        val now = Calendar.getInstance()
-        val mYear = now.get(Calendar.YEAR)
-        val mMonth = now.get(Calendar.MONTH)
-        val mDay = now.get(Calendar.DAY_OF_MONTH)
-        val datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-            registerViewModel.birth.value = String.format("%d년 %d월 %d일", year, month+1, dayOfMonth)
-            if(!registerViewModel.isBirthCheck.value!!){
-                registerViewModel.isBirthCheck.value = true
-            }
-        }, mYear, mMonth, mDay)
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            registerViewModel.birthFocusable.value = false
+            val now = Calendar.getInstance()
+            val mYear = now.get(Calendar.YEAR)
+            val mMonth = now.get(Calendar.MONTH)
+            val mDay = now.get(Calendar.DAY_OF_MONTH)
+            datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
+                registerViewModel.birth.value = "${mYear}-${mMonth+1}-${mDay}"
+                if(!registerViewModel.birthCheck.value!!){
+                    registerViewModel.birthCheck.value = true
+                }
+            }, mYear, mMonth, mDay)
+        } else {
+            // 낮은 버전은 에딧 텍스트로 입력합니다.
+            registerViewModel.birthFocusable.value = true
+            binding.edittextRegisterBirth.setHint(R.string.register_hint_birth_low_version)
+        }
 
         binding.edittextRegisterBirth.setOnClickListener {
-            datePicker.show()
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                datePicker.show()
+            }
         }
         binding.buttonRegisterIdDuplication.setOnClickListener {
             registerViewModel.idDuplicationCheck()
@@ -68,7 +78,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun initObserver() {
-        registerViewModel.isBirthCheck.observe(viewLifecycleOwner) {
+        registerViewModel.birthCheck.observe(viewLifecycleOwner) {
             if(it) {
                 binding.textinputlayoutRegisterId.visibility = View.VISIBLE
                 binding.buttonRegisterIdDuplication.visibility = View.VISIBLE
@@ -76,7 +86,7 @@ class RegisterFragment : Fragment() {
                 binding.textviewRegisterYourinfo.setText(R.string.register_text_your_id)
             }
         }
-        registerViewModel.isIdCheck.observe(viewLifecycleOwner) {
+        registerViewModel.idCheck.observe(viewLifecycleOwner) {
             if(it) {
                 binding.textinputlayoutRegisterPassword.visibility = View.VISIBLE
                 binding.textinputlayoutRegisterPasswordCheck.visibility = View.VISIBLE
@@ -85,7 +95,7 @@ class RegisterFragment : Fragment() {
                 binding.textviewRegisterYourinfo.setText(R.string.register_text_your_password)
             }
         }
-        registerViewModel.isPasswordCheck.observe(viewLifecycleOwner) {
+        registerViewModel.passwordCheck.observe(viewLifecycleOwner) {
             binding.buttonRegisterSignup.visibility = if(it) View.VISIBLE else View.INVISIBLE
         }
     }
