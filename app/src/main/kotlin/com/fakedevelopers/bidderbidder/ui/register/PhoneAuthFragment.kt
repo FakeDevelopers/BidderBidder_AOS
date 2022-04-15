@@ -20,9 +20,12 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.orhanobut.logger.Logger
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthFragment : Fragment() {
+
+    private val EXPIRE_TIME = 60L
 
     private lateinit var mainActivity: MainActivity
     private lateinit var _binding: FragmentPhoneAuthBinding
@@ -50,7 +53,7 @@ class PhoneAuthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         auth = FirebaseAuth.getInstance().apply {
-            setLanguageCode("ko")
+            setLanguageCode(Locale.getDefault().language)
         }
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthNextstep.setOnClickListener {
@@ -106,7 +109,7 @@ class PhoneAuthFragment : Fragment() {
     private fun sendPhoneAuthCode() {
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber("+82${phoneAuthViewModel.phoneNumber.value}")
-            .setTimeout(60L, TimeUnit.SECONDS)
+            .setTimeout(EXPIRE_TIME, TimeUnit.SECONDS)
             .setActivity(mainActivity)
             .setCallbacks(callbacks)
             .build()

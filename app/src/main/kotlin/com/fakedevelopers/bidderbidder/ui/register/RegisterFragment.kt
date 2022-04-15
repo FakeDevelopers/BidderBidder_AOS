@@ -44,10 +44,7 @@ class RegisterFragment : Fragment() {
         val mMonth = now.get(Calendar.MONTH)
         val mDay = now.get(Calendar.DAY_OF_MONTH)
         datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-            registerViewModel.birth.value = "${year}년 ${month+1}월 ${dayOfMonth}일"
-            if(!registerViewModel.birthCheck.value!!){
-             //   registerViewModel.birthCheck.value = true
-            }
+            registerViewModel.setBirth(year, month, dayOfMonth)
         }, mYear, mMonth, mDay)
 
         binding.edittextRegisterBirth.setOnClickListener {
