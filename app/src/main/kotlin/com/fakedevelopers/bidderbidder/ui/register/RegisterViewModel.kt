@@ -12,7 +12,7 @@ class RegisterViewModel : ViewModel() {
     val password = MutableLiveData("")
     val passwordAgain = MutableLiveData("")
 
-    private val confirmedId = MutableLiveData("")
+    private lateinit var confirmedId: String
     private val _birth = MutableLiveData("")
     private val _birthCheck = MutableLiveData(false)
     private val _idCheck = MutableLiveData(false)
@@ -33,7 +33,7 @@ class RegisterViewModel : ViewModel() {
 
     fun idDuplicationCheck() {
         // 여기서 id.value와 중복되는 id가 있는지 서버에 요청해야한다.
-        confirmedId.value = id.value
+        confirmedId = id.value!!
         if(!idCheck.value!!){
             _idCheck.value = true
         }

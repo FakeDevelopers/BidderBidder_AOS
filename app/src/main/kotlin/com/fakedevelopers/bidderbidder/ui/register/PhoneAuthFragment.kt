@@ -20,12 +20,10 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.orhanobut.logger.Logger
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class PhoneAuthFragment : Fragment() {
-
-    private val EXPIRE_TIME = 60L
 
     private lateinit var mainActivity: MainActivity
     private lateinit var _binding: FragmentPhoneAuthBinding
@@ -145,5 +143,9 @@ class PhoneAuthFragment : Fragment() {
     // 아직은 사용하지 않읍니다
     private fun isSafetyNetAvailable(): Boolean {
         return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(requireContext()) == ConnectionResult.SUCCESS
+    }
+
+    companion object {
+        private const val EXPIRE_TIME = 60L
     }
 }
