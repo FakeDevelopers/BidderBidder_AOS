@@ -1,23 +1,28 @@
 package com.fakedevelopers.bidderbidder.api
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.bidderbidder.api.repository.LoginRepository
+import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import javax.inject.Inject
 
-class LoginViewModel(private val loginRepository: LoginRepository): ViewModel() {
-    // LiveData는 LifeCycle 내에서만 동작하며 LifeCycle이 종료되면 같이 삭제된다.
-    // 그래서 메모리 누출이 없고 수명주기에 따른 데이터 관리를 내가 따로 안해도 된다는 이점이 있다.
-    val loginResponse = MutableLiveData<Response<String>>()
-    val email = MutableLiveData<String>()
-    val passwd = MutableLiveData<String>()
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val repository: UserLoginRepository): ViewModel() {
 
-    // 코루틴으로 api를 호출해서 결과를 LiveData에 넣는다.
-    fun loginRequest(email: String, passwd: String) {
+    val email = MutableLiveData("")
+    val passwd = MutableLiveData("")
+
+    private val _loginResponse = MutableLiveData<Response<String>>()
+
+    val loginResponse: LiveData<Response<String>> get() = _loginResponse
+
+    fun loginRequest() {
         viewModelScope.launch {
-            loginResponse.value = loginRepository.loginRequest(email, passwd)
+            _loginResponse.value = repository.postLogin(email.value!!, passwd.value!!)
         }
     }
 }
