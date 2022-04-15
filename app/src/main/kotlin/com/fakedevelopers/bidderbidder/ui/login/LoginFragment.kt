@@ -6,23 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.LoginViewModel
-import com.fakedevelopers.bidderbidder.api.MainViewModelFactory
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
-import com.fakedevelopers.bidderbidder.api.repository.LoginRepository
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
-    private val loginViewModel: LoginViewModel by lazy {
-        ViewModelProvider(this, MainViewModelFactory(LoginRepository()))[LoginViewModel::class.java]
-    }
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,7 +43,7 @@ class LoginFragment : Fragment() {
         binding.buttonLoginSignin.setOnClickListener {
             with(loginViewModel){
                 // api 요청
-                loginRequest(email.value!!, passwd.value!!)
+                loginRequest()
             }
         }
         // 회원가입 버튼

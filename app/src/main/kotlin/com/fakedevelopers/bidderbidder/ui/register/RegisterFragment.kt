@@ -46,7 +46,7 @@ class RegisterFragment : Fragment() {
         datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
             registerViewModel.birth.value = "${year}년 ${month+1}월 ${dayOfMonth}일"
             if(!registerViewModel.birthCheck.value!!){
-                registerViewModel.birthCheck.value = true
+             //   registerViewModel.birthCheck.value = true
             }
         }, mYear, mMonth, mDay)
 

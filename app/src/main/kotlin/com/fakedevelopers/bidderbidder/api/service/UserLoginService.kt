@@ -5,8 +5,8 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
 
-interface RetrofitService {
+interface UserLoginService {
     @FormUrlEncoded
     @POST("user/login")
-    suspend fun loginRequest(@Field("email") email: String, @Field("passwd") passwd: String): Response<String>
+    suspend fun postLogin(@Field("email") email: String, @Field("passwd") passwd: String): Response<String>
 }
