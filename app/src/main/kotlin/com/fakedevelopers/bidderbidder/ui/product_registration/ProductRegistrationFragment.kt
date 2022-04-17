@@ -2,15 +2,12 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.app.AlertDialog
 import android.content.ContentResolver
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +19,6 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.fakedevelopers.bidderbidder.BuildConfig
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.AndroidLogAdapter
