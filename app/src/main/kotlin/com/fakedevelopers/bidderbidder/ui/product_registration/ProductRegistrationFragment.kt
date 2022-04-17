@@ -1,20 +1,28 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.app.AlertDialog
 import android.content.ContentResolver
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.PermissionChecker
+import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.fakedevelopers.bidderbidder.BuildConfig
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -27,10 +35,12 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 
+
 @AndroidEntryPoint
 class ProductRegistrationFragment: Fragment() {
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var _binding: FragmentProductRegistrationBinding
 
     private val productRegistrationViewModel: ProductRegistrationViewModel by viewModels()
@@ -60,13 +70,18 @@ class ProductRegistrationFragment: Fragment() {
     }
 
     private fun getPictures() {
-        val albumIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-            type = "image/*"
-            action = Intent.ACTION_GET_CONTENT
-            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        // 미디어 접근 권한이 없으면 안됩니다
+        if(checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED){
+            val albumIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
+                type = "image/*"
+                action = Intent.ACTION_GET_CONTENT
+                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+            activityResultLauncher.launch(albumIntent)
+        } else {
+            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
-        activityResultLauncher.launch(albumIntent)
     }
 
     private fun initResultLauncher() {
@@ -85,6 +100,14 @@ class ProductRegistrationFragment: Fragment() {
                             productRegistrationViewModel.imageList.add(getMultipart(uri!!, requireActivity().contentResolver)!!)
                         }
                     }
+                }
+            }
+        permissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
+                if(isGranted){
+                    getPictures()
+                } else {
+                    Toast.makeText(requireContext(), R.string.permission_read_external_storage, Toast.LENGTH_SHORT).show()
                 }
             }
     }
