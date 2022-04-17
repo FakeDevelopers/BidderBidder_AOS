@@ -12,6 +12,7 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 class LoginTypeFragment : Fragment() {
 
     private var _binding: FragmentLoginTypeBinding? = null
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -29,6 +30,9 @@ class LoginTypeFragment : Fragment() {
         // 로그인 버튼을 누르면 로그인 프래그먼트로 넘어갑니다.
         binding.buttonLogintypeCommonlogin.setOnClickListener {
             navController.navigate(R.id.action_loginTypeFragment_to_loginFragment)
+        }
+        binding.button3.setOnClickListener {
+            navController.navigate(R.id.action_loginTypeFragment_to_productRegistrationFragment)
         }
     }
 

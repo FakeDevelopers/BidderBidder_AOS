@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/fragment_horizontal_margin"
-        android:paddingEnd="@dimen/fragment_horizontal_margin"
-        tools:context=".ui.register.RegisterFragment">
+        android:paddingEnd="@dimen/fragment_horizontal_margin">
 
         <TextView
             android:id="@+id/textview_register_yourinfo"

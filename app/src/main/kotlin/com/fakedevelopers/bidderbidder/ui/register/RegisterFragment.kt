@@ -19,6 +19,7 @@ class RegisterFragment : Fragment() {
 
     private lateinit var datePicker: DatePickerDialog
     private lateinit var _binding: FragmentRegisterBinding
+
     private val binding get() = _binding
     private val registerViewModel: RegisterViewModel by lazy {
         ViewModelProvider(this)[RegisterViewModel::class.java]

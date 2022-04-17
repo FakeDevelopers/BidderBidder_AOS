@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
-import com.fakedevelopers.bidderbidder.api.LoginViewModel
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -19,17 +18,20 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var binding: FragmentLoginBinding
+    private lateinit var _binding: FragmentLoginBinding
     private val loginViewModel: LoginViewModel by viewModels()
+
+    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate<FragmentLoginBinding?>(inflater, R.layout.fragment_login, container, false).also {
+        _binding = DataBindingUtil.inflate<FragmentLoginBinding?>(inflater, R.layout.fragment_login, container, false).also {
             it.vm = loginViewModel
             it.lifecycleOwner = this
         }
+        Logger.addLogAdapter(AndroidLogAdapter())
         return binding.root
     }
 
@@ -38,7 +40,6 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = Navigation.findNavController(view)
-        Logger.addLogAdapter(AndroidLogAdapter())
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
             with(loginViewModel){

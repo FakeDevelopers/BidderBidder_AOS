@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_loginTypeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_loginTypeFragment_to_productRegistrationFragment"
+            app:destination="@id/productRegistrationFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -50,4 +53,8 @@
             android:name="token"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/productRegistrationFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationFragment"
+        android:label="ProductRegistrationFragment" />
 </navigation>

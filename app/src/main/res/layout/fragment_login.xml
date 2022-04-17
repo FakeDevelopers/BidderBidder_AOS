@@ -5,15 +5,14 @@
     <data>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.api.LoginViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.login.LoginViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/fragment_horizontal_margin"
-        android:paddingEnd="@dimen/fragment_horizontal_margin"
-        tools:context=".ui.login.LoginFragment">
+        android:paddingEnd="@dimen/fragment_horizontal_margin">
 
         <ImageView
             android:id="@+id/imageView_logintype_logo"

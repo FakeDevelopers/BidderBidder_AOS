@@ -29,6 +29,7 @@ class PhoneAuthFragment : Fragment() {
     private lateinit var _binding: FragmentPhoneAuthBinding
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private lateinit var auth: FirebaseAuth
+
     private val binding get() = _binding
     private val phoneAuthViewModel: PhoneAuthViewModel by lazy {
         ViewModelProvider(this)[PhoneAuthViewModel::class.java]
