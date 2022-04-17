@@ -31,9 +31,6 @@ class LoginTypeFragment : Fragment() {
         binding.buttonLogintypeCommonlogin.setOnClickListener {
             navController.navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
-        binding.button3.setOnClickListener {
-            navController.navigate(R.id.action_loginTypeFragment_to_productRegistrationFragment)
-        }
     }
 
     override fun onDestroyView() {

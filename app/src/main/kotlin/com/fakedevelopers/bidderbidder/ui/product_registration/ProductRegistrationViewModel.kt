@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.UserProductRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
