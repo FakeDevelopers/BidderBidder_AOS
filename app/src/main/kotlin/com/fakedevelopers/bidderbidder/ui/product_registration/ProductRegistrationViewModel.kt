@@ -27,21 +27,14 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
-            val content = "콘텐트 내용".toPlainRequestBody()
-            val title = "제목".toPlainRequestBody()
-            val category = "1".toPlainRequestBody()
-            val endDate = "2030-01-01 07:07".toPlainRequestBody()
-            val hope = "100".toPlainRequestBody()
-            val open = "50".toPlainRequestBody()
-            val tick = "1".toPlainRequestBody()
             val map = hashMapOf<String, RequestBody>()
-            map["board_content"] = content
-            map["board_title"] = title
-            map["category"] = category
-            map["end_date"] = endDate
-            map["hope_price"] = hope
-            map["opening_bid"] = open
-            map["tick"] = tick
+            map["board_content"] = "콘텐트 내용".toPlainRequestBody()
+            map["board_title"] = "제목".toPlainRequestBody()
+            map["category"] = "1".toPlainRequestBody()
+            map["end_date"] = "2030-01-01 07:07".toPlainRequestBody()
+            map["hope_price"] = "100".toPlainRequestBody()
+            map["opening_bid"] = "50".toPlainRequestBody()
+            map["tick"] = "1".toPlainRequestBody()
             _productRegistrationResponse.value = repository.postProductRegistration(imageList, map)
         }
     }
