@@ -24,8 +24,8 @@ class RegisterViewModel : ViewModel() {
     val passwordCheck: LiveData<Boolean> get() = _passwordCheck
 
     fun setBirth(year: Int, month: Int, dayOfMonth: Int) {
-        _birth.value = "${year}년 ${month+1}월 ${dayOfMonth}일"
-        if(!birthCheck.value!!){
+        _birth.value = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+        if (!birthCheck.value!!) {
             Log.d("mytest", "asdf")
             _birthCheck.value = true
         }
@@ -34,7 +34,7 @@ class RegisterViewModel : ViewModel() {
     fun idDuplicationCheck() {
         // 여기서 id.value와 중복되는 id가 있는지 서버에 요청해야한다.
         confirmedId = id.value!!
-        if(!idCheck.value!!){
+        if (!idCheck.value!!) {
             _idCheck.value = true
         }
     }

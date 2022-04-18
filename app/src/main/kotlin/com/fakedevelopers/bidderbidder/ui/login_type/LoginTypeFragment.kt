@@ -12,10 +12,12 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 class LoginTypeFragment : Fragment() {
 
     private var _binding: FragmentLoginTypeBinding? = null
+
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment

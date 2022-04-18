@@ -50,4 +50,8 @@
             android:name="token"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/productRegistrationFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationFragment"
+        android:label="ProductRegistrationFragment" />
 </navigation>

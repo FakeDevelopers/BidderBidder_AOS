@@ -2,7 +2,9 @@ package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
+import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.orhanobut.logger.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -35,7 +37,7 @@ class ApiModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit{
+    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
@@ -43,11 +45,23 @@ class ApiModule {
             .build()
     }
 
+    // 로그인 요청
     @Singleton
     @Provides
     fun provideUserLoginService(retrofit: Retrofit): UserLoginService = retrofit.create(UserLoginService::class.java)
 
     @Singleton
     @Provides
-    fun provideUserLoginRepository(userLoginService: UserLoginService): UserLoginRepository = UserLoginRepository(userLoginService)
+    fun provideUserLoginRepository(service: UserLoginService): UserLoginRepository = UserLoginRepository(service)
+
+    // 게시글 등록 요청
+    @Singleton
+    @Provides
+    fun provideUserProductRegistrationService(retrofit: Retrofit): ProductRegistrationService =
+        retrofit.create(ProductRegistrationService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideUserProductRegistrationRepository(service: ProductRegistrationService): ProductRegistrationRepository =
+        ProductRegistrationRepository(service)
 }

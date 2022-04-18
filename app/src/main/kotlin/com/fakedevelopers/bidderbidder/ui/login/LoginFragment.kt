@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
-import com.fakedevelopers.bidderbidder.api.LoginViewModel
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -19,17 +18,26 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var binding: FragmentLoginBinding
-    private val loginViewModel: LoginViewModel by viewModels()
+    private lateinit var _binding: FragmentLoginBinding
+    private val viewModel: LoginViewModel by viewModels()
+
+    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
-        binding = DataBindingUtil.inflate<FragmentLoginBinding?>(inflater, R.layout.fragment_login, container, false).also {
-            it.vm = loginViewModel
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = DataBindingUtil.inflate<FragmentLoginBinding?>(
+            inflater,
+            R.layout.fragment_login,
+            container,
+            false
+        ).also {
+            it.vm = viewModel
             it.lifecycleOwner = this
         }
+        Logger.addLogAdapter(AndroidLogAdapter())
         return binding.root
     }
 
@@ -38,10 +46,9 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = Navigation.findNavController(view)
-        Logger.addLogAdapter(AndroidLogAdapter())
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
-            with(loginViewModel){
+            with(viewModel) {
                 // api 요청
                 loginRequest()
             }
@@ -52,10 +59,10 @@ class LoginFragment : Fragment() {
         }
 
         // 결과 처리
-        loginViewModel.loginResponse.observe(viewLifecycleOwner) {
-            if(it.isSuccessful){
+        viewModel.loginResponse.observe(viewLifecycleOwner) {
+            if (it.isSuccessful) {
                 Logger.t("Login").i(it.body().toString())
-                if(it.body().toString() == LOGIN_SUCCESS){
+                if (it.body().toString() == LOGIN_SUCCESS) {
                     navController.navigate(R.id.action_loginFragment_to_mainFragment)
                 }
             } else {

@@ -1,4 +1,4 @@
-package com.fakedevelopers.bidderbidder.api
+package com.fakedevelopers.bidderbidder.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +11,7 @@ import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: UserLoginRepository): ViewModel() {
+class LoginViewModel @Inject constructor(private val repository: UserLoginRepository) : ViewModel() {
 
     val email = MutableLiveData("")
     val passwd = MutableLiveData("")
