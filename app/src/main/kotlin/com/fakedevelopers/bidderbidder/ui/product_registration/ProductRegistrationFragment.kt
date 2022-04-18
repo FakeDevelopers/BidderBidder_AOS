@@ -31,20 +31,24 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 
-
 @AndroidEntryPoint
-class ProductRegistrationFragment: Fragment() {
+class ProductRegistrationFragment : Fragment() {
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private lateinit var _binding: FragmentProductRegistrationBinding
 
-    private val productRegistrationViewModel: ProductRegistrationViewModel by viewModels()
+    private val viewModel: ProductRegistrationViewModel by viewModels()
     private val binding get() = _binding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate<FragmentProductRegistrationBinding?>(inflater, R.layout.fragment_product_registration, container, false).also {
-            it.vm = productRegistrationViewModel
+        _binding = DataBindingUtil.inflate<FragmentProductRegistrationBinding?>(
+            inflater,
+            R.layout.fragment_product_registration,
+            container,
+            false
+        ).also {
+            it.vm = viewModel
             it.lifecycleOwner = this
         }
         Logger.addLogAdapter(AndroidLogAdapter())
@@ -61,13 +65,14 @@ class ProductRegistrationFragment: Fragment() {
         }
         // 요청
         binding.button2.setOnClickListener {
-            productRegistrationViewModel.productRegistrationRequest()
+            viewModel.productRegistrationRequest()
         }
     }
 
     private fun getPictures() {
         // 미디어 접근 권한이 없으면 안됩니다
-        if(checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PermissionChecker.PERMISSION_GRANTED){
+        val permissionCheck = checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
             val albumIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
                 type = "image/*"
                 action = Intent.ACTION_GET_CONTENT
@@ -82,35 +87,35 @@ class ProductRegistrationFragment: Fragment() {
 
     private fun initResultLauncher() {
         activityResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-                if(it.resultCode == RESULT_OK){
-                    if(it.data?.clipData != null){
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (it.resultCode == RESULT_OK) {
+                    if (it.data?.clipData != null) {
                         val len = it.data?.clipData!!.itemCount
-                        for(i in 0 until len) {
+                        for (i in 0 until len) {
                             it.data?.clipData!!.getItemAt(i).uri.let { uri ->
-                                productRegistrationViewModel.imageList.add(getMultipart(uri, requireActivity().contentResolver)!!)
+                                viewModel.imageList.add(getMultipart(uri, requireActivity().contentResolver)!!)
                             }
                         }
                     } else {
                         it.data?.data.let { uri ->
-                            productRegistrationViewModel.imageList.add(getMultipart(uri!!, requireActivity().contentResolver)!!)
+                            viewModel.imageList.add(getMultipart(uri!!, requireActivity().contentResolver)!!)
                         }
                     }
                 }
             }
         permissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()){ isGranted ->
-                if(isGranted){
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
                     getPictures()
                 } else {
-                    Toast.makeText(requireContext(), R.string.permission_read_external_storage, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), R.string.read_external_storage, Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
     private fun initObserver() {
-        productRegistrationViewModel.productRegistrationResponse.observe(viewLifecycleOwner) {
-            if(it.isSuccessful){
+        viewModel.productRegistrationResponse.observe(viewLifecycleOwner) {
+            if (it.isSuccessful) {
                 Logger.t("myImage").i(it.body().toString())
             } else {
                 Logger.t("myImage").e(it.errorBody().toString())
@@ -119,8 +124,8 @@ class ProductRegistrationFragment: Fragment() {
     }
 
     private fun getMultipart(uri: Uri, contentResolver: ContentResolver): MultipartBody.Part? {
-        return contentResolver.query(uri, null, null, null, null)?.let{
-            if (it.moveToNext()){
+        return contentResolver.query(uri, null, null, null, null)?.let {
+            if (it.moveToNext()) {
                 // 절대 경로 얻기
                 val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                 val displayName = it.getString(idx)

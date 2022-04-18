@@ -26,7 +26,12 @@ class RegisterFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate<FragmentRegisterBinding>(inflater, R.layout.fragment_register, container, false).also {
+        _binding = DataBindingUtil.inflate<FragmentRegisterBinding>(
+            inflater,
+            R.layout.fragment_register,
+            container,
+            false
+        ).also {
             it.vm = registerViewModel
             it.lifecycleOwner = this
         }
@@ -55,7 +60,7 @@ class RegisterFragment : Fragment() {
             registerViewModel.idDuplicationCheck()
         }
         binding.buttonRegisterSignup.setOnClickListener {
-            if(registerViewModel.requestSignUp()){
+            if (registerViewModel.requestSignUp()) {
                 // 가입에 성공하면 메인으로 갑니다.
                 // 물론 로그인한 상태로 말입니다.
                 findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
@@ -65,7 +70,7 @@ class RegisterFragment : Fragment() {
 
     private fun initObserver() {
         registerViewModel.birthCheck.observe(viewLifecycleOwner) {
-            if(it) {
+            if (it) {
                 binding.textinputlayoutRegisterId.visibility = View.VISIBLE
                 binding.buttonRegisterIdDuplication.visibility = View.VISIBLE
                 binding.textviewRegisterIdState.visibility = View.VISIBLE
@@ -73,7 +78,7 @@ class RegisterFragment : Fragment() {
             }
         }
         registerViewModel.idCheck.observe(viewLifecycleOwner) {
-            if(it) {
+            if (it) {
                 binding.textinputlayoutRegisterPassword.visibility = View.VISIBLE
                 binding.textinputlayoutRegisterPasswordCheck.visibility = View.VISIBLE
                 binding.textviewRegisterPasswordState.visibility = View.VISIBLE
@@ -82,7 +87,7 @@ class RegisterFragment : Fragment() {
             }
         }
         registerViewModel.passwordCheck.observe(viewLifecycleOwner) {
-            binding.buttonRegisterSignup.visibility = if(it) View.VISIBLE else View.INVISIBLE
+            binding.buttonRegisterSignup.visibility = if (it) View.VISIBLE else View.INVISIBLE
         }
     }
 }

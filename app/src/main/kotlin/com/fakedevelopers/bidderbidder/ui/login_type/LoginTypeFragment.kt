@@ -16,7 +16,8 @@ class LoginTypeFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
@@ -30,6 +31,9 @@ class LoginTypeFragment : Fragment() {
         // 로그인 버튼을 누르면 로그인 프래그먼트로 넘어갑니다.
         binding.buttonLogintypeCommonlogin.setOnClickListener {
             navController.navigate(R.id.action_loginTypeFragment_to_loginFragment)
+        }
+        binding.buttonLogintypeKakaologin.setOnClickListener {
+            navController.navigate(R.id.action_loginTypeFragment_to_productRegistrationFragment)
         }
     }
 

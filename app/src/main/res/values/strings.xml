@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">BidderBidder</string>
     <!-- Strings related to permission-->
-    <string name="permission_read_external_storage">미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.</string>
+    <string name="read_external_storage">미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.</string>
     <!-- Strings related to loginType -->
     <string name="logintype_logo">땅땅마켓 로고</string>
     <string name="logintype_welcometext">로그인 하시오. 당신도.</string>

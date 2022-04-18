@@ -8,8 +8,11 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.PartMap
 
-interface UserProductRegistrationService {
+interface ProductRegistrationService {
     @Multipart
     @POST("board/write")
-    suspend fun postProductRegistration(@Part files: List<MultipartBody.Part>, @PartMap params: HashMap<String, RequestBody>): Response<String>
+    suspend fun postProductRegistration(
+        @Part files: List<MultipartBody.Part>,
+        @PartMap params: HashMap<String, RequestBody>
+    ): Response<String>
 }

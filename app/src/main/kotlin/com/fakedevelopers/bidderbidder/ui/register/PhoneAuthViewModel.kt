@@ -9,5 +9,4 @@ class PhoneAuthViewModel : ViewModel() {
     val authCode = MutableLiveData<String>()
     val isCodeSending = MutableLiveData(false)
     val verificationId = MutableLiveData<String>()
-
 }

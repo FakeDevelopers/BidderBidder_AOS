@@ -19,16 +19,22 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginFragment : Fragment() {
 
     private lateinit var _binding: FragmentLoginBinding
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val viewModel: LoginViewModel by viewModels()
 
     private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate<FragmentLoginBinding?>(inflater, R.layout.fragment_login, container, false).also {
-            it.vm = loginViewModel
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = DataBindingUtil.inflate<FragmentLoginBinding?>(
+            inflater,
+            R.layout.fragment_login,
+            container,
+            false
+        ).also {
+            it.vm = viewModel
             it.lifecycleOwner = this
         }
         Logger.addLogAdapter(AndroidLogAdapter())
@@ -42,7 +48,7 @@ class LoginFragment : Fragment() {
         val navController = Navigation.findNavController(view)
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
-            with(loginViewModel){
+            with(viewModel) {
                 // api 요청
                 loginRequest()
             }
@@ -53,10 +59,10 @@ class LoginFragment : Fragment() {
         }
 
         // 결과 처리
-        loginViewModel.loginResponse.observe(viewLifecycleOwner) {
-            if(it.isSuccessful){
+        viewModel.loginResponse.observe(viewLifecycleOwner) {
+            if (it.isSuccessful) {
                 Logger.t("Login").i(it.body().toString())
-                if(it.body().toString() == LOGIN_SUCCESS){
+                if (it.body().toString() == LOGIN_SUCCESS) {
                     navController.navigate(R.id.action_loginFragment_to_mainFragment)
                 }
             } else {
