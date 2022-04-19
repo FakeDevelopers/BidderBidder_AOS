@@ -19,6 +19,7 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -53,7 +54,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()
-        initObserver()
+        initCollector()
         return binding.root
     }
 
@@ -113,12 +114,14 @@ class ProductRegistrationFragment : Fragment() {
             }
     }
 
-    private fun initObserver() {
-        viewModel.productRegistrationResponse.observe(viewLifecycleOwner) {
-            if (it.isSuccessful) {
-                Logger.t("myImage").i(it.body().toString())
-            } else {
-                Logger.t("myImage").e(it.errorBody().toString())
+    private fun initCollector() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.productRegistrationResponse.collect {
+                if (it.isSuccessful) {
+                    Logger.t("myImage").i(it.body().toString())
+                } else {
+                    Logger.t("myImage").e(it.errorBody().toString())
+                }
             }
         }
     }
