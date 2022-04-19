@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.Navigation
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
@@ -14,6 +17,7 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -48,10 +52,7 @@ class LoginFragment : Fragment() {
         val navController = Navigation.findNavController(view)
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
-            with(viewModel) {
-                // api 요청
-                loginRequest()
-            }
+            viewModel.loginRequest()
         }
         // 회원가입 버튼
         binding.buttonLoginResgister.setOnClickListener {
@@ -59,14 +60,18 @@ class LoginFragment : Fragment() {
         }
 
         // 결과 처리
-        viewModel.loginResponse.observe(viewLifecycleOwner) {
-            if (it.isSuccessful) {
-                Logger.t("Login").i(it.body().toString())
-                if (it.body().toString() == LOGIN_SUCCESS) {
-                    navController.navigate(R.id.action_loginFragment_to_mainFragment)
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.loginResponse.collect {
+                    if (it.isSuccessful) {
+                        Logger.t("Login").i(it.body().toString())
+                        if (it.body().toString() == LOGIN_SUCCESS) {
+                            navController.navigate(R.id.action_loginFragment_to_mainFragment)
+                        }
+                    } else {
+                        Logger.e(it.errorBody().toString())
+                    }
                 }
-            } else {
-                Logger.e(it.errorBody().toString())
             }
         }
     }

@@ -6,13 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.MainActivity
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.GoogleApiAvailability
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -20,6 +21,8 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.orhanobut.logger.Logger
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -31,9 +34,7 @@ class PhoneAuthFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
 
     private val binding get() = _binding
-    private val viewModel: PhoneAuthViewModel by lazy {
-        ViewModelProvider(this)[PhoneAuthViewModel::class.java]
-    }
+    private val viewModel: PhoneAuthViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,7 +64,7 @@ class PhoneAuthFragment : Fragment() {
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthNextstep.setOnClickListener {
             with(viewModel) {
-                if (isCodeSending.value!!) {
+                if (isCodeSending.value) {
                     // 인증 번호 확인
                     signInWithPhoneAuthCredential()
                 } else {
@@ -76,16 +77,20 @@ class PhoneAuthFragment : Fragment() {
 
     private fun initCallbacks() {
         // 코드 발송 상태에 따라 버튼 메세지가 바뀜
-        viewModel.isCodeSending.observe(viewLifecycleOwner) {
-            with(binding) {
-                if (it) {
-                    buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
-                    textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
-                } else {
-                    buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
-                    textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isCodeSending.collectLatest {
+                    with(binding) {
+                        if (it) {
+                            buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
+                            textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
+                        } else {
+                            buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
+                            textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
+                        }
+                        edittextPhoneauthAuthcode.isEnabled = it
+                    }
                 }
-                edittextPhoneauthAuthcode.isEnabled = it
             }
         }
         // 콜백 저장
@@ -103,7 +108,7 @@ class PhoneAuthFragment : Fragment() {
             override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
                 Logger.t("Auth").i("onCodeSent")
                 // 인증 id 저장
-                viewModel.verificationId.value = p0
+                viewModel.setVerificationId(p0)
                 super.onCodeSent(p0, p1)
             }
         }
@@ -118,12 +123,12 @@ class PhoneAuthFragment : Fragment() {
             .setCallbacks(callbacks)
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
-        viewModel.isCodeSending.value = true
+        viewModel.setCodeSending(true)
     }
 
     // 인증 번호 검사
     private fun signInWithPhoneAuthCredential() {
-        PhoneAuthProvider.getCredential(viewModel.verificationId.value!!, viewModel.authCode.value!!).let {
+        PhoneAuthProvider.getCredential(viewModel.verificationId.value, viewModel.authCode.value).let {
             auth.signInWithCredential(it)
                 .addOnCompleteListener(mainActivity) { task ->
                     if (task.isSuccessful) {
@@ -151,11 +156,13 @@ class PhoneAuthFragment : Fragment() {
     // SafetyNet 사용가능 여부
     // 없으면 휴대폰 인증을 받기전에 리캡챠가 뜹니다.
     // 아직은 사용하지 않읍니다
-    private fun isSafetyNetAvailable(): Boolean {
-        return GoogleApiAvailability
-            .getInstance()
-            .isGooglePlayServicesAvailable(requireContext()) == ConnectionResult.SUCCESS
-    }
+    /*
+        private fun isSafetyNetAvailable(): Boolean {
+            return GoogleApiAvailability
+                .getInstance()
+                .isGooglePlayServicesAvailable(requireContext()) == ConnectionResult.SUCCESS
+        }
+    */
 
     companion object {
         private const val EXPIRE_TIME = 60L

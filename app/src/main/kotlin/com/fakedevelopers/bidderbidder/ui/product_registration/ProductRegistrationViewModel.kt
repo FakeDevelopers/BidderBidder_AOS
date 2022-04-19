@@ -1,11 +1,11 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -21,9 +21,9 @@ class ProductRegistrationViewModel @Inject constructor(
 
     val imageList = mutableListOf<MultipartBody.Part>()
 
-    private val _productRegistrationResponse = MutableLiveData<Response<String>>()
+    private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
-    val productRegistrationResponse: LiveData<Response<String>> get() = _productRegistrationResponse
+    val productRegistrationResponse: SharedFlow<Response<String>> = _productRegistrationResponse
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
@@ -35,7 +35,7 @@ class ProductRegistrationViewModel @Inject constructor(
             map["hope_price"] = "100".toPlainRequestBody()
             map["opening_bid"] = "50".toPlainRequestBody()
             map["tick"] = "1".toPlainRequestBody()
-            _productRegistrationResponse.value = repository.postProductRegistration(imageList, map)
+            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
 
