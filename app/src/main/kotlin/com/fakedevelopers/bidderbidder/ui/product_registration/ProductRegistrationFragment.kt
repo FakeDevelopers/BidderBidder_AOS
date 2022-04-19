@@ -54,7 +54,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()
-        initObserver()
+        initCollector()
         return binding.root
     }
 
@@ -114,7 +114,7 @@ class ProductRegistrationFragment : Fragment() {
             }
     }
 
-    private fun initObserver() {
+    private fun initCollector() {
         lifecycleScope.launchWhenStarted {
             viewModel.productRegistrationResponse.collect {
                 if (it.isSuccessful) {

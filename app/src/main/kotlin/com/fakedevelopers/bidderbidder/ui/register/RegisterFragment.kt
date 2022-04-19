@@ -40,7 +40,7 @@ class RegisterFragment : Fragment() {
             it.lifecycleOwner = this
         }
         Logger.addLogAdapter(AndroidLogAdapter())
-        initCollect()
+        initCollector()
         return binding.root
     }
 
@@ -73,7 +73,7 @@ class RegisterFragment : Fragment() {
         }
     }
 
-    private fun initCollect() {
+    private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.birthCheck.collectLatest {
