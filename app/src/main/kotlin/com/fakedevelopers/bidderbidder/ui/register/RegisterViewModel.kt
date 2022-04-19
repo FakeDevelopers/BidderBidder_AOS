@@ -24,8 +24,8 @@ class RegisterViewModel : ViewModel() {
     val idCheck: StateFlow<Boolean> = _idCheck
     val passwordCheck: StateFlow<Boolean> = _passwordCheck
 
-    fun setBirth(year: Int, month: Int, dayOfMonth: Int) {
-        _birth.value = "${year}년 ${month + 1}월 ${dayOfMonth}일"
+    fun setBirth(userBirth: String) {
+        _birth.value = userBirth
         viewModelScope.launch {
             _birthCheck.emit(true)
         }

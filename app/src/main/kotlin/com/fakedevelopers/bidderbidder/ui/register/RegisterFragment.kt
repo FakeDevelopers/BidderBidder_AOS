@@ -19,7 +19,9 @@ import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.DateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class RegisterFragment : Fragment() {
 
@@ -50,12 +52,16 @@ class RegisterFragment : Fragment() {
         val args: RegisterFragmentArgs by navArgs()
         viewModel.firebaseToken.value = args.token
         Logger.t("Register").i(viewModel.firebaseToken.value)
-        val now = Calendar.getInstance()
+        val now = Calendar.getInstance(Locale.getDefault())
         val mYear = now.get(Calendar.YEAR)
         val mMonth = now.get(Calendar.MONTH)
         val mDay = now.get(Calendar.DAY_OF_MONTH)
         datePicker = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
-            viewModel.setBirth(year, month, dayOfMonth)
+            now.set(year, month, dayOfMonth)
+            DateFormat.getDateInstance(DateFormat.LONG).apply {
+                timeZone = now.timeZone
+                viewModel.setBirth(format(now.time))
+            }
         }, mYear, mMonth, mDay)
 
         binding.edittextRegisterBirth.setOnClickListener {
