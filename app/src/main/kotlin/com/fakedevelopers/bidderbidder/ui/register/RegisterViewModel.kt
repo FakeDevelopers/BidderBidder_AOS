@@ -19,10 +19,10 @@ class RegisterViewModel : ViewModel() {
     private val _idCheck = MutableStateFlow(false)
     private val _passwordCheck = MutableStateFlow(false)
 
-    val birth: StateFlow<String> = _birth
-    val birthCheck: StateFlow<Boolean> = _birthCheck
-    val idCheck: StateFlow<Boolean> = _idCheck
-    val passwordCheck: StateFlow<Boolean> = _passwordCheck
+    val birth: StateFlow<String> get() = _birth
+    val birthCheck: StateFlow<Boolean> get() = _birthCheck
+    val idCheck: StateFlow<Boolean> get() = _idCheck
+    val passwordCheck: StateFlow<Boolean> get() = _passwordCheck
 
     fun setBirth(userBirth: String) {
         _birth.value = userBirth
@@ -45,5 +45,5 @@ class RegisterViewModel : ViewModel() {
         }
     }
 
-    fun requestSignUp(): Boolean = birthCheck.value && idCheck.value && passwordCheck.value
+    fun requestSignUp() = birthCheck.value && idCheck.value && passwordCheck.value
 }

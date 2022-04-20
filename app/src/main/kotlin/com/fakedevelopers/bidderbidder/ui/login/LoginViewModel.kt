@@ -19,7 +19,7 @@ class LoginViewModel @Inject constructor(private val repository: UserLoginReposi
 
     private val _loginResponse = MutableSharedFlow<Response<String>>()
 
-    val loginResponse: SharedFlow<Response<String>> = _loginResponse
+    val loginResponse: SharedFlow<Response<String>> get() = _loginResponse
 
     fun loginRequest() {
         viewModelScope.launch {
