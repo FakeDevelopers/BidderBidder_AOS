@@ -13,8 +13,8 @@ class PhoneAuthViewModel : ViewModel() {
     private val _verificationId = MutableStateFlow("")
     private val _isCodeSending = MutableStateFlow(false)
 
-    val verificationId: StateFlow<String> = _verificationId
-    val isCodeSending: StateFlow<Boolean> = _isCodeSending
+    val verificationId: StateFlow<String> get() = _verificationId
+    val isCodeSending: StateFlow<Boolean> get() = _isCodeSending
 
     fun setVerificationId(id: String) {
         _verificationId.value = id

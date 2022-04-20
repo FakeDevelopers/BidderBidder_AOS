@@ -23,7 +23,7 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
-    val productRegistrationResponse: SharedFlow<Response<String>> = _productRegistrationResponse
+    val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
