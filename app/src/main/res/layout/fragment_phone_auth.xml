@@ -71,8 +71,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="@string/phoneauth_hint_authcode"
                 android:enabled="false"
+                android:hint="@string/phoneauth_hint_authcode"
                 android:inputType="numberDecimal"
                 android:minHeight="48dp"
                 android:text="@={vm.authCode}"
@@ -92,5 +92,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.9" />
+
+        <TextView
+            android:id="@+id/textview_phoneauth_resend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/phoneauth_resend"
+            android:textColor="@drawable/phone_auth_resend_text_click"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textinputlayout_phoneauth_authcode" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

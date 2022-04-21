@@ -5,6 +5,7 @@ import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
+import com.google.firebase.auth.FirebaseAuth
 import com.orhanobut.logger.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -14,6 +15,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.*
 import javax.inject.Singleton
 
 @Module
@@ -43,6 +45,15 @@ class ApiModule {
             .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
             .build()
+    }
+
+    // 파이어베이스 Auth
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance().apply {
+            setLanguageCode(Locale.getDefault().language)
+        }
     }
 
     // 로그인 요청

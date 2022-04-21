@@ -19,6 +19,7 @@
     <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
     <string name="phoneauth_hint_authcode">인증 번호</string>
     <string name="phoneauth_getauthcode">인증 번호 받기</string>
+    <string name="phoneauth_resend">인증 번호 재전송</string>
     <string name="phoneauth_nextstep">다음</string>
     <!-- Strings related to Register -->
     <string name="register_text_your_birth">생년월일을\n입력해주세요</string>
