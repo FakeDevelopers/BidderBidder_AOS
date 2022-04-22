@@ -105,12 +105,12 @@ class PhoneAuthFragment : Fragment() {
                     with(binding) {
                         if (it) {
                             buttonPhoneauthNextstep.setText(R.string.phoneauth_sending_authcode)
-                            buttonPhoneauthNextstep.isEnabled = false
                             textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
                         } else {
                             buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
                             textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
                         }
+                        buttonPhoneauthNextstep.isEnabled = !it
                         edittextPhoneauthAuthcode.isEnabled = it
                     }
                 }
