@@ -1,0 +1,39 @@
+name: BidderBidder CI
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Create google-service
+        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ./app/google-services.json
+      - name: Create data dir
+        run: mkdir ./app/src/main/kotlin/com/fakedevelopers/bidderbidder/api/data
+      - name: Create Constants
+        run: echo '${{ secrets.CONSTANTS }}' > ./app/src/main/kotlin/com/fakedevelopers/bidderbidder/api/data/Constants.kt
+      - name: Build with Gradle
+        run: ./gradlew build
+      - name: Build Release APK
+        run: ./gradlew assembleRelease
+      - name: Releasing using Hub
+        uses: kyze8439690/action-release-releaseapk@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          APP_FOLDER: app
