@@ -32,8 +32,13 @@ jobs:
         run: ./gradlew build
       - name: Build Release APK
         run: ./gradlew assembleRelease
-      - name: Releasing using Hub
-        uses: kyze8439690/action-release-releaseapk@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-          APP_FOLDER: app
+      - name: upload artifact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+         appName: FakeDevelopers/BidderBidder
+         token: ${{secrets.TOKEN}}
+         group: FakeDevelopers
+         file: app/build/outputs/apk/release/app-release-unsigned.apk
+         notifyTesters: true
+         debug: false
+         releaseNotes: "CI/CD 테스트"
