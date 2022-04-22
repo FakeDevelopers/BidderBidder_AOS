@@ -45,13 +45,3 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: ${{ steps.sign_app.outputs.signedReleaseFile }}
-      - name: upload artifact to App Center
-        uses: wzieba/AppCenter-Github-Action@v1
-        with:
-         appName: FakeDevelopers/BidderBidder
-         token: ${{secrets.TOKEN}}
-         group: FakeDevelopers
-         file: ${{ steps.sign_app.outputs.signedReleaseFile }}
-         notifyTesters: true
-         debug: false
-         releaseNotes: "CI/CD 테스트"
