@@ -41,6 +41,9 @@ class PhoneAuthFragment : Fragment() {
                 Logger.t("Auth").i("onVerificationCompleted")
                 // 재전송 버튼 보이기
                 binding.textviewPhoneauthResend.visibility = View.VISIBLE
+                // 다음 단계 버튼 활성화
+                binding.buttonPhoneauthNextstep.isEnabled = true
+                binding.buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
             }
             // 인증 실패 상태
             override fun onVerificationFailed(e: FirebaseException) {
@@ -101,12 +104,13 @@ class PhoneAuthFragment : Fragment() {
                 viewModel.isCodeSending.collectLatest {
                     with(binding) {
                         if (it) {
-                            buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
+                            buttonPhoneauthNextstep.setText(R.string.phoneauth_sending_authcode)
                             textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
                         } else {
                             buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
                             textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
                         }
+                        buttonPhoneauthNextstep.isEnabled = !it
                         edittextPhoneauthAuthcode.isEnabled = it
                     }
                 }

@@ -18,6 +18,7 @@
     <string name="phoneauth_authtext">휴대폰 번호를\n인증해주세요</string>
     <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
     <string name="phoneauth_hint_authcode">인증 번호</string>
+    <string name="phoneauth_sending_authcode">인증 번호를 보내고 있어요</string>
     <string name="phoneauth_getauthcode">인증 번호 받기</string>
     <string name="phoneauth_resend">인증 번호 재전송</string>
     <string name="phoneauth_nextstep">다음</string>
