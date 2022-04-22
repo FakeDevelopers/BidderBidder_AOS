@@ -37,21 +37,21 @@ class PhoneAuthFragment : Fragment() {
     private val callbacks by lazy {
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
             // 인증이 끝난 상태
-            override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 Logger.t("Auth").i("onVerificationCompleted")
                 // 재전송 버튼 보이기
                 binding.textviewPhoneauthResend.visibility = View.VISIBLE
             }
             // 인증 실패 상태
-            override fun onVerificationFailed(p0: FirebaseException) {
+            override fun onVerificationFailed(e: FirebaseException) {
                 Logger.t("Auth").i("onVerificationFailed")
             }
             // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
-            override fun onCodeSent(p0: String, p1: PhoneAuthProvider.ForceResendingToken) {
+            override fun onCodeSent(verificationCode: String, resendingToken: PhoneAuthProvider.ForceResendingToken) {
                 Logger.t("Auth").i("onCodeSent")
                 // 인증 id 저장
-                viewModel.setCodeSent(p0, p1)
-                super.onCodeSent(p0, p1)
+                viewModel.setCodeSent(verificationCode, resendingToken)
+                super.onCodeSent(verificationCode, resendingToken)
             }
         }
     }
@@ -68,7 +68,6 @@ class PhoneAuthFragment : Fragment() {
             container,
             false
         ).also {
-            // 뷰 모델과 데이터 바인딩 합체
             it.vm = viewModel
             it.lifecycleOwner = this
         }
