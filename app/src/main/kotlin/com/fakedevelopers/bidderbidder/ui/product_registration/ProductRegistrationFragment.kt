@@ -48,9 +48,9 @@ class ProductRegistrationFragment : Fragment() {
             R.layout.fragment_product_registration,
             container,
             false
-        ).also {
-            it.vm = viewModel
-            it.lifecycleOwner = this
+        ).apply {
+            vm = viewModel
+            lifecycleOwner = this@ProductRegistrationFragment
         }
         Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()

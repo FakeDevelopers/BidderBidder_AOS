@@ -67,9 +67,9 @@ class PhoneAuthFragment : Fragment() {
             R.layout.fragment_phone_auth,
             container,
             false
-        ).also {
-            it.vm = viewModel
-            it.lifecycleOwner = this
+        ).apply {
+            vm = viewModel
+            lifecycleOwner = this@PhoneAuthFragment
         }
         initCollector()
         return binding.root

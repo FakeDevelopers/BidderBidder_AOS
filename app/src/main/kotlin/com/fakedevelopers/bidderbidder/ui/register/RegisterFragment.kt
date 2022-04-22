@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentRegisterBinding
+import com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel.RegisterEvent
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
@@ -37,9 +38,9 @@ class RegisterFragment : Fragment() {
             R.layout.fragment_register,
             container,
             false
-        ).also {
-            it.vm = viewModel
-            it.lifecycleOwner = this
+        ).apply {
+            vm = viewModel
+            lifecycleOwner = this@RegisterFragment
         }
         Logger.addLogAdapter(AndroidLogAdapter())
         initCollector()
@@ -67,9 +68,6 @@ class RegisterFragment : Fragment() {
         binding.edittextRegisterBirth.setOnClickListener {
             datePicker.show()
         }
-        binding.buttonRegisterIdDuplication.setOnClickListener {
-            viewModel.idDuplicationCheck()
-        }
         binding.buttonRegisterSignup.setOnClickListener {
             if (viewModel.requestSignUp()) {
                 // 가입에 성공하면 메인으로 갑니다.
@@ -82,46 +80,33 @@ class RegisterFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.birthCheck.collectLatest {
-                    if (it) {
-                        binding.textinputlayoutRegisterId.visibility = View.VISIBLE
-                        binding.buttonRegisterIdDuplication.visibility = View.VISIBLE
-                        binding.textviewRegisterIdState.visibility = View.VISIBLE
-                        binding.textviewRegisterYourinfo.setText(R.string.register_text_your_id)
-                    }
-                }
+                viewModel.eventFlow.collectLatest { event -> handleRegisterEvent(event) }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.idCheck.collectLatest {
-                    if (it) {
-                        binding.textinputlayoutRegisterPassword.visibility = View.VISIBLE
-                        binding.textinputlayoutRegisterPasswordCheck.visibility = View.VISIBLE
-                        binding.textviewRegisterPasswordState.visibility = View.VISIBLE
-                        binding.textviewRegisterPasswordCheckState.visibility = View.VISIBLE
-                        binding.textviewRegisterYourinfo.setText(R.string.register_text_your_password)
+    }
+
+    private fun handleRegisterEvent(event: RegisterEvent) {
+        with(binding) {
+            when (event) {
+                is RegisterEvent.BirthCheck -> {
+                    if (event.check) {
+                        textinputlayoutRegisterId.visibility = View.VISIBLE
+                        buttonRegisterIdDuplication.visibility = View.VISIBLE
+                        textviewRegisterIdState.visibility = View.VISIBLE
+                        textviewRegisterYourinfo.setText(R.string.register_text_your_id)
                     }
                 }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.idCheck.collectLatest {
-                    if (it) {
-                        binding.textinputlayoutRegisterPassword.visibility = View.VISIBLE
-                        binding.textinputlayoutRegisterPasswordCheck.visibility = View.VISIBLE
-                        binding.textviewRegisterPasswordState.visibility = View.VISIBLE
-                        binding.textviewRegisterPasswordCheckState.visibility = View.VISIBLE
-                        binding.textviewRegisterYourinfo.setText(R.string.register_text_your_password)
+                is RegisterEvent.IdCheck -> {
+                    if (event.check) {
+                        textinputlayoutRegisterPassword.visibility = View.VISIBLE
+                        textinputlayoutRegisterPasswordCheck.visibility = View.VISIBLE
+                        textviewRegisterPasswordState.visibility = View.VISIBLE
+                        textviewRegisterPasswordCheckState.visibility = View.VISIBLE
+                        textviewRegisterYourinfo.setText(R.string.register_text_your_password)
                     }
                 }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.passwordCheck.collectLatest {
-                    binding.buttonRegisterSignup.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                is RegisterEvent.PasswordCheck -> {
+                    buttonRegisterSignup.visibility = if (event.check) View.VISIBLE else View.INVISIBLE
                 }
             }
         }
