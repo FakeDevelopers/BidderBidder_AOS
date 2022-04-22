@@ -37,9 +37,9 @@ class LoginFragment : Fragment() {
             R.layout.fragment_login,
             container,
             false
-        ).also {
-            it.vm = viewModel
-            it.lifecycleOwner = this
+        ).apply {
+            vm = viewModel
+            lifecycleOwner = this@LoginFragment
         }
         Logger.addLogAdapter(AndroidLogAdapter())
         return binding.root

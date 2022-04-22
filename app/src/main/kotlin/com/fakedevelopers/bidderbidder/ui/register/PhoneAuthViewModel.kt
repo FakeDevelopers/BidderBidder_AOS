@@ -34,7 +34,7 @@ class PhoneAuthViewModel @Inject constructor(
 
     fun requestSendPhoneAuth(options: PhoneAuthOptions.Builder) {
         // 재전송 토큰이 있다면 재전송
-        if(::resendToken.isInitialized) {
+        if (::resendToken.isInitialized) {
             options.setForceResendingToken(resendToken)
         } else {
             viewModelScope.launch {

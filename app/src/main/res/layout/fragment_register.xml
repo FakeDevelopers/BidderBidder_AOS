@@ -88,6 +88,7 @@
             android:text="@string/register_button_duplicate_check"
             android:textColor="@color/black"
             android:visibility="invisible"
+            android:onClick="@{() -> vm.idDuplicationCheck()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textinputlayout_register_birth" />
 
