@@ -30,4 +30,4 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: BidderBidder
-        path: app/build/intermediates/apk/debug
+        path: app/build/outputs/apk/debug
