@@ -39,21 +39,18 @@ class PhoneAuthFragment : Fragment() {
             // 인증이 끝난 상태
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 Logger.t("Auth").i("onVerificationCompleted")
-                // 재전송 버튼 보이기
-                binding.textviewPhoneauthResend.visibility = View.VISIBLE
-                // 다음 단계 버튼 활성화
-                binding.buttonPhoneauthNextstep.isEnabled = true
-                binding.buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
+                viewModel.setCodeSendingStates(PhoneAuthState.SENT)
             }
             // 인증 실패 상태
             override fun onVerificationFailed(e: FirebaseException) {
                 Logger.t("Auth").i("onVerificationFailed")
+                viewModel.setCodeSendingStates(PhoneAuthState.INIT)
             }
             // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
             override fun onCodeSent(verificationCode: String, resendingToken: PhoneAuthProvider.ForceResendingToken) {
                 Logger.t("Auth").i("onCodeSent")
                 // 인증 id 저장
-                viewModel.setCodeSent(verificationCode, resendingToken)
+                viewModel.setVerificationCodeAndResendingToken(verificationCode, resendingToken)
                 super.onCodeSent(verificationCode, resendingToken)
             }
         }
@@ -82,14 +79,10 @@ class PhoneAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthNextstep.setOnClickListener {
-            with(viewModel) {
-                if (isCodeSending.value) {
-                    // 인증 번호 확인
-                    signInWithPhoneAuthCredential()
-                } else {
-                    // 인증 번호 전송
-                    sendPhoneAuthCode()
-                }
+            when (viewModel.codeSendingStates.value) {
+                PhoneAuthState.INIT -> sendPhoneAuthCode()
+                PhoneAuthState.SENT -> signInWithPhoneAuthCredential()
+                else -> {}
             }
         }
         binding.textviewPhoneauthResend.setOnClickListener {
@@ -101,20 +94,32 @@ class PhoneAuthFragment : Fragment() {
         // 코드 발송 상태에 따라 버튼 메세지가 바뀜
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isCodeSending.collectLatest {
-                    with(binding) {
-                        if (it) {
-                            buttonPhoneauthNextstep.setText(R.string.phoneauth_sending_authcode)
-                            textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
-                        } else {
-                            buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
-                            textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
-                        }
-                        buttonPhoneauthNextstep.isEnabled = !it
-                        edittextPhoneauthAuthcode.isEnabled = it
-                    }
+                viewModel.codeSendingStates.collectLatest { state -> handlePhoneAuthEvent(state) }
+            }
+        }
+    }
+
+    private fun handlePhoneAuthEvent(state: PhoneAuthState) {
+        with(binding) {
+            when (state) {
+                PhoneAuthState.INIT -> {
+                    buttonPhoneauthNextstep.setText(R.string.phoneauth_getauthcode)
+                    textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
+                    textviewPhoneauthResend.visibility = View.INVISIBLE
+                }
+                PhoneAuthState.SENDING -> {
+                    buttonPhoneauthNextstep.setText(R.string.phoneauth_sending_authcode)
+                    textinputlayoutPhoneauthAuthcode.visibility = View.INVISIBLE
+                    textviewPhoneauthResend.visibility = View.INVISIBLE
+                }
+                PhoneAuthState.SENT -> {
+                    buttonPhoneauthNextstep.setText(R.string.phoneauth_nextstep)
+                    textinputlayoutPhoneauthAuthcode.visibility = View.VISIBLE
+                    textviewPhoneauthResend.visibility = View.VISIBLE
                 }
             }
+            edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
+            buttonPhoneauthNextstep.isEnabled = state != PhoneAuthState.SENT
         }
     }
 
@@ -130,6 +135,8 @@ class PhoneAuthFragment : Fragment() {
 
     // 인증 번호 검사
     private fun signInWithPhoneAuthCredential() {
+        // 검사 받는 동안은 버튼을 막아 둔다.
+        binding.buttonPhoneauthNextstep.isEnabled = false
         PhoneAuthProvider.getCredential(viewModel.verificationId.value, viewModel.authCode.value).let {
             viewModel.auth.signInWithCredential(it)
                 .addOnCompleteListener(mainActivity) { task ->
@@ -144,6 +151,7 @@ class PhoneAuthFragment : Fragment() {
                         if (task.exception is FirebaseAuthInvalidCredentialsException) {
                             Logger.t("Auth").i("코드가 맞지 않음")
                         }
+                        binding.buttonPhoneauthNextstep.isEnabled = true
                     }
                 }
         }
@@ -156,6 +164,6 @@ class PhoneAuthFragment : Fragment() {
     }
 
     companion object {
-        private const val EXPIRE_TIME = 60L
+        private const val EXPIRE_TIME = 120L
     }
 }
