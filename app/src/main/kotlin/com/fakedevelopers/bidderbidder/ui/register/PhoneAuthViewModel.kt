@@ -16,31 +16,38 @@ class PhoneAuthViewModel @Inject constructor(
     private val _auth: FirebaseAuth
 ) : ViewModel() {
 
-    private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
-
     val phoneNumber = MutableStateFlow("")
     val authCode = MutableStateFlow("")
+    private val resendingToken = MutableStateFlow<PhoneAuthProvider.ForceResendingToken?>(null)
     private val _verificationId = MutableStateFlow("")
-    private val _isCodeSending = MutableStateFlow(false)
+    private val _codeSendingStates = MutableStateFlow(PhoneAuthState.INIT)
 
     val auth get() = _auth
     val verificationId: StateFlow<String> get() = _verificationId
-    val isCodeSending: StateFlow<Boolean> get() = _isCodeSending
+    val codeSendingStates: StateFlow<PhoneAuthState> get() = _codeSendingStates
 
-    fun setCodeSent(id: String, token: PhoneAuthProvider.ForceResendingToken) {
+    fun setVerificationCodeAndResendingToken(id: String, token: PhoneAuthProvider.ForceResendingToken) {
         _verificationId.value = id
-        resendToken = token
+        resendingToken.value = token
     }
 
     fun requestSendPhoneAuth(options: PhoneAuthOptions.Builder) {
         // 재전송 토큰이 있다면 재전송
-        if (::resendToken.isInitialized) {
-            options.setForceResendingToken(resendToken)
+        if (resendingToken.value != null) {
+            options.setForceResendingToken(resendingToken.value!!)
         } else {
-            viewModelScope.launch {
-                _isCodeSending.emit(true)
-            }
+            setCodeSendingStates(PhoneAuthState.SENDING)
         }
         PhoneAuthProvider.verifyPhoneNumber(options.build())
+    }
+
+    fun setCodeSendingStates(state: PhoneAuthState) {
+        viewModelScope.launch {
+            _codeSendingStates.emit(state)
+        }
+        if (state == PhoneAuthState.INIT) {
+            resendingToken.value = null
+            authCode.value = ""
+        }
     }
 }
