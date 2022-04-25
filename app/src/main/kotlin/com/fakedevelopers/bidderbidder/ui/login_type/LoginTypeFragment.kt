@@ -11,9 +11,9 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 
 class LoginTypeFragment : Fragment() {
 
-    private var _binding: FragmentLoginTypeBinding? = null
+    private lateinit var _binding: FragmentLoginTypeBinding
 
-    private val binding get() = _binding!!
+    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,10 +32,5 @@ class LoginTypeFragment : Fragment() {
         binding.buttonLogintypeCommonlogin.setOnClickListener {
             navController.navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 }
