@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -42,8 +43,10 @@ class PhoneAuthFragment : Fragment() {
                 viewModel.setCodeSendingStates(PhoneAuthState.SENT)
             }
             // 인증 실패 상태
+            // 보통 할당량이 다 떨어지면 여기로 간다
             override fun onVerificationFailed(e: FirebaseException) {
                 Logger.t("Auth").i("onVerificationFailed")
+                showToast("저런! 실패했군요!")
                 viewModel.setCodeSendingStates(PhoneAuthState.INIT)
             }
             // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
@@ -162,6 +165,10 @@ class PhoneAuthFragment : Fragment() {
         PhoneAuthFragmentDirections.actionPhoneAuthFragmentToRegisterFragment(token).let {
             findNavController().navigate(it)
         }
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
     companion object {

@@ -75,6 +75,7 @@
             android:backgroundTint="@color/grey"
             android:text="@string/login_signin"
             android:textColor="@color/black"
+            android:onClick="@{() -> vm.loginRequest()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
