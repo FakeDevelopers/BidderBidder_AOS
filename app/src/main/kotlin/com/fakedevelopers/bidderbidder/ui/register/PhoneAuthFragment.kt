@@ -122,6 +122,7 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
             edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
+            // 보내는 중에는 버튼을 막아놓는다
             buttonPhoneauthNextstep.isEnabled = state != PhoneAuthState.SENDING
         }
     }
