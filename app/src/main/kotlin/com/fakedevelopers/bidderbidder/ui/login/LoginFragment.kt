@@ -9,10 +9,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.CreateMethod
 import by.kirich1409.viewbindingdelegate.viewBinding
-import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
@@ -43,7 +42,10 @@ class LoginFragment : Fragment() {
     // 버튼 클릭 시 로그인 확인 API 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        // 로그인 버튼
+        binding.buttonLoginSignin.setOnClickListener {
+            viewModel.loginRequest()
+        }
         // 회원가입 버튼
         binding.buttonLoginResgister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_phoneAuthFragment)
