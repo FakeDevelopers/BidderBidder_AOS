@@ -5,13 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.MainActivity
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
@@ -30,9 +31,8 @@ import java.util.concurrent.TimeUnit
 class PhoneAuthFragment : Fragment() {
 
     private lateinit var mainActivity: MainActivity
-    private lateinit var _binding: FragmentPhoneAuthBinding
 
-    private val binding get() = _binding
+    private val binding: FragmentPhoneAuthBinding by viewBinding(createMethod = CreateMethod.INFLATE)
     private val viewModel: PhoneAuthViewModel by viewModels()
 
     private val callbacks by lazy {
@@ -65,17 +65,12 @@ class PhoneAuthFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mainActivity = activity as MainActivity
-        _binding = DataBindingUtil.inflate<FragmentPhoneAuthBinding>(
-            inflater,
-            R.layout.fragment_phone_auth,
-            container,
-            false
-        ).apply {
-            vm = viewModel
-            lifecycleOwner = this@PhoneAuthFragment
-        }
         initCollector()
-        return binding.root
+        return binding.run {
+            vm = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -122,7 +117,6 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
             edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
-            // 보내는 중에는 버튼을 막아놓는다
             buttonPhoneauthNextstep.isEnabled = state != PhoneAuthState.SENDING
         }
     }

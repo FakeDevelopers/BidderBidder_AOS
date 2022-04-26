@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentRegisterBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel.RegisterEvent
@@ -27,24 +28,18 @@ import java.util.Locale
 class RegisterFragment : Fragment() {
 
     private lateinit var datePicker: DatePickerDialog
-    private lateinit var _binding: FragmentRegisterBinding
 
-    private val binding get() = _binding
+    private val binding: FragmentRegisterBinding by viewBinding(createMethod = CreateMethod.INFLATE)
     private val viewModel: RegisterViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate<FragmentRegisterBinding>(
-            inflater,
-            R.layout.fragment_register,
-            container,
-            false
-        ).apply {
-            vm = viewModel
-            lifecycleOwner = this@RegisterFragment
-        }
         Logger.addLogAdapter(AndroidLogAdapter())
         initCollector()
-        return binding.root
+        return binding.run {
+            vm = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

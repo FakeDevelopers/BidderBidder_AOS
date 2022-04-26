@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.Navigation
+import by.kirich1409.viewbindingdelegate.CreateMethod
+import by.kirich1409.viewbindingdelegate.viewBinding
 import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
@@ -22,30 +24,23 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private lateinit var _binding: FragmentLoginBinding
+    private val binding: FragmentLoginBinding by viewBinding(createMethod = CreateMethod.INFLATE)
     private val viewModel: LoginViewModel by viewModels()
-
-    private val binding get() = _binding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = DataBindingUtil.inflate<FragmentLoginBinding?>(
-            inflater,
-            R.layout.fragment_login,
-            container,
-            false
-        ).apply {
-            vm = viewModel
-            lifecycleOwner = this@LoginFragment
-        }
         Logger.addLogAdapter(AndroidLogAdapter())
-        return binding.root
+        return binding.run {
+            vm = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            root
+        }
     }
 
-    // 버튼 클릭 시 로그인 확인 API를 호출
+    // 버튼 클릭 시 로그인 확인 API 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
