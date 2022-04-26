@@ -10,7 +10,7 @@ import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.databinding.FragmentMainBinding
 
 class MainFragment : Fragment() {
-
+  
     private val binding: FragmentMainBinding by viewBinding(createMethod = CreateMethod.INFLATE)
 
     override fun onCreateView(
