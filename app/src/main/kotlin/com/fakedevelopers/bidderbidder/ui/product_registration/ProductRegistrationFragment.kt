@@ -16,11 +16,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import by.kirich1409.viewbindingdelegate.CreateMethod
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.AndroidLogAdapter
@@ -39,12 +38,21 @@ class ProductRegistrationFragment : Fragment() {
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
-    private val binding: FragmentProductRegistrationBinding by viewBinding(createMethod = CreateMethod.INFLATE)
+    private var _binding: FragmentProductRegistrationBinding? = null
+
+    private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()
+        initCollector()
+        _binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_product_registration,
+            container,
+            false
+        )
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -146,5 +154,10 @@ class ProductRegistrationFragment : Fragment() {
                 null
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
