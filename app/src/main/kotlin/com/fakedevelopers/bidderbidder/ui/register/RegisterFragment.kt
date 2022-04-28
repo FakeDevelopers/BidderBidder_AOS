@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -15,8 +16,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import by.kirich1409.viewbindingdelegate.CreateMethod
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentRegisterBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel.RegisterEvent
@@ -32,7 +31,9 @@ class RegisterFragment : Fragment() {
 
     private lateinit var datePicker: DatePickerDialog
 
-    private val binding: FragmentRegisterBinding by viewBinding(createMethod = CreateMethod.INFLATE)
+    private var _binding: FragmentRegisterBinding? = null
+
+    private val binding get() = _binding!!
     private val viewModel: RegisterViewModel by viewModels()
 
     private val backPressedCallback by lazy {
@@ -48,6 +49,13 @@ class RegisterFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Logger.addLogAdapter(AndroidLogAdapter())
+        initCollector()
+        _binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_register,
+            container,
+            false
+        )
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -132,5 +140,11 @@ class RegisterFragment : Fragment() {
 
     private fun showToast(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        backPressedCallback.remove()
     }
 }

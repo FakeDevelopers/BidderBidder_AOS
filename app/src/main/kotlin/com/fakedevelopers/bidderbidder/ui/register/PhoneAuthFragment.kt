@@ -5,14 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import by.kirich1409.viewbindingdelegate.CreateMethod
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.MainActivity
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
@@ -32,7 +31,9 @@ class PhoneAuthFragment : Fragment() {
 
     private lateinit var mainActivity: MainActivity
 
-    private val binding: FragmentPhoneAuthBinding by viewBinding(createMethod = CreateMethod.INFLATE)
+    private var _binding: FragmentPhoneAuthBinding? = null
+
+    private val binding get() = _binding!!
     private val viewModel: PhoneAuthViewModel by viewModels()
 
     private val callbacks by lazy {
@@ -65,6 +66,13 @@ class PhoneAuthFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mainActivity = activity as MainActivity
+        initCollector()
+        _binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_phone_auth,
+            container,
+            false
+        )
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -168,6 +176,11 @@ class PhoneAuthFragment : Fragment() {
 
     private fun showToast(msg: String) {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     companion object {

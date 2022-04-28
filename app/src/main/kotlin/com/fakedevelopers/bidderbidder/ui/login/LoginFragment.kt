@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import by.kirich1409.viewbindingdelegate.CreateMethod
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
@@ -23,7 +22,9 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
 
-    private val binding: FragmentLoginBinding by viewBinding(createMethod = CreateMethod.INFLATE)
+    private var _binding: FragmentLoginBinding? = null
+
+    private val binding get() = _binding!!
     private val viewModel: LoginViewModel by viewModels()
 
     override fun onCreateView(
@@ -32,6 +33,12 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         Logger.addLogAdapter(AndroidLogAdapter())
+        _binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_login,
+            container,
+            false
+        )
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -74,5 +81,10 @@ class LoginFragment : Fragment() {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

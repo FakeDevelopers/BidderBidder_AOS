@@ -6,20 +6,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import by.kirich1409.viewbindingdelegate.CreateMethod
-import by.kirich1409.viewbindingdelegate.viewBinding
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 
 class LoginTypeFragment : Fragment() {
 
-    private val binding: FragmentLoginTypeBinding by viewBinding(createMethod = CreateMethod.INFLATE)
+    private var _binding: FragmentLoginTypeBinding? = null
+
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentLoginTypeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -29,5 +30,10 @@ class LoginTypeFragment : Fragment() {
         binding.buttonLogintypeCommonlogin.setOnClickListener {
             findNavController().navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
