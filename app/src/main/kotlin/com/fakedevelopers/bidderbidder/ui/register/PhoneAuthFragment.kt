@@ -65,7 +65,6 @@ class PhoneAuthFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         mainActivity = activity as MainActivity
-        initCollector()
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -75,6 +74,11 @@ class PhoneAuthFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListener()
+        initCollector()
+    }
+
+    private fun initListener() {
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthNextstep.setOnClickListener {
             when (viewModel.codeSendingStates.value) {
@@ -83,6 +87,7 @@ class PhoneAuthFragment : Fragment() {
                 else -> {}
             }
         }
+
         binding.textviewPhoneauthResend.setOnClickListener {
             sendPhoneAuthCode()
         }

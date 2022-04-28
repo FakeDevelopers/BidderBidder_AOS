@@ -45,7 +45,6 @@ class ProductRegistrationFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()
-        initCollector()
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -55,14 +54,8 @@ class ProductRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // 사진 가져오기
-        binding.button.setOnClickListener {
-            getPictures()
-        }
-        // 요청
-        binding.button2.setOnClickListener {
-            viewModel.productRegistrationRequest()
-        }
+        initListener()
+        initCollector()
     }
 
     private fun getPictures() {
@@ -78,6 +71,17 @@ class ProductRegistrationFragment : Fragment() {
             activityResultLauncher.launch(albumIntent)
         } else {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun initListener() {
+        // 사진 가져오기
+        binding.button.setOnClickListener {
+            getPictures()
+        }
+        // 요청
+        binding.button2.setOnClickListener {
+            viewModel.productRegistrationRequest()
         }
     }
 
