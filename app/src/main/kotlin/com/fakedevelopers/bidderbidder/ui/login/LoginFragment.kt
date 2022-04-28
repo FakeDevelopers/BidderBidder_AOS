@@ -42,6 +42,12 @@ class LoginFragment : Fragment() {
     // 버튼 클릭 시 로그인 확인 API 호출
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        initListener()
+        initCollector()
+    }
+
+    private fun initListener() {
         // 로그인 버튼
         binding.buttonLoginSignin.setOnClickListener {
             viewModel.loginRequest()
@@ -50,7 +56,9 @@ class LoginFragment : Fragment() {
         binding.buttonLoginResgister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_phoneAuthFragment)
         }
+    }
 
+    private fun initCollector() {
         // 결과 처리
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {

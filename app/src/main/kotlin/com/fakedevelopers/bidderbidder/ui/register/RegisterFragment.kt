@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -32,9 +35,19 @@ class RegisterFragment : Fragment() {
     private val binding: FragmentRegisterBinding by viewBinding(createMethod = CreateMethod.INFLATE)
     private val viewModel: RegisterViewModel by viewModels()
 
+    private val backPressedCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                AnimationUtils.loadAnimation(requireContext(), R.anim.animation_shake).let {
+                    binding.constraintlayoutRegister.startAnimation(it)
+                }
+                showToast("못 돌아간다!")
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         Logger.addLogAdapter(AndroidLogAdapter())
-        initCollector()
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -48,6 +61,11 @@ class RegisterFragment : Fragment() {
         val args: RegisterFragmentArgs by navArgs()
         viewModel.firebaseToken.value = args.token
         Logger.t("Register").i(viewModel.firebaseToken.value)
+        initListener()
+        initCollector()
+    }
+
+    private fun initListener() {
         val now = Calendar.getInstance(Locale.getDefault())
         val mYear = now.get(Calendar.YEAR)
         val mMonth = now.get(Calendar.MONTH)
@@ -63,6 +81,7 @@ class RegisterFragment : Fragment() {
         binding.edittextRegisterBirth.setOnClickListener {
             datePicker.show()
         }
+
         binding.buttonRegisterSignup.setOnClickListener {
             if (viewModel.requestSignUp()) {
                 // 가입에 성공하면 메인으로 갑니다.
@@ -70,6 +89,10 @@ class RegisterFragment : Fragment() {
                 findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            backPressedCallback
+        )
     }
 
     private fun initCollector() {
@@ -105,5 +128,9 @@ class RegisterFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun showToast(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 }

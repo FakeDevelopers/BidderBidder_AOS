@@ -8,7 +8,9 @@
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintlayout_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingStart="@dimen/fragment_horizontal_margin"
@@ -86,10 +88,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="28dp"
             android:backgroundTint="@color/grey"
+            android:onClick="@{() -> vm.idDuplicationCheck()}"
             android:text="@string/register_button_duplicate_check"
             android:textColor="@color/black"
             android:visibility="invisible"
-            android:onClick="@{() -> vm.idDuplicationCheck()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textinputlayout_register_birth" />
 
