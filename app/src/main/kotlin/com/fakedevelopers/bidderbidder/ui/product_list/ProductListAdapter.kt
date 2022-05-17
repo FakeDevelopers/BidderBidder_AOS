@@ -37,11 +37,7 @@ class ProductListAdapter(
                 val timer = dateFormat.parse(item.expirationDate)!!.time - System.currentTimeMillis()
                 timerTask = object : CountDownTimer(timer, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
-                        (millisUntilFinished / 60000).let {
-                            val minute = if (it > 0) "${it}분 " else ""
-                            val second = if (it < 5) "${millisUntilFinished % 60000 / 1000}초 " else ""
-                            textviewProductListExpire.text = "${minute}${second}후 마감"
-                        }
+                        textviewProductListExpire.text = getRemainTimeString(millisUntilFinished)
                     }
 
                     override fun onFinish() {
@@ -60,6 +56,31 @@ class ProductListAdapter(
                 textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
             }
+        }
+        private fun getRemainTimeString(millisUntilFinished: Long): String {
+            val totalMinute = millisUntilFinished / 60000
+            val day = totalMinute / 1440
+            val hour = totalMinute % 1440 / 60
+            val remainTimeString = StringBuilder("마감까지 ")
+            // 일
+            if (day > 0) {
+                remainTimeString.append("${day}일 ")
+            }
+            // 시간
+            if (hour != 0L) {
+                remainTimeString.append("${hour}시간 ")
+            }
+            // 분, 초
+            if(day == 0L && hour < 3) {
+                val minute = totalMinute % 1440 % 60
+                if (minute != 0L) {
+                    remainTimeString.append("${minute}분 ")
+                }
+                if(hour == 0L && minute < 5) {
+                    remainTimeString.append("${millisUntilFinished % 60000 / 1000}초")
+                }
+            }
+            return remainTimeString.toString()
         }
     }
 
