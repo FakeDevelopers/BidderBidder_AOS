@@ -26,7 +26,7 @@ class ProductListViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> get() = _isLoading
     val isReadMoreVisible: StateFlow<Boolean> get() = _isReadMoreVisible
 
-    fun getNextProductList(isInitialize: Boolean) {
+    fun getNextProductList() {
         // 이미 로딩 중일 때
         // 더보기가 활성화 중일 때
         // 마지막 상품까지 불러왔을 때
@@ -34,7 +34,7 @@ class ProductListViewModel @Inject constructor(
             return
         }
 
-        requestProductList(isInitialize)
+        requestProductList(false)
     }
 
     fun requestProductList(isInitialize: Boolean) {
@@ -65,7 +65,7 @@ class ProductListViewModel @Inject constructor(
 
     fun clickReadMore() {
         _isReadMoreVisible.value = false
-        getNextProductList(false)
+        getNextProductList()
     }
 
     private fun setLoadingState(state: Boolean) {

@@ -99,7 +99,7 @@ class ProductListFragment : Fragment() {
                     val lastVisibleItem = (it as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                     if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
                         Logger.t("recycler").i("리스트 하나 더")
-                        viewModel.getNextProductList(false)
+                        viewModel.getNextProductList()
                     }
                 }
             }
