@@ -11,6 +11,9 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.util.ImageLoader.loadProductImage
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -45,9 +48,11 @@ class ProductListAdapter(
                         textviewProductListExpire.text = "마감"
                     }
                 }.start()
-                loadProductImage(item.thumbnail) {
-                    if (it != null) {
-                        imageProductList.setImageBitmap(it)
+                CoroutineScope(Dispatchers.IO).launch {
+                    loadProductImage(item.thumbnail) {
+                        if (it != null) {
+                            imageProductList.setImageBitmap(it)
+                        }
                     }
                 }
                 textviewProductListTitle.text = item.boardTitle
