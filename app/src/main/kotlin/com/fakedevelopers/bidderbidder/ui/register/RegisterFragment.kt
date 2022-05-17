@@ -19,7 +19,6 @@ import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentRegisterBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel.RegisterEvent
-import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -48,7 +47,6 @@ class RegisterFragment : Fragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        Logger.addLogAdapter(AndroidLogAdapter())
         initCollector()
         _binding = DataBindingUtil.inflate(
             inflater,

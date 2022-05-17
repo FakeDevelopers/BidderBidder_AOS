@@ -39,9 +39,9 @@
     </fragment>
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.main.MainFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_product_list" />
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.register.RegisterFragment"

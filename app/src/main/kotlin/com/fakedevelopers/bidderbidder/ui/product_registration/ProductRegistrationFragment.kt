@@ -22,7 +22,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
-import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.MediaType
@@ -44,7 +43,6 @@ class ProductRegistrationFragment : Fragment() {
     private val viewModel: ProductRegistrationViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        Logger.addLogAdapter(AndroidLogAdapter())
         initResultLauncher()
         initCollector()
         _binding = DataBindingUtil.inflate(
