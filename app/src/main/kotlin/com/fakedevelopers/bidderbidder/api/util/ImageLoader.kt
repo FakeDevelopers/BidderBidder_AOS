@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.api.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.orhanobut.logger.Logger
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -11,7 +12,11 @@ import java.net.URL
 object ImageLoader {
     private val imageCache = mutableMapOf<String, Bitmap>()
 
-    suspend fun loadProductImage(url: String, completed: (Bitmap?) -> Unit) {
+    suspend fun loadProductImage(
+        url: String,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main,
+        completed: (Bitmap?) -> Unit
+    ) {
         if (url.isEmpty()) {
             completed(null)
             return
@@ -27,7 +32,7 @@ object ImageLoader {
             BitmapFactory.decodeStream(URL(url).openStream()).let {
                 imageCache[url] = it
                 coroutineScope {
-                    launch(Dispatchers.Main) {
+                    launch(dispatcher) {
                         completed(it)
                     }
                 }
@@ -35,7 +40,7 @@ object ImageLoader {
         }.onFailure {
             Logger.e(it.message.toString())
             coroutineScope {
-                launch(Dispatchers.Main) {
+                launch(dispatcher) {
                     completed(null)
                 }
             }
