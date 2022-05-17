@@ -71,12 +71,12 @@ class ProductListAdapter(
                 remainTimeString.append("${hour}시간 ")
             }
             // 분, 초
-            if(day == 0L && hour < 3) {
+            if (day == 0L && hour < 3) {
                 val minute = totalMinute % 1440 % 60
                 if (minute != 0L) {
                     remainTimeString.append("${minute}분 ")
                 }
-                if(hour == 0L && minute < 5) {
+                if (hour == 0L && minute < 5) {
                     remainTimeString.append("${millisUntilFinished % 60000 / 1000}초")
                 }
             }
