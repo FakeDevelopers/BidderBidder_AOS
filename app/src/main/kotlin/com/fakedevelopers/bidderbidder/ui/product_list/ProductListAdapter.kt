@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.product_list
 
+import android.content.Context
 import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
@@ -7,13 +8,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
-import com.fakedevelopers.bidderbidder.api.util.ImageLoader.loadProductImage
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -26,7 +24,8 @@ class ProductListAdapter(
     private var listSize = 0
 
     inner class ItemViewHolder(
-        private val binding: RecyclerProductListBinding
+        private val binding: RecyclerProductListBinding,
+        private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         private lateinit var timerTask: CountDownTimer
         fun bind(item: ProductListDto) {
@@ -44,13 +43,11 @@ class ProductListAdapter(
                         textviewProductListExpire.text = "마감"
                     }
                 }.start()
-                CoroutineScope(Dispatchers.IO).launch {
-                    loadProductImage(item.thumbnail) {
-                        if (it != null) {
-                            imageProductList.setImageBitmap(it)
-                        }
-                    }
-                }
+                Glide.with(context)
+                    .load(item.thumbnail)
+                    .placeholder(R.drawable.the_cat)
+                    .error(R.drawable.the_cat)
+                    .into(imageProductList)
                 textviewProductListTitle.text = item.boardTitle
                 textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
                 textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
@@ -101,7 +98,8 @@ class ProductListAdapter(
                 ItemViewHolder(
                     RecyclerProductListBinding.bind(
                         it.inflate(R.layout.recycler_product_list, parent, false)
-                    )
+                    ),
+                    parent.context
                 )
             } else {
                 FooterViewHolder(
