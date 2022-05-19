@@ -1,11 +1,15 @@
 package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.orhanobut.logger.BuildConfig
 import dagger.Module
 import dagger.Provides
@@ -14,6 +18,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.Locale
 import javax.inject.Singleton
@@ -39,11 +44,16 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, baseUrl: String): Retrofit {
+    fun provideGson(): Gson = GsonBuilder().setLenient().create()
+
+    @Singleton
+    @Provides
+    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
             .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
@@ -75,4 +85,15 @@ object ApiModule {
     @Provides
     fun provideUserProductRegistrationRepository(service: ProductRegistrationService): ProductRegistrationRepository =
         ProductRegistrationRepository(service)
+
+    // 상품 리스트 요청
+    @Singleton
+    @Provides
+    fun provideProductListService(retrofit: Retrofit): ProductListService =
+        retrofit.create(ProductListService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProductListRepository(service: ProductListService): ProductListRepository =
+        ProductListRepository(service)
 }

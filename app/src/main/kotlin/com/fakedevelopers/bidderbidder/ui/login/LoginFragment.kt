@@ -14,7 +14,6 @@ import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
-import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -32,7 +31,6 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Logger.addLogAdapter(AndroidLogAdapter())
         _binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_login,
