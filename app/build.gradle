@@ -47,8 +47,6 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-
     // ktlint
     ktlint 'com.pinterest:ktlint:0.43.1'
     // Import the Firebase BoM
