@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,9 +21,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            Logger.i(destination.displayName)
-            when (destination.displayName.substringAfterLast("/")) {
-                "mainFragment" -> {
+            when (destination.id) {
+                R.id.productListFragment -> {
                     binding.bottomNavigationMain.visibility = View.VISIBLE
                 }
             }
