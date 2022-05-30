@@ -14,6 +14,7 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 class ProductListAdapter(
@@ -33,7 +34,7 @@ class ProductListAdapter(
                 if (::timerTask.isInitialized) {
                     timerTask.cancel()
                 }
-                val timer = dateFormat.parse(item.expirationDate)!!.time - System.currentTimeMillis()
+                val timer = dateFormat.parse(item.expirationDate)!!.time - Date(System.currentTimeMillis()).time
                 timerTask = object : CountDownTimer(timer, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         textviewProductListExpire.text = getRemainTimeString(millisUntilFinished)
