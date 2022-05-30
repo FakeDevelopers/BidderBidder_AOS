@@ -47,7 +47,7 @@ class ProductListAdapter(
                 Glide.with(context)
                     .load(item.thumbnail)
                     .placeholder(R.drawable.the_cat)
-                    .error(R.drawable.the_cat)
+                    .error(R.drawable.error_cat)
                     .into(imageProductList)
                 textviewProductListTitle.text = item.boardTitle
                 textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
