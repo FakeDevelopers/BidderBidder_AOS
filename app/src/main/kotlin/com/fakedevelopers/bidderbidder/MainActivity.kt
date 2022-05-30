@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
-            when(item.itemId) {
+            when (item.itemId) {
                 R.id.menu_product_registration -> navController.navigate(R.id.productRegistrationFragment)
             }
             true
