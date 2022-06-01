@@ -19,7 +19,7 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository
 ) : ViewModel() {
 
-    val adapter = ProductRegistrationAdapter()
+    val adapter = SelectedPictureListAdapter()
 
     // private val imageList = mutableListOf<MultipartBody.Part>()
     private val urlList = MutableStateFlow<MutableList<String>>(mutableListOf())

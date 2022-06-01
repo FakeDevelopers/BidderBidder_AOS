@@ -75,7 +75,7 @@
     </fragment>
     <fragment
         android:id="@+id/pictureSelectFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.picture_select.PictureSelectFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment"
         android:label="PictureSelectFragment" >
         <action
             android:id="@+id/action_pictureSelectFragment_to_productRegistrationFragment"

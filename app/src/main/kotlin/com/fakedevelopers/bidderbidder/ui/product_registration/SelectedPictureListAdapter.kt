@@ -10,7 +10,7 @@ import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBinding
 
-class ProductRegistrationAdapter : ListAdapter<String, ProductRegistrationAdapter.ViewHolder>(diffUtil) {
+class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
 
     class ViewHolder(
         private val binding: RecyclerProductRegistrationBinding,
