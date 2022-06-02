@@ -54,6 +54,8 @@ class ProductListAdapter(
                     hopePrice.visibility = View.GONE
                     textviewProductListHopePrice.visibility = View.GONE
                 } else {
+                    hopePrice.visibility = View.VISIBLE
+                    textviewProductListHopePrice.visibility = View.VISIBLE
                     textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
                 }
                 textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
