@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import java.text.DecimalFormat
@@ -44,12 +45,17 @@ class ProductListAdapter(
                     }
                 }.start()
                 Glide.with(context)
-                    .load(item.thumbnail)
+                    .load(BASE_URL + item.thumbnail)
                     .placeholder(R.drawable.the_cat)
                     .error(R.drawable.the_cat)
                     .into(imageProductList)
                 textviewProductListTitle.text = item.boardTitle
-                textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                if (item.hopePrice == 0L) {
+                    hopePrice.visibility = View.GONE
+                    textviewProductListHopePrice.visibility = View.GONE
+                } else {
+                    textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                }
                 textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
             }
