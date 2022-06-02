@@ -9,10 +9,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBinding
+import com.orhanobut.logger.Logger
 
-class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
+class SelectedPictureListAdapter(
+    private val deleteSelectedImage: (String) -> Unit,
+    private val swapSelectedImage: (Int, Int) -> Unit = { _, _ -> }
+) : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
 
-    class ViewHolder(
+    inner class ViewHolder(
         private val binding: RecyclerProductRegistrationBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -22,6 +26,10 @@ class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapte
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
                 .into(binding.imageviewProductRegistration)
+            // 선택 사진 터치 시 제거
+            binding.imageviewProductRegistration.setOnClickListener {
+                deleteSelectedImage(item)
+            }
         }
     }
 
@@ -36,6 +44,14 @@ class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapte
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    fun onItemDragMove(fromPosition: Int, toPosition: Int) {
+        swapSelectedImage(fromPosition, toPosition)
+    }
+
+    fun changeMoveEvent() {
+        Logger.i("끝")
     }
 
     companion object {

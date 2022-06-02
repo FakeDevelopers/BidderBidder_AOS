@@ -17,10 +17,14 @@ class AlbumListViewModel : ViewModel() {
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
         setScrollFlag = { setScrollFlag() }
-    ) { url, state ->
-        setSelectedState(url, state)
+    ) { uri, state ->
+        setSelectedState(uri, state)
     }
-    val selectedPictureAdapter = SelectedPictureListAdapter()
+    val selectedPictureAdapter = SelectedPictureListAdapter(
+        deleteSelectedImage = {
+            setSelectedState(it)
+        }
+    )
     var scrollToTopFlag = false
 
     fun setList(albumName: String = currentAlbum.value) {
@@ -47,11 +51,9 @@ class AlbumListViewModel : ViewModel() {
         scrollToTopFlag = !scrollToTopFlag
     }
 
-    fun findImageIndex(uri: String) = allImages[currentAlbum.value]!!.indexOf(uri)
-
     private fun findSelectedImageIndex(uri: String) = selectedImageList.value.indexOf(uri)
 
-    private fun setSelectedState(uri: String, state: Boolean) {
+    private fun setSelectedState(uri: String, state: Boolean = false) {
         if (state) {
             _selectedImageList.add(uri)
         } else {

@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,13 +20,37 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository
 ) : ViewModel() {
 
-    val adapter = SelectedPictureListAdapter()
+    val adapter = SelectedPictureListAdapter(
+        deleteSelectedImage = {
+            deleteSelectedImage(it)
+        }
+    ) { fromPosition, toPosition ->
+        swapSelectedImage(fromPosition, toPosition)
+    }
 
     // private val imageList = mutableListOf<MultipartBody.Part>()
     private val urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+
+    private fun deleteSelectedImage(uri: String) {
+        urlList.value.remove(uri)
+        adapter.submitList(urlList.value.toList())
+    }
+
+    private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(urlList.value, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(urlList.value, i, i - 1)
+            }
+        }
+        adapter.submitList(urlList.value.toList())
+    }
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
@@ -42,8 +67,8 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setImageList(url: List<String>) {
-        urlList.value.addAll(url.toList())
-        adapter.submitList(urlList.value)
+        urlList.value.addAll(url)
+        adapter.submitList(urlList.value.toList())
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
