@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,8 +20,12 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository
 ) : ViewModel() {
 
-    val adapter = SelectedPictureListAdapter {
-        deleteSelectedImage(it)
+    val adapter = SelectedPictureListAdapter(
+        deleteSelectedImage = {
+            deleteSelectedImage(it)
+        }
+    ) { fromPosition, toPosition ->
+        swapSelectedImage(fromPosition, toPosition)
     }
 
     // private val imageList = mutableListOf<MultipartBody.Part>()
@@ -31,6 +36,19 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private fun deleteSelectedImage(uri: String) {
         urlList.value.remove(uri)
+        adapter.submitList(urlList.value.toList())
+    }
+
+    private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(urlList.value, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(urlList.value, i, i - 1)
+            }
+        }
         adapter.submitList(urlList.value.toList())
     }
 

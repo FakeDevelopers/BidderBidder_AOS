@@ -19,6 +19,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.Logger
@@ -60,6 +61,8 @@ class ProductRegistrationFragment : Fragment() {
         val args: ProductRegistrationFragmentArgs by navArgs()
         if (!args.selectedImageList.isNullOrEmpty()) {
             viewModel.setImageList(args.selectedImageList!!.toList())
+            ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
+                .attachToRecyclerView(binding.recyclerProductRegistration)
         }
         initListener()
         initCollector()

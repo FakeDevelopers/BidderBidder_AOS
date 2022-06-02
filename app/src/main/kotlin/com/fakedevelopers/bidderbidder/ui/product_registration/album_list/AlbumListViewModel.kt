@@ -20,9 +20,11 @@ class AlbumListViewModel : ViewModel() {
     ) { uri, state ->
         setSelectedState(uri, state)
     }
-    val selectedPictureAdapter = SelectedPictureListAdapter {
-        setSelectedState(it)
-    }
+    val selectedPictureAdapter = SelectedPictureListAdapter(
+        deleteSelectedImage = {
+            setSelectedState(it)
+        }
+    )
     var scrollToTopFlag = false
 
     fun setList(albumName: String = currentAlbum.value) {
