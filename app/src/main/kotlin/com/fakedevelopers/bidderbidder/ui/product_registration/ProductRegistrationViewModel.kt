@@ -19,13 +19,20 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository
 ) : ViewModel() {
 
-    val adapter = SelectedPictureListAdapter()
+    val adapter = SelectedPictureListAdapter {
+        deleteSelectedImage(it)
+    }
 
     // private val imageList = mutableListOf<MultipartBody.Part>()
     private val urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+
+    private fun deleteSelectedImage(uri: String) {
+        urlList.value.remove(uri)
+        adapter.submitList(urlList.value.toList())
+    }
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
@@ -42,8 +49,8 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setImageList(url: List<String>) {
-        urlList.value.addAll(url.toList())
-        adapter.submitList(urlList.value)
+        urlList.value.addAll(url)
+        adapter.submitList(urlList.value.toList())
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

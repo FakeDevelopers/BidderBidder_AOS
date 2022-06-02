@@ -10,9 +10,11 @@ import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBinding
 
-class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
+class SelectedPictureListAdapter(
+    private val deleteSelectedImage: (String) -> Unit
+) : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
 
-    class ViewHolder(
+    inner class ViewHolder(
         private val binding: RecyclerProductRegistrationBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -22,6 +24,10 @@ class SelectedPictureListAdapter : ListAdapter<String, SelectedPictureListAdapte
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
                 .into(binding.imageviewProductRegistration)
+            // 선택 사진 터치 시 제거
+            binding.imageviewProductRegistration.setOnClickListener {
+                deleteSelectedImage(item)
+            }
         }
     }
 
