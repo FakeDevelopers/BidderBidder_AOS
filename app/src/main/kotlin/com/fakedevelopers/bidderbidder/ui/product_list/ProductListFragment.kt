@@ -73,7 +73,7 @@ class ProductListFragment : Fragment() {
             productListAdapter = ProductListAdapter(onClick = {
                 // 더보기 버튼이 애매하게 가려진 채로 누르면 크래쉬가 납니다.
                 // 그래서 우선 더보기를 누르면 스크롤을 가장 끝까지 내린다음 클릭 이벤트를 수행 합니다.
-                binding.recyclerProductList.scrollToPosition(productListAdapter.itemCount)
+                binding.recyclerProductList.scrollToPosition(productListAdapter.itemCount + 1)
                 viewModel.clickReadMore()
             }) {
                 getString(R.string.productlist_text_price, it)
@@ -84,7 +84,6 @@ class ProductListFragment : Fragment() {
                 setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
             }
             binding.recyclerProductList.apply {
-                layoutManager = LinearLayoutManager(activity)
                 addItemDecoration(divider)
                 adapter = productListAdapter
             }

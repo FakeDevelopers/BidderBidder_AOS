@@ -5,10 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
@@ -19,8 +19,10 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository
 ) : ViewModel() {
 
-    val imageList = mutableListOf<MultipartBody.Part>()
+    val adapter = SelectedPictureListAdapter()
 
+    // private val imageList = mutableListOf<MultipartBody.Part>()
+    private val urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
@@ -35,8 +37,13 @@ class ProductRegistrationViewModel @Inject constructor(
             map["hope_price"] = "100".toPlainRequestBody()
             map["opening_bid"] = "50".toPlainRequestBody()
             map["tick"] = "1".toPlainRequestBody()
-            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+            // _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
+    }
+
+    fun setImageList(url: List<String>) {
+        urlList.value.addAll(url.toList())
+        adapter.submitList(urlList.value)
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
