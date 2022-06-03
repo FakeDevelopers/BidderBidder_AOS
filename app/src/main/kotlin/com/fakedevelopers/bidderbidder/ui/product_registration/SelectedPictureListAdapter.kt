@@ -9,10 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBinding
-import com.orhanobut.logger.Logger
 
 class SelectedPictureListAdapter(
     private val deleteSelectedImage: (String) -> Unit,
+    private val swapComplete: () -> Unit = {},
     private val swapSelectedImage: (Int, Int) -> Unit = { _, _ -> }
 ) : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
 
@@ -51,7 +51,7 @@ class SelectedPictureListAdapter(
     }
 
     fun changeMoveEvent() {
-        Logger.i("끝")
+        swapComplete()
     }
 
     companion object {

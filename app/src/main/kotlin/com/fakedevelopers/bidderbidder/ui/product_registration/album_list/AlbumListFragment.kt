@@ -16,9 +16,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
+import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -56,6 +59,8 @@ class AlbumListFragment : Fragment() {
                     )
             )
         }
+        ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
+            .attachToRecyclerView(binding.recyclerSelectedPicture)
     }
 
     private fun getPictures() {
@@ -126,6 +131,7 @@ class AlbumListFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedImageList.collectLatest {
+                    Logger.i("123")
                     binding.buttonAlbumListComplete.visibility = if (it.isEmpty()) View.INVISIBLE else View.VISIBLE
                     viewModel.setList()
                 }

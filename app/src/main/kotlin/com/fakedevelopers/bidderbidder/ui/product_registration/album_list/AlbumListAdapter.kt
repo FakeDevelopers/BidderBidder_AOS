@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerPictureSelectBinding
+import com.orhanobut.logger.Logger
 
 class AlbumListAdapter(
     private val findSelectedImageIndex: (String) -> Int,
@@ -31,6 +32,7 @@ class AlbumListAdapter(
 
                 // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
                 findSelectedImageIndex(item).let {
+                    Logger.i(it.toString())
                     val visibility = if (it != -1) View.VISIBLE else View.INVISIBLE
                     binding.backgroundPictrueSelect.visibility = visibility
                     binding.textviewPictureSelectCount.visibility = visibility
