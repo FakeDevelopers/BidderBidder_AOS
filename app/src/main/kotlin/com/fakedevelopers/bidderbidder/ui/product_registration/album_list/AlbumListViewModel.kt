@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.product_registration.SelectedPictureListAdapter
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
@@ -37,7 +36,6 @@ class AlbumListViewModel : ViewModel() {
             // 리스트에 영향이 없으면 bind를 호출하지 않는다.
             // 그러므로 notifyDataSetChanged를 이용해 강제로 갱신 시켜야 한다.
             if (albumName == currentAlbum.value) {
-                Logger.i("호출")
                 albumListAdapter.notifyDataSetChanged()
             } else {
                 imageList.emit(allImages[albumName]!!)

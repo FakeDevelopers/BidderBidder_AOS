@@ -1,7 +1,9 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
+import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.orhanobut.logger.Logger
 
 class DragAndDropCallback(
     private val adapter: SelectedPictureListAdapter
@@ -49,6 +51,27 @@ class DragAndDropCallback(
 
     override fun isItemViewSwipeEnabled(): Boolean {
         return false
+    }
+
+    override fun onChildDraw(
+        c: Canvas,
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        dX: Float,
+        dY: Float,
+        actionState: Int,
+        isCurrentlyActive: Boolean
+    ) {
+        Logger.i(recyclerView.childCount.toString())
+        val newDX =
+            if (
+                (viewHolder.adapterPosition == 0 && dX < 0) ||
+                (viewHolder.adapterPosition == recyclerView.childCount - 1 && dX > 0)
+            )
+                0.0f
+            else
+                dX
+        super.onChildDraw(c, recyclerView, viewHolder, newDX, dY, actionState, isCurrentlyActive)
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {}
