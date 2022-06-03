@@ -9,6 +9,7 @@ interface ProductListService {
     @GET("product/getInfiniteProductList")
     suspend fun postProductList(
         @Query("searchWord") searchWord: String?,
+        @Query("searchType") searchType: Int?,
         @Query("listCount") listCount: Int,
         @Query("startNumber") startNumber: Long
     ): Response<List<ProductListDto>>

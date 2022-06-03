@@ -10,9 +10,10 @@ class ProductListRepository @Inject constructor(
 ) {
     suspend fun postProductList(
         searchWord: String,
+        searchType: Int,
         listCount: Int,
         startNumber: Long
     ): Response<List<ProductListDto>> {
-        return service.postProductList(searchWord, listCount, startNumber)
+        return service.postProductList(searchWord, searchType, listCount, startNumber)
     }
 }
