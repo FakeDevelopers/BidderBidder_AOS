@@ -80,7 +80,7 @@ class ProductRegistrationFragment : Fragment() {
 
     private fun initListener() {
         // 사진 가져오기
-        binding.button.setOnClickListener {
+        binding.imageviewSelectPicture.setOnClickListener {
             toPictureSelectFragment()
         }
         // 게시글 작성 요청

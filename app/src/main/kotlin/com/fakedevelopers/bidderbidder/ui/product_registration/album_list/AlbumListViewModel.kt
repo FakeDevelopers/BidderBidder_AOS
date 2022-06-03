@@ -3,8 +3,10 @@ package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.product_registration.SelectedPictureListAdapter
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 class AlbumListViewModel : ViewModel() {
 
@@ -21,25 +23,27 @@ class AlbumListViewModel : ViewModel() {
         setSelectedState(uri, state)
     }
     val selectedPictureAdapter = SelectedPictureListAdapter(
-        deleteSelectedImage = {
-            setSelectedState(it)
-        }
-    )
+        deleteSelectedImage = { setSelectedState(it) },
+        swapComplete = { swapComplete() }
+    ) { fromPosition, toPosition ->
+        swapSelectedImage(fromPosition, toPosition)
+    }
     var scrollToTopFlag = false
 
     fun setList(albumName: String = currentAlbum.value) {
         viewModelScope.launch {
-            imageList.emit(allImages[albumName]!!)
             // ViewHolder의 bind를 통해 사진 선택 순서를 표시한다.
             // 하지만 사진을 선택하는 행위는 리스트에 영향을 주지 않는다.
             // 리스트에 영향이 없으면 bind를 호출하지 않는다.
             // 그러므로 notifyDataSetChanged를 이용해 강제로 갱신 시켜야 한다.
             if (albumName == currentAlbum.value) {
+                Logger.i("호출")
                 albumListAdapter.notifyDataSetChanged()
             } else {
+                imageList.emit(allImages[albumName]!!)
                 albumListAdapter.submitList(imageList.value.toMutableList())
+                currentAlbum.emit(albumName)
             }
-            currentAlbum.emit(albumName)
         }
     }
 
@@ -51,7 +55,26 @@ class AlbumListViewModel : ViewModel() {
         scrollToTopFlag = !scrollToTopFlag
     }
 
-    private fun findSelectedImageIndex(uri: String) = selectedImageList.value.indexOf(uri)
+    private fun swapComplete() {
+        viewModelScope.launch {
+            selectedImageList.emit(_selectedImageList.toList())
+        }
+    }
+
+    private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
+        if (fromPosition < toPosition) {
+            for (i in fromPosition until toPosition) {
+                Collections.swap(_selectedImageList, i, i + 1)
+            }
+        } else {
+            for (i in fromPosition downTo toPosition + 1) {
+                Collections.swap(_selectedImageList, i, i - 1)
+            }
+        }
+        selectedPictureAdapter.submitList(_selectedImageList.toList())
+    }
+
+    private fun findSelectedImageIndex(uri: String) = _selectedImageList.indexOf(uri)
 
     private fun setSelectedState(uri: String, state: Boolean = false) {
         if (state) {
