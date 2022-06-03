@@ -50,7 +50,7 @@ class ProductListAdapter(
                     .placeholder(R.drawable.the_cat)
                     .error(R.drawable.error_cat)
                     .into(imageProductList)
-                textviewProductListTitle.text = item.boardTitle
+                textviewProductListTitle.text = item.productTitle
                 if (item.hopePrice == 0L) {
                     hopePrice.visibility = View.GONE
                     textviewProductListHopePrice.visibility = View.GONE
@@ -148,7 +148,7 @@ class ProductListAdapter(
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
-                oldItem.boardId == newItem.boardId
+                oldItem.productId == newItem.productId
 
             override fun areContentsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
                 oldItem == newItem

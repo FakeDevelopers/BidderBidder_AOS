@@ -51,7 +51,7 @@ class ProductListViewModel @Inject constructor(
                     val currentList = if (isInitialize) mutableListOf() else _productList.value.toMutableList()
                     currentList.addAll(it.body()!!)
                     _productList.emit(currentList)
-                    startNumber.emit(_productList.value[_productList.value.size - 1].boardId)
+                    startNumber.emit(_productList.value[_productList.value.size - 1].productId)
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
                     if (it.body()!!.size < LIST_COUNT) {
                         isLastProduct.emit(true)
