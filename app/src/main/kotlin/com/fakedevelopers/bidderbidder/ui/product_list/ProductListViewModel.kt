@@ -40,6 +40,7 @@ class ProductListViewModel @Inject constructor(
     fun requestProductList(isInitialize: Boolean) {
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
+            isLastProduct.value = false
             startNumber.value = -1
         }
         viewModelScope.launch {
