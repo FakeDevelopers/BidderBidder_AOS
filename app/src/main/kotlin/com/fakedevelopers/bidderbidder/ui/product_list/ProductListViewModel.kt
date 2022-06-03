@@ -40,17 +40,18 @@ class ProductListViewModel @Inject constructor(
     fun requestProductList(isInitialize: Boolean) {
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
+            isLastProduct.value = false
             startNumber.value = -1
         }
         viewModelScope.launch {
             // 추가하기 전에 로딩 띄우기
             setLoadingState(true)
-            repository.postProductList(searchWord.value, LIST_COUNT, startNumber.value).let {
+            repository.postProductList(searchWord.value, 0, LIST_COUNT, startNumber.value).let {
                 if (it.isSuccessful) {
                     val currentList = if (isInitialize) mutableListOf() else _productList.value.toMutableList()
                     currentList.addAll(it.body()!!)
                     _productList.emit(currentList)
-                    startNumber.emit(_productList.value[_productList.value.size - 1].boardId)
+                    startNumber.emit(_productList.value[_productList.value.size - 1].productId)
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
                     if (it.body()!!.size < LIST_COUNT) {
                         isLastProduct.emit(true)

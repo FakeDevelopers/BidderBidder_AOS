@@ -36,7 +36,7 @@ jobs:
           key_alias: ${{ secrets.ALIAS }}
           key_password: ${{ secrets.KEY_STORE_PASSWORD }}
         env:
-         BUILD_TOOLS_VERSION: "30.0.2"
+          BUILD_TOOLS_VERSION: "30.0.2"
       - name: signed app bundle
         uses: actions/upload-artifact@v3
         with:
@@ -47,7 +47,7 @@ jobs:
           name: artifact
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H')"
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d-%H-%M')"
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

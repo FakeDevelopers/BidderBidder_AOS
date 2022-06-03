@@ -10,8 +10,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
+import com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel.Companion.LIST_COUNT
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -45,12 +47,19 @@ class ProductListAdapter(
                     }
                 }.start()
                 Glide.with(context)
-                    .load(item.thumbnail)
+                    .load(BASE_URL + item.thumbnail)
                     .placeholder(R.drawable.the_cat)
                     .error(R.drawable.error_cat)
                     .into(imageProductList)
-                textviewProductListTitle.text = item.boardTitle
-                textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                textviewProductListTitle.text = item.productTitle
+                if (item.hopePrice == 0L) {
+                    hopePrice.visibility = View.GONE
+                    textviewProductListHopePrice.visibility = View.GONE
+                } else {
+                    hopePrice.visibility = View.VISIBLE
+                    textviewProductListHopePrice.visibility = View.VISIBLE
+                    textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                }
                 textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
             }
@@ -120,9 +129,9 @@ class ProductListAdapter(
     }
 
     override fun getItemViewType(position: Int) =
-        if (position == itemCount - 1) TYPE_FOOTER else TYPE_ITEM
+        if (position <= LIST_COUNT && position == itemCount - 1) TYPE_FOOTER else TYPE_ITEM
 
-    override fun getItemCount() = if (listSize == 0) super.getItemCount() else listSize
+    override fun getItemCount() = if (listSize == 0 || listSize > LIST_COUNT) super.getItemCount() else listSize
 
     override fun submitList(list: List<ProductListDto>?) {
         if (!list.isNullOrEmpty()) {
@@ -140,7 +149,7 @@ class ProductListAdapter(
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
-                oldItem.boardId == newItem.boardId
+                oldItem.productId == newItem.productId
 
             override fun areContentsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
                 oldItem == newItem

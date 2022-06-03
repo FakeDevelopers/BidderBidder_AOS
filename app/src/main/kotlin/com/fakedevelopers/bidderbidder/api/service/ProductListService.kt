@@ -6,9 +6,10 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ProductListService {
-    @GET("board/getInfiniteProductList")
+    @GET("product/getInfiniteProductList")
     suspend fun postProductList(
         @Query("searchWord") searchWord: String?,
+        @Query("searchType") searchType: Int?,
         @Query("listCount") listCount: Int,
         @Query("startNumber") startNumber: Long
     ): Response<List<ProductListDto>>
