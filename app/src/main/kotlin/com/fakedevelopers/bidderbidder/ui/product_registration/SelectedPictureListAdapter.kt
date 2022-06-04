@@ -2,6 +2,7 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,6 +13,7 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBi
 
 class SelectedPictureListAdapter(
     private val deleteSelectedImage: (String) -> Unit,
+    private val findSelectedImageIndex: (String) -> Int,
     private val swapComplete: () -> Unit = {},
     private val swapSelectedImage: (Int, Int) -> Unit = { _, _ -> }
 ) : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
@@ -21,6 +23,7 @@ class SelectedPictureListAdapter(
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: String) {
+            setRepresentImage(findSelectedImageIndex(item) == 0)
             Glide.with(context)
                 .load(item)
                 .placeholder(R.drawable.the_cat)
@@ -30,6 +33,14 @@ class SelectedPictureListAdapter(
             binding.imageviewProductRegistration.setOnClickListener {
                 deleteSelectedImage(item)
             }
+        }
+
+        fun setRepresentImage(state: Boolean) {
+            binding.textviewProductRegistration.visibility =
+                if (state)
+                    View.VISIBLE
+                else
+                    View.INVISIBLE
         }
     }
 
