@@ -26,6 +26,7 @@ class ProductListAdapter(
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
     inner class ItemViewHolder(
         private val binding: RecyclerProductListBinding,
@@ -149,7 +150,6 @@ class ProductListAdapter(
         const val TYPE_FOOTER = 2
 
         val dec = DecimalFormat("#,###")
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
