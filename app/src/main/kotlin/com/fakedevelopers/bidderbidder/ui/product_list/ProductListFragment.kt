@@ -69,9 +69,10 @@ class ProductListFragment : Fragment() {
 
     private fun updateRecyclerView(productList: List<ProductListDto>) {
         if (!::productListAdapter.isInitialized) {
-            productListAdapter = ProductListAdapter(onClick = {
-                viewModel.clickReadMore()
-            }) {
+            productListAdapter = ProductListAdapter(
+                onClick = { viewModel.clickReadMore() },
+                isReadMoreVisible = { viewModel.isReadMoreVisible.value }
+            ) {
                 getString(R.string.productlist_text_price, it)
             }.apply {
                 submitList(productList)

@@ -21,6 +21,7 @@ import java.util.Locale
 
 class ProductListAdapter(
     private val onClick: () -> Unit,
+    private val isReadMoreVisible: () -> Boolean,
     private val getPriceInfo: (String) -> String
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
@@ -95,9 +96,12 @@ class ProductListAdapter(
         private val binding: RecyclerProductListFooterBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
-            binding.buttonLoadMore.setOnClickListener {
-                binding.buttonLoadMore.visibility = View.GONE
-                onClick()
+            binding.buttonLoadMore.run {
+                visibility = if (isReadMoreVisible()) View.VISIBLE else View.GONE
+                setOnClickListener {
+                    binding.buttonLoadMore.visibility = View.GONE
+                    onClick()
+                }
             }
         }
     }
