@@ -21,10 +21,12 @@ import java.util.Locale
 
 class ProductListAdapter(
     private val onClick: () -> Unit,
+    private val isReadMoreVisible: () -> Boolean,
     private val getPriceInfo: (String) -> String
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
     inner class ItemViewHolder(
         private val binding: RecyclerProductListBinding,
@@ -95,9 +97,12 @@ class ProductListAdapter(
         private val binding: RecyclerProductListFooterBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
-            binding.buttonLoadMore.setOnClickListener {
-                binding.buttonLoadMore.visibility = View.GONE
-                onClick()
+            binding.buttonLoadMore.run {
+                visibility = if (isReadMoreVisible()) View.VISIBLE else View.GONE
+                setOnClickListener {
+                    binding.buttonLoadMore.visibility = View.GONE
+                    onClick()
+                }
             }
         }
     }
@@ -145,7 +150,6 @@ class ProductListAdapter(
         const val TYPE_FOOTER = 2
 
         val dec = DecimalFormat("#,###")
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =

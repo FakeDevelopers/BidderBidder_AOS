@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.orhanobut.logger.Logger
 
 class DragAndDropCallback(
     private val adapter: SelectedPictureListAdapter
@@ -34,6 +33,13 @@ class DragAndDropCallback(
         y: Int
     ) {
         super.onMoved(recyclerView, viewHolder, fromPos, target, toPos, x, y)
+        if (fromPos == 0) {
+            (viewHolder as SelectedPictureListAdapter.ViewHolder).setRepresentImage(false)
+            (target as SelectedPictureListAdapter.ViewHolder).setRepresentImage(true)
+        } else if (toPos == 0) {
+            (viewHolder as SelectedPictureListAdapter.ViewHolder).setRepresentImage(true)
+            (target as SelectedPictureListAdapter.ViewHolder).setRepresentImage(false)
+        }
         isMoved = true
     }
 
@@ -62,7 +68,6 @@ class DragAndDropCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        Logger.i(recyclerView.childCount.toString())
         val newDX =
             if (
                 (viewHolder.adapterPosition == 0 && dX < 0) ||

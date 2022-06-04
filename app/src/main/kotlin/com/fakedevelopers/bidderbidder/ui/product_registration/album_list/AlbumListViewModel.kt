@@ -23,6 +23,7 @@ class AlbumListViewModel : ViewModel() {
     }
     val selectedPictureAdapter = SelectedPictureListAdapter(
         deleteSelectedImage = { setSelectedState(it) },
+        findSelectedImageIndex = { findSelectedImageIndex(it) },
         swapComplete = { swapComplete() }
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)

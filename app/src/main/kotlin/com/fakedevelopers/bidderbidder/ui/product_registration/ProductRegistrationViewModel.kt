@@ -21,9 +21,8 @@ class ProductRegistrationViewModel @Inject constructor(
 ) : ViewModel() {
 
     val adapter = SelectedPictureListAdapter(
-        deleteSelectedImage = {
-            deleteSelectedImage(it)
-        }
+        deleteSelectedImage = { deleteSelectedImage(it) },
+        findSelectedImageIndex = { findSelectedImageIndex(it) }
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
@@ -51,6 +50,8 @@ class ProductRegistrationViewModel @Inject constructor(
         }
         adapter.submitList(urlList.value.toList())
     }
+
+    private fun findSelectedImageIndex(uri: String) = urlList.value.indexOf(uri)
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
