@@ -78,6 +78,7 @@ class AlbumListFragment : Fragment() {
             if (it != null) {
                 val albums = mutableMapOf<String, MutableList<String>>()
                 albums[ALL_PICTURES] = mutableListOf()
+                val albumNameSummary = mutableMapOf<String, String>()
                 while (it.moveToNext()) {
                     // 이미지 Uri
                     val imageUri = ContentUris.withAppendedId(
@@ -88,13 +89,16 @@ class AlbumListFragment : Fragment() {
                     albums[ALL_PICTURES]!!.add(imageUri)
                     // 이미지 상대 경로에 저장
                     it.getString(it.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
-                        if (!albums.containsKey(path)) {
-                            albums[path] = mutableListOf()
+                        if (!albumNameSummary.containsKey(path)) {
+                            path.split("/").let { split ->
+                                albumNameSummary[path] = split[split.lastIndex - 1]
+                                albums[split[split.lastIndex - 1]] = mutableListOf()
+                            }
                         }
-                        albums[path]!!.add(imageUri)
+                        albums[albumNameSummary[path]]!!.add(imageUri)
                     }
                 }
-                viewModel.setAllImages(albums)
+                viewModel.initAlbumInfo(albums)
                 viewModel.setAlbumList(ALL_PICTURES)
                 initSpinner(albums.keys.toTypedArray())
                 initCollector()

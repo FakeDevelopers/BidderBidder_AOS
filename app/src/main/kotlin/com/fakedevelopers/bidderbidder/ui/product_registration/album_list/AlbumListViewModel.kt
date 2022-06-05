@@ -51,7 +51,7 @@ class AlbumListViewModel : ViewModel() {
         setSelectedImageList()
     }
 
-    fun setAllImages(map: Map<String, MutableList<String>>) {
+    fun initAlbumInfo(map: Map<String, MutableList<String>>) {
         allImages = map
     }
 
