@@ -38,7 +38,6 @@
     <string name="register_text_password_check_fail">설정한 비밀번호와 다릅니다!</string>
     <string name="register_button_signup">가입 완료</string>
     <!-- Strings related to ProductList -->
-    <string name="productlist_text_price">%1$s원</string>
     <string name="productlist_load_more">더보기</string>
     <!-- Strings related to Bottom Navigation -->
     <string name="bottom_home">홈</string>
