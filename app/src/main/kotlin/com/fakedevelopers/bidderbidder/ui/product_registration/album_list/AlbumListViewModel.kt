@@ -71,7 +71,6 @@ class AlbumListViewModel : ViewModel() {
         selectedPictureAdapter.submitList(_selectedImageList.value.toList())
         setAlbumList()
         viewModelScope.launch {
-            Logger.i("여긴가나")
             _onListChange.emit(true)
         }
     }

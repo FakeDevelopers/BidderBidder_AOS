@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -142,7 +141,6 @@ class AlbumListFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.onListChange.collectLatest {
-                    Logger.i(viewModel.selectedImageList.value.size.toString())
                     binding.buttonAlbumListComplete.visibility =
                         if (viewModel.selectedImageList.value.isEmpty())
                             View.INVISIBLE

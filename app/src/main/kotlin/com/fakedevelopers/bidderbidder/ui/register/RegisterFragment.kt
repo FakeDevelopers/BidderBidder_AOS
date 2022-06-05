@@ -19,7 +19,6 @@ import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentRegisterBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegisterViewModel.RegisterEvent
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.DateFormat
@@ -66,7 +65,6 @@ class RegisterFragment : Fragment() {
 
         val args: RegisterFragmentArgs by navArgs()
         viewModel.firebaseToken.value = args.token
-        Logger.t("Register").i(viewModel.firebaseToken.value)
         initListener()
         initCollector()
     }

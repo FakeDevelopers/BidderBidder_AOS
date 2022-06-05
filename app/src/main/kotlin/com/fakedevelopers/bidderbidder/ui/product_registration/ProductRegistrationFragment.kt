@@ -109,9 +109,7 @@ class ProductRegistrationFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launchWhenStarted {
             viewModel.productRegistrationResponse.collect {
-                if (it.isSuccessful) {
-                    Logger.t("myImage").i(it.body().toString())
-                } else {
+                if (!it.isSuccessful) {
                     Logger.t("myImage").e(it.errorBody().toString())
                 }
             }
