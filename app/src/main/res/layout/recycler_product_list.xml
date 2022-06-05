@@ -21,6 +21,7 @@
             android:id="@+id/image_product_list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
             app:srcCompat="@drawable/the_cat" />
     </androidx.cardview.widget.CardView>
 
@@ -92,7 +93,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:text="몇 명 입찰"
-        android:textSize="10sp"
+        android:textSize="11sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -17,15 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductListBinding
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductListFragment : Fragment() {
-
-    private lateinit var productListAdapter: ProductListAdapter
 
     private var _binding: FragmentProductListBinding? = null
 
@@ -54,42 +51,21 @@ class ProductListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         viewModel.requestProductList(true)
+        binding.recyclerProductList.addItemDecoration(
+            DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
+                setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
+            }
+        )
         collectProductList()
     }
 
     private fun collectProductList() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productList.collectLatest {
-                    updateRecyclerView(it)
-                    binding.swipeProductList.isRefreshing = false
+                viewModel.isLoading.collectLatest {
+                    binding.swipeProductList.isRefreshing = it
                 }
             }
-        }
-    }
-
-    private fun updateRecyclerView(productList: List<ProductListDto>) {
-        if (!::productListAdapter.isInitialized) {
-            productListAdapter = ProductListAdapter(onClick = {
-                // 더보기 버튼이 애매하게 가려진 채로 누르면 크래쉬가 납니다.
-                // 그래서 우선 더보기를 누르면 스크롤을 가장 끝까지 내린다음 클릭 이벤트를 수행 합니다.
-                binding.recyclerProductList.scrollToPosition(productListAdapter.itemCount)
-                viewModel.clickReadMore()
-            }) {
-                getString(R.string.productlist_text_price, it)
-            }.apply {
-                submitList(productList)
-            }
-            val divider = DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
-                setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
-            }
-            binding.recyclerProductList.apply {
-                layoutManager = LinearLayoutManager(activity)
-                addItemDecoration(divider)
-                adapter = productListAdapter
-            }
-        } else {
-            productListAdapter.submitList(productList.toList())
         }
     }
 
@@ -103,7 +79,6 @@ class ProductListFragment : Fragment() {
                 binding.recyclerProductList.layoutManager.let {
                     val lastVisibleItem = (it as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
                     if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
-                        Logger.t("recycler").i("리스트 하나 더")
                         viewModel.getNextProductList()
                     }
                 }

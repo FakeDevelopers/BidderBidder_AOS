@@ -41,7 +41,12 @@
         android:id="@+id/productListFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragment"
         android:label="fragment_product_list"
-        tools:layout="@layout/fragment_product_list" />
+        tools:layout="@layout/fragment_product_list" >
+        <action
+            android:id="@+id/action_productListFragment_to_productRegistrationFragment"
+            app:destination="@id/productRegistrationFragment"
+            app:launchSingleTop="true" />
+    </fragment>
     <fragment
         android:id="@+id/registerFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.register.RegisterFragment"
@@ -59,5 +64,35 @@
     <fragment
         android:id="@+id/productRegistrationFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationFragment"
-        android:label="ProductRegistrationFragment" />
+        android:label="ProductRegistrationFragment" >
+        <action
+            android:id="@+id/action_productRegistrationFragment_to_pictureSelectFragment"
+            app:destination="@id/pictureSelectFragment"
+            app:launchSingleTop="true" />
+        <argument
+            android:name="selectedImageList"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <action
+            android:id="@+id/action_productRegistrationFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:popUpTo="@id/productListFragment"
+            app:launchSingleTop="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/pictureSelectFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment"
+        android:label="PictureSelectFragment" >
+        <action
+            android:id="@+id/action_pictureSelectFragment_to_productRegistrationFragment"
+            app:destination="@id/productRegistrationFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/pictureSelectFragment" />
+        <argument
+            android:name="selectedImageList"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
 </navigation>

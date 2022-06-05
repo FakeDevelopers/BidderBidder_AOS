@@ -69,7 +69,6 @@ class LoginFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginResponse.collect {
                     if (it.isSuccessful) {
-                        Logger.t("Login").i(it.body().toString())
                         if (it.body().toString() == LOGIN_SUCCESS) {
                             findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                         }

@@ -23,10 +23,21 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.productListFragment -> {
-                    binding.bottomNavigationMain.visibility = View.VISIBLE
+                    binding.bottomNavigationMain.run {
+                        visibility = View.VISIBLE
+                        selectedItemId = R.id.menu_product_list
+                    }
                 }
+                R.id.productRegistrationFragment -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }
+        binding.bottomNavigationMain.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_product_registration -> navController.navigate(R.id.productRegistrationFragment)
+            }
+            true
+        }
+        // navController.navigate(R.id.productRegistrationFragment)
     }
 
     override fun onDestroy() {

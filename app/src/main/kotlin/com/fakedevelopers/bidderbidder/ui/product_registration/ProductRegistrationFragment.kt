@@ -1,17 +1,15 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.Manifest
-import android.app.Activity.RESULT_OK
 import android.content.ContentResolver
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
@@ -20,6 +18,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
 import com.orhanobut.logger.Logger
@@ -34,7 +35,6 @@ import okio.source
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
 
-    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var _binding: FragmentProductRegistrationBinding? = null
@@ -42,9 +42,16 @@ class ProductRegistrationFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
 
+    private val backPressedCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         initResultLauncher()
-        initCollector()
         _binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_product_registration,
@@ -60,21 +67,27 @@ class ProductRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args: ProductRegistrationFragmentArgs by navArgs()
+        if (!args.selectedImageList.isNullOrEmpty()) {
+            viewModel.setImageList(args.selectedImageList!!.toList())
+            ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
+                .attachToRecyclerView(binding.recyclerProductRegistration)
+        }
         initListener()
         initCollector()
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
-    private fun getPictures() {
+    private fun toPictureSelectFragment() {
         // 미디어 접근 권한이 없으면 안됩니다
         val permissionCheck = checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
-            val albumIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI).apply {
-                type = "image/*"
-                action = Intent.ACTION_GET_CONTENT
-                putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            }
-            activityResultLauncher.launch(albumIntent)
+            findNavController().navigate(
+                ProductRegistrationFragmentDirections
+                    .actionProductRegistrationFragmentToPictureSelectFragment(
+                        viewModel.urlList.value.toTypedArray()
+                    )
+            )
         } else {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
@@ -82,37 +95,21 @@ class ProductRegistrationFragment : Fragment() {
 
     private fun initListener() {
         // 사진 가져오기
-        binding.button.setOnClickListener {
-            getPictures()
+        binding.imageviewSelectPicture.setOnClickListener {
+            toPictureSelectFragment()
         }
-        // 요청
+        // 게시글 작성 요청
         binding.button2.setOnClickListener {
-            viewModel.productRegistrationRequest()
+            // viewModel.productRegistrationRequest()
+            Toast.makeText(requireContext(), "지금은 안돼", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun initResultLauncher() {
-        activityResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                if (it.resultCode == RESULT_OK) {
-                    if (it.data?.clipData != null) {
-                        val len = it.data?.clipData!!.itemCount
-                        for (i in 0 until len) {
-                            it.data?.clipData!!.getItemAt(i).uri.let { uri ->
-                                viewModel.imageList.add(getMultipart(uri, requireActivity().contentResolver)!!)
-                            }
-                        }
-                    } else {
-                        it.data?.data.let { uri ->
-                            viewModel.imageList.add(getMultipart(uri!!, requireActivity().contentResolver)!!)
-                        }
-                    }
-                }
-            }
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    getPictures()
+                    toPictureSelectFragment()
                 } else {
                     Toast.makeText(requireContext(), R.string.read_external_storage, Toast.LENGTH_SHORT).show()
                 }
@@ -122,9 +119,7 @@ class ProductRegistrationFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launchWhenStarted {
             viewModel.productRegistrationResponse.collect {
-                if (it.isSuccessful) {
-                    Logger.t("myImage").i(it.body().toString())
-                } else {
+                if (!it.isSuccessful) {
                     Logger.t("myImage").e(it.errorBody().toString())
                 }
             }
@@ -157,5 +152,6 @@ class ProductRegistrationFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        backPressedCallback.remove()
     }
 }
