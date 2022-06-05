@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -48,7 +49,10 @@ class AlbumListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getPictures()
-        initCollector()
+        val args: AlbumListFragmentArgs by navArgs()
+        if (!args.selectedImageList.isNullOrEmpty()) {
+            viewModel.initSelectedImageList(args.selectedImageList!!.toList())
+        }
         binding.buttonAlbumListComplete.setOnClickListener {
             // 선택한 이미지 uri를 들고 돌아갑니다
             findNavController().navigate(
@@ -91,8 +95,9 @@ class AlbumListFragment : Fragment() {
                     }
                 }
                 viewModel.setAllImages(albums)
-                viewModel.setList(ALL_PICTURES)
+                viewModel.setAlbumList(ALL_PICTURES)
                 initSpinner(albums.keys.toTypedArray())
+                initCollector()
                 // 앨범 전환 시 가장 위로 스크롤
                 binding.recyclerAlbemList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
                     override fun onLayoutCompleted(state: RecyclerView.State?) {
@@ -117,7 +122,7 @@ class AlbumListFragment : Fragment() {
             )
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.setList(albumArray[position])
+                    viewModel.setAlbumList(albumArray[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -126,12 +131,11 @@ class AlbumListFragment : Fragment() {
     }
 
     private fun initCollector() {
-        // 이미지 선택 순서를 보여주기 위한 콜렉터
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedImageList.collectLatest {
                     binding.buttonAlbumListComplete.visibility = if (it.isEmpty()) View.INVISIBLE else View.VISIBLE
-                    viewModel.setList()
+                    viewModel.setAlbumList()
                 }
             }
         }
