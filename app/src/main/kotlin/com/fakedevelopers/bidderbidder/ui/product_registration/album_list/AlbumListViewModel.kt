@@ -70,7 +70,7 @@ class AlbumListViewModel : ViewModel() {
                 Collections.swap(_selectedImageList, i, i - 1)
             }
         }
-        selectedPictureAdapter.submitList(_selectedImageList.toList())
+        selectedPictureAdapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     private fun findSelectedImageIndex(uri: String) = _selectedImageList.indexOf(uri)
@@ -80,6 +80,10 @@ class AlbumListViewModel : ViewModel() {
             _selectedImageList.add(uri)
         } else {
             _selectedImageList.remove(uri)
+            // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
+            if (_selectedImageList.isNotEmpty()) {
+                selectedPictureAdapter.notifyItemChanged(1)
+            }
         }
         selectedPictureAdapter.submitList(_selectedImageList.toList())
         viewModelScope.launch {

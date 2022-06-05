@@ -36,6 +36,10 @@ class ProductRegistrationViewModel @Inject constructor(
     private fun deleteSelectedImage(uri: String) {
         urlList.value.remove(uri)
         adapter.submitList(urlList.value.toList())
+        // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
+        if (urlList.value.isNotEmpty()) {
+            adapter.notifyItemChanged(1)
+        }
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
@@ -48,7 +52,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 Collections.swap(urlList.value, i, i - 1)
             }
         }
-        adapter.submitList(urlList.value.toList())
+        adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     private fun findSelectedImageIndex(uri: String) = urlList.value.indexOf(uri)

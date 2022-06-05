@@ -71,7 +71,7 @@ class DragAndDropCallback(
         val newDX =
             if (
                 (viewHolder.adapterPosition == 0 && dX < 0) ||
-                (viewHolder.adapterPosition == recyclerView.childCount - 1 && dX > 0)
+                (viewHolder.adapterPosition == recyclerView.adapter!!.itemCount - 1 && dX > 0)
             )
                 0.0f
             else
