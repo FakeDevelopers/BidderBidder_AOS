@@ -15,16 +15,21 @@ class ProductListViewModel @Inject constructor(
     private val repository: ProductListRepository
 ) : ViewModel() {
 
-    private val _productList = MutableStateFlow(mutableListOf<ProductListDto>())
+    private val productList = MutableStateFlow(listOf<ProductListDto>())
     private val _isLoading = MutableStateFlow(false)
-    private val _isReadMoreVisible = MutableStateFlow(true)
+    private val isReadMoreVisible = MutableStateFlow(true)
     private val isLastProduct = MutableStateFlow(false)
     private val startNumber = MutableStateFlow(-1L)
     private val searchWord = MutableStateFlow("")
 
-    val isReadMoreVisible: StateFlow<Boolean> get() = _isReadMoreVisible
-    val productList: StateFlow<List<ProductListDto>> get() = _productList
     val isLoading: StateFlow<Boolean> get() = _isLoading
+
+    val adapter = ProductListAdapter(
+        onClick = { clickReadMore() },
+        isReadMoreVisible = { isReadMoreVisible.value }
+    ) {
+        "${it}원"
+    }
 
     fun getNextProductList() {
         // 이미 로딩 중일 때
@@ -48,13 +53,14 @@ class ProductListViewModel @Inject constructor(
             setLoadingState(true)
             repository.postProductList(searchWord.value, 0, LIST_COUNT, startNumber.value).let {
                 if (it.isSuccessful) {
-                    val currentList = if (isInitialize) mutableListOf() else _productList.value.toMutableList()
+                    val currentList = if (isInitialize) mutableListOf() else productList.value.toMutableList()
                     currentList.addAll(it.body()!!)
-                    _productList.emit(currentList)
-                    startNumber.emit(_productList.value[_productList.value.size - 1].productId)
+                    productList.emit(currentList)
+                    startNumber.emit(productList.value[productList.value.size - 1].productId)
+                    adapter.submitList(productList.value.toList())
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
                     if (it.body()!!.size < LIST_COUNT) {
-                        _isReadMoreVisible.value = false
+                        isReadMoreVisible.value = false
                         isLastProduct.emit(true)
                     }
                 } else {
@@ -65,8 +71,8 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    fun clickReadMore() {
-        _isReadMoreVisible.value = false
+    private fun clickReadMore() {
+        isReadMoreVisible.value = false
         getNextProductList()
     }
 

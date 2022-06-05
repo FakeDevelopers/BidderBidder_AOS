@@ -24,8 +24,6 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ProductListFragment : Fragment() {
 
-    private lateinit var productListAdapter: ProductListAdapter
-
     private var _binding: FragmentProductListBinding? = null
 
     private val binding get() = _binding!!
@@ -53,39 +51,21 @@ class ProductListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         viewModel.requestProductList(true)
+        binding.recyclerProductList.addItemDecoration(
+            DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
+                setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
+            }
+        )
         collectProductList()
     }
 
     private fun collectProductList() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productList.collectLatest {
-                    updateRecyclerView(it)
-                    binding.swipeProductList.isRefreshing = false
+                viewModel.isLoading.collectLatest {
+                    binding.swipeProductList.isRefreshing = it
                 }
             }
-        }
-    }
-
-    private fun updateRecyclerView(productList: List<ProductListDto>) {
-        if (!::productListAdapter.isInitialized) {
-            productListAdapter = ProductListAdapter(
-                onClick = { viewModel.clickReadMore() },
-                isReadMoreVisible = { viewModel.isReadMoreVisible.value }
-            ) {
-                getString(R.string.productlist_text_price, it)
-            }.apply {
-                submitList(productList)
-            }
-            val divider = DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
-                setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
-            }
-            binding.recyclerProductList.apply {
-                addItemDecoration(divider)
-                adapter = productListAdapter
-            }
-        } else {
-            productListAdapter.submitList(productList.toList())
         }
     }
 
