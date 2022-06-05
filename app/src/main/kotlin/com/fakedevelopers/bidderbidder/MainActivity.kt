@@ -22,7 +22,12 @@ class MainActivity : AppCompatActivity() {
         navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.productListFragment -> binding.bottomNavigationMain.visibility = View.VISIBLE
+                R.id.productListFragment -> {
+                    binding.bottomNavigationMain.run {
+                        visibility = View.VISIBLE
+                        selectedItemId = R.id.menu_product_list
+                    }
+                }
                 R.id.productRegistrationFragment -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }

@@ -94,9 +94,7 @@ class RegisterFragment : Fragment() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(
-            backPressedCallback
-        )
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     private fun initCollector() {

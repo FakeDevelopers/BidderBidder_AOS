@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,6 +32,19 @@ class AlbumListFragment : Fragment() {
 
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
+
+    private val backPressedCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(
+                    AlbumListFragmentDirections
+                        .actionPictureSelectFragmentToProductRegistrationFragment(
+                            viewModel.selectedImageList.value.toTypedArray()
+                        )
+                )
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DataBindingUtil.inflate(
@@ -64,6 +78,7 @@ class AlbumListFragment : Fragment() {
                     )
             )
         }
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
     }
@@ -75,7 +90,7 @@ class AlbumListFragment : Fragment() {
             null,
             null,
             null,
-            MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC"
+            MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
         ).let {
             if (it != null) {
                 val albums = mutableMapOf<String, MutableList<String>>()
@@ -158,5 +173,6 @@ class AlbumListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        backPressedCallback.remove()
     }
 }

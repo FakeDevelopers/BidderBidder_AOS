@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.product_registration.SelectedPictureListAdapter
-import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow

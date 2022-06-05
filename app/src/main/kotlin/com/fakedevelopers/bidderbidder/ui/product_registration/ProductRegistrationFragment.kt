@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
@@ -41,6 +42,14 @@ class ProductRegistrationFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
 
+    private val backPressedCallback by lazy {
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+            }
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         initResultLauncher()
         _binding = DataBindingUtil.inflate(
@@ -66,6 +75,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         initListener()
         initCollector()
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     private fun toPictureSelectFragment() {
@@ -142,5 +152,6 @@ class ProductRegistrationFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        backPressedCallback.remove()
     }
 }
