@@ -70,7 +70,7 @@ class AlbumListViewModel : ViewModel() {
                 Collections.swap(_selectedImageList, i, i - 1)
             }
         }
-        selectedPictureAdapter.submitList(_selectedImageList.toList())
+        selectedPictureAdapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     private fun findSelectedImageIndex(uri: String) = _selectedImageList.indexOf(uri)

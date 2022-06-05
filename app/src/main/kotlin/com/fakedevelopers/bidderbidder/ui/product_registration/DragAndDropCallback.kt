@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.orhanobut.logger.Logger
 
 class DragAndDropCallback(
     private val adapter: SelectedPictureListAdapter
@@ -69,7 +68,6 @@ class DragAndDropCallback(
         actionState: Int,
         isCurrentlyActive: Boolean
     ) {
-        Logger.i(recyclerView.adapter!!.itemCount.toString())
         val newDX =
             if (
                 (viewHolder.adapterPosition == 0 && dX < 0) ||

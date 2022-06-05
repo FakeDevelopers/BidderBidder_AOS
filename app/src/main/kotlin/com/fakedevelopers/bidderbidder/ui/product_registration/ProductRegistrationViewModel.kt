@@ -52,7 +52,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 Collections.swap(urlList.value, i, i - 1)
             }
         }
-        adapter.submitList(urlList.value.toList())
+        adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
     private fun findSelectedImageIndex(uri: String) = urlList.value.indexOf(uri)
