@@ -30,7 +30,7 @@ class AlbumListViewModel : ViewModel() {
     }
     var scrollToTopFlag = false
 
-    fun setList(albumName: String = currentAlbum.value) {
+    fun setAlbumList(albumName: String = currentAlbum.value) {
         viewModelScope.launch {
             // ViewHolder의 bind를 통해 사진 선택 순서를 표시한다.
             // 하지만 사진을 선택하는 행위는 리스트에 영향을 주지 않는다.
@@ -46,12 +46,24 @@ class AlbumListViewModel : ViewModel() {
         }
     }
 
-    fun setAllImages(map: Map<String, MutableList<String>>) {
+    fun initSelectedImageList(list: List<String>) {
+        _selectedImageList.addAll(list)
+        setSelectedImageList()
+    }
+
+    fun initAlbumInfo(map: Map<String, MutableList<String>>) {
         allImages = map
     }
 
     fun setScrollFlag() {
         scrollToTopFlag = !scrollToTopFlag
+    }
+
+    private fun setSelectedImageList() {
+        selectedPictureAdapter.submitList(_selectedImageList.toList())
+        viewModelScope.launch {
+            selectedImageList.emit(_selectedImageList.toList())
+        }
     }
 
     private fun swapComplete() {
@@ -85,9 +97,6 @@ class AlbumListViewModel : ViewModel() {
                 selectedPictureAdapter.notifyItemChanged(1)
             }
         }
-        selectedPictureAdapter.submitList(_selectedImageList.toList())
-        viewModelScope.launch {
-            selectedImageList.emit(_selectedImageList.toList())
-        }
+        setSelectedImageList()
     }
 }

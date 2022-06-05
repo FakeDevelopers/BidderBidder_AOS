@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -28,16 +29,17 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     // private val imageList = mutableListOf<MultipartBody.Part>()
-    private val urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
+    private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
 
+    val urlList: StateFlow<List<String>> get() = _urlList
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
 
     private fun deleteSelectedImage(uri: String) {
-        urlList.value.remove(uri)
-        adapter.submitList(urlList.value.toList())
+        _urlList.value.remove(uri)
+        adapter.submitList(_urlList.value.toList())
         // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-        if (urlList.value.isNotEmpty()) {
+        if (_urlList.value.isNotEmpty()) {
             adapter.notifyItemChanged(1)
         }
     }
@@ -45,17 +47,17 @@ class ProductRegistrationViewModel @Inject constructor(
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(urlList.value, i, i + 1)
+                Collections.swap(_urlList.value, i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(urlList.value, i, i - 1)
+                Collections.swap(_urlList.value, i, i - 1)
             }
         }
         adapter.notifyItemMoved(fromPosition, toPosition)
     }
 
-    private fun findSelectedImageIndex(uri: String) = urlList.value.indexOf(uri)
+    private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
 
     fun productRegistrationRequest() {
         viewModelScope.launch {
@@ -72,8 +74,8 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setImageList(url: List<String>) {
-        urlList.value.addAll(url)
-        adapter.submitList(urlList.value.toList())
+        _urlList.value.addAll(url)
+        adapter.submitList(_urlList.value.toList())
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

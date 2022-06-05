@@ -72,7 +72,12 @@ class ProductRegistrationFragment : Fragment() {
         // 미디어 접근 권한이 없으면 안됩니다
         val permissionCheck = checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
-            findNavController().navigate(R.id.action_productRegistrationFragment_to_pictureSelectFragment)
+            findNavController().navigate(
+                ProductRegistrationFragmentDirections
+                    .actionProductRegistrationFragmentToPictureSelectFragment(
+                        viewModel.urlList.value.toTypedArray()
+                    )
+            )
         } else {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
