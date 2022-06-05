@@ -17,11 +17,12 @@ class ProductListViewModel @Inject constructor(
 
     private val _productList = MutableStateFlow(mutableListOf<ProductListDto>())
     private val _isLoading = MutableStateFlow(false)
+    private val _isReadMoreVisible = MutableStateFlow(true)
     private val isLastProduct = MutableStateFlow(false)
     private val startNumber = MutableStateFlow(-1L)
     private val searchWord = MutableStateFlow("")
 
-    val isReadMoreVisible = MutableStateFlow(true)
+    val isReadMoreVisible: StateFlow<Boolean> get() = _isReadMoreVisible
     val productList: StateFlow<List<ProductListDto>> get() = _productList
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
@@ -53,7 +54,7 @@ class ProductListViewModel @Inject constructor(
                     startNumber.emit(_productList.value[_productList.value.size - 1].productId)
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
                     if (it.body()!!.size < LIST_COUNT) {
-                        isReadMoreVisible.value = false
+                        _isReadMoreVisible.value = false
                         isLastProduct.emit(true)
                     }
                 } else {
@@ -65,7 +66,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun clickReadMore() {
-        isReadMoreVisible.value = false
+        _isReadMoreVisible.value = false
         getNextProductList()
     }
 

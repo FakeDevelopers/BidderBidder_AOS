@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -48,10 +49,12 @@ class AlbumListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initCollector()
         getPictures()
         val args: AlbumListFragmentArgs by navArgs()
         if (!args.selectedImageList.isNullOrEmpty()) {
             viewModel.initSelectedImageList(args.selectedImageList!!.toList())
+            binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
         binding.buttonAlbumListComplete.setOnClickListener {
             // 선택한 이미지 uri를 들고 돌아갑니다
@@ -101,7 +104,6 @@ class AlbumListFragment : Fragment() {
                 viewModel.initAlbumInfo(albums)
                 viewModel.setAlbumList(ALL_PICTURES)
                 initSpinner(albums.keys.toTypedArray())
-                initCollector()
                 // 앨범 전환 시 가장 위로 스크롤
                 binding.recyclerAlbemList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
                     override fun onLayoutCompleted(state: RecyclerView.State?) {
@@ -137,9 +139,13 @@ class AlbumListFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectedImageList.collectLatest {
-                    binding.buttonAlbumListComplete.visibility = if (it.isEmpty()) View.INVISIBLE else View.VISIBLE
-                    viewModel.setAlbumList()
+                viewModel.onListChange.collectLatest {
+                    Logger.i(viewModel.selectedImageList.value.size.toString())
+                    binding.buttonAlbumListComplete.visibility =
+                        if (viewModel.selectedImageList.value.isEmpty())
+                            View.INVISIBLE
+                        else
+                            View.VISIBLE
                 }
             }
         }
