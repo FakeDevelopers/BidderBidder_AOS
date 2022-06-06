@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductListBinding
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -89,7 +88,6 @@ class ProductListFragment : Fragment() {
             override fun onLayoutCompleted(state: RecyclerView.State?) {
                 super.onLayoutCompleted(state)
                 if (viewModel.isInitialize) {
-                    Logger.i("옴")
                     binding.recyclerProductList.scrollToPosition(0)
                     viewModel.setInitializeState(false)
                 }
