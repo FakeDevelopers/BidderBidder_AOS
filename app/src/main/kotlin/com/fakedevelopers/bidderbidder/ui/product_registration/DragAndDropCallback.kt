@@ -51,13 +51,9 @@ class DragAndDropCallback(
         }
     }
 
-    override fun isLongPressDragEnabled(): Boolean {
-        return true
-    }
+    override fun isLongPressDragEnabled() = true
 
-    override fun isItemViewSwipeEnabled(): Boolean {
-        return false
-    }
+    override fun isItemViewSwipeEnabled() = false
 
     override fun onChildDraw(
         c: Canvas,
