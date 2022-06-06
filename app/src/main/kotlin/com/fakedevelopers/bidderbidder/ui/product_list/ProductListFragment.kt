@@ -84,6 +84,15 @@ class ProductListFragment : Fragment() {
                 }
             }
         })
+        binding.recyclerProductList.layoutManager = object : LinearLayoutManager(requireContext()) {
+            override fun onLayoutCompleted(state: RecyclerView.State?) {
+                super.onLayoutCompleted(state)
+                if (viewModel.isInitialize) {
+                    binding.recyclerProductList.scrollToPosition(0)
+                    viewModel.setInitializeState(false)
+                }
+            }
+        }
     }
 
     override fun onDestroyView() {
