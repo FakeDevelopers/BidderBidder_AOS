@@ -17,11 +17,13 @@ class ProductListViewModel @Inject constructor(
 
     private val productList = MutableStateFlow(listOf<ProductListDto>())
     private val _isLoading = MutableStateFlow(false)
+    private var _isInitialize = false
     private val isReadMoreVisible = MutableStateFlow(true)
     private val isLastProduct = MutableStateFlow(false)
     private val startNumber = MutableStateFlow(-1L)
     private val searchWord = MutableStateFlow("")
 
+    val isInitialize get() = _isInitialize
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
     val adapter = ProductListAdapter(
@@ -42,12 +44,17 @@ class ProductListViewModel @Inject constructor(
         requestProductList(false)
     }
 
+    fun setInitializeState(state: Boolean) {
+        _isInitialize = state
+    }
+
     fun requestProductList(isInitialize: Boolean) {
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
             isLastProduct.value = false
             startNumber.value = -1
         }
+        _isInitialize = isInitialize
         viewModelScope.launch {
             // 추가하기 전에 로딩 띄우기
             setLoadingState(true)
