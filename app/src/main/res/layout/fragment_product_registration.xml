@@ -70,7 +70,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/camera_cat" />
+                            android:src="@drawable/camera_cat"
+                            android:contentDescription="@string/product_registration_button_to_album" />
                     </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -83,12 +84,13 @@
                     android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="제목"
+                    android:hint="@string/product_registration_product_title"
                     android:importantForAutofill="no"
                     android:inputType="textPersonName"
                     android:maxLength="20"
                     android:minHeight="48dp"
-                    android:text="@={vm.title}" />
+                    android:text="@={vm.title}"
+                    tools:ignore="TextContrastCheck" />
 
                 <EditText
                     android:id="@+id/edittext_product_registration_hope_price"
@@ -98,11 +100,12 @@
                     android:layout_marginVertical="@dimen/product_registration_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="희망 가격 (선택사항)"
+                    android:hint="@string/product_registration_product_hope_price"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
-                    android:text="@={vm.hopePrice}" />
+                    android:text="@={vm.hopePrice}"
+                    tools:ignore="TextContrastCheck" />
 
                 <Spinner
                     android:id="@+id/spinner_product_registration_category"
@@ -121,11 +124,12 @@
                     android:layout_marginVertical="@dimen/product_registration_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="입찰 시작가"
+                    android:hint="@string/product_registration_product_opening_bid"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
-                    android:text="@={vm.openingBid}"/>
+                    android:text="@={vm.openingBid}"
+                    tools:ignore="TextContrastCheck" />
 
                 <EditText
                     android:id="@+id/edittext_product_registration_tick"
@@ -135,11 +139,12 @@
                     android:layout_marginVertical="@dimen/product_registration_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="호가"
+                    android:hint="@string/product_registration_product_tick"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
-                    android:text="@={vm.tick}" />
+                    android:text="@={vm.tick}"
+                    tools:ignore="TextContrastCheck" />
 
                 <EditText
                     android:id="@+id/edittext_product_registration_expiration"
@@ -147,17 +152,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
                     android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="경매 기간 (최대 72시간)"
+                    android:hint="@string/product_registration_product_expiration"
                     android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
                     android:maxLength="3"
                     android:minHeight="48dp"
                     android:onTextChanged="@{(c, p1, p2, p3) -> vm.setExpiration(c)}"
-                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
                     android:text="@{vm.expiration}"
-                    android:inputType="numberDecimal"
-                    tools:ignore="TextFields" />
+                    tools:ignore="TextFields,TextContrastCheck" />
 
                 <EditText
                     android:id="@+id/edittext_product_registration_content"
@@ -165,16 +170,17 @@
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
                     android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:gravity="start"
-                    android:hint="게시글 내용을 작성해주세요."
+                    android:hint="@string/product_registration_product_content"
                     android:importantForAutofill="no"
                     android:inputType="textMultiLine"
                     android:maxLength="1000"
                     android:minHeight="100dp"
-                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
-                    android:text="@={vm.content}" />
+                    android:text="@={vm.content}"
+                    tools:ignore="TextContrastCheck" />
 
             </LinearLayout>
         </ScrollView>

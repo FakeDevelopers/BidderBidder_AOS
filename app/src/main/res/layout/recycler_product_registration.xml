@@ -25,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            tools:srcCompat="@drawable/the_cat" />
+            tools:srcCompat="@drawable/the_cat"
+            android:contentDescription="@string/product_registration_selected_image" />
 
         <TextView
             android:id="@+id/textview_product_registration"
@@ -34,7 +35,7 @@
             android:layout_gravity="bottom"
             android:background="@color/black"
             android:gravity="center"
-            android:text="대 표"
+            android:text="@string/product_registration_represent_image"
             android:textColor="@color/white"
             android:visibility="gone"
             tools:visibility="visible" />
