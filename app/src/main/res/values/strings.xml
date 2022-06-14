@@ -45,4 +45,8 @@
     <!-- Strings related to Toolbar -->
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
+    <!-- Strings related to Product Registration -->
+    <string name="product_registration_button">등록</string>
+    <string name="product_registration_category">카테고리</string>
+    <string name="product_registration_title">내 물건 등록</string>
 </resources>

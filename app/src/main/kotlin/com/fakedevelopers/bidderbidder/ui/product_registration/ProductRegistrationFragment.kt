@@ -2,12 +2,16 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.Manifest
 import android.content.ContentResolver
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.InputFilter
+import android.text.Spanned
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -17,14 +21,19 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -35,13 +44,15 @@ import okio.source
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
 
+    private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var _binding: FragmentProductRegistrationBinding? = null
 
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
-
+    private val grey by lazy { resources.getColor(R.color.grey, requireActivity().theme) }
+    private val black by lazy { resources.getColor(R.color.black, requireActivity().theme) }
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -68,11 +79,24 @@ class ProductRegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val args: ProductRegistrationFragmentArgs by navArgs()
-        if (!args.selectedImageList.isNullOrEmpty()) {
-            viewModel.setImageList(args.selectedImageList!!.toList())
-            ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
-                .attachToRecyclerView(binding.recyclerProductRegistration)
+        args.productRegistrationDto?.let {
+            viewModel.initState(it)
+            if (it.urlList.isNotEmpty()) {
+                ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
+                    .attachToRecyclerView(binding.recyclerProductRegistration)
+            }
         }
+        val adapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.spinner_product_registration,
+            viewModel.category
+        ) {
+            override fun getCount(): Int {
+                return super.getCount() - 1
+            }
+        }
+        binding.spinnerProductRegistrationCategory.adapter = adapter
+        binding.spinnerProductRegistrationCategory.setSelection(adapter.count)
         initListener()
         initCollector()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
@@ -84,9 +108,7 @@ class ProductRegistrationFragment : Fragment() {
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
             findNavController().navigate(
                 ProductRegistrationFragmentDirections
-                    .actionProductRegistrationFragmentToPictureSelectFragment(
-                        viewModel.urlList.value.toTypedArray()
-                    )
+                    .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductRegistrationDto())
             )
         } else {
             permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -94,14 +116,69 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initListener() {
+        val priceFilters = arrayOf(
+            object : InputFilter {
+                override fun filter(
+                    source: CharSequence?,
+                    start: Int,
+                    end: Int,
+                    dest: Spanned?,
+                    dstart: Int,
+                    dend: Int
+                ): CharSequence {
+                    return if (dest.toString() == "0" && source.toString() == "0") {
+                        ""
+                    } else {
+                        source.toString().replace("[^(0-9|,)]".toRegex(), "")
+                    }
+                }
+            },
+            InputFilter.LengthFilter(MAX_PRICE_LENGTH)
+        )
+        // 문자열 필터 등록
+        binding.edittextProductRegistrationHopePrice.also {
+            it.filters = priceFilters
+            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
+        }
+        binding.edittextProductRegistrationOpeningBid.also {
+            it.filters = priceFilters
+            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
+        }
+        binding.edittextProductRegistrationTick.also {
+            it.filters = priceFilters
+            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
+        }
+        // 문자열 셀렉션
+
         // 사진 가져오기
         binding.imageviewSelectPicture.setOnClickListener {
             toPictureSelectFragment()
         }
         // 게시글 작성 요청
-        binding.button2.setOnClickListener {
-            // viewModel.productRegistrationRequest()
-            Toast.makeText(requireContext(), "지금은 안돼", Toast.LENGTH_SHORT).show()
+        binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
+            if (viewModel.condition.value) {
+                val list = mutableListOf<MultipartBody.Part>()
+                viewModel.urlList.value.forEach { uri ->
+                    getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
+                }
+                viewModel.productRegistrationRequest(list)
+            }
+        }
+        // 키보드 이벤트
+        keyboardVisibilityUtils = KeyboardVisibilityUtils(
+            requireActivity().window,
+            onShowKeyboard = {
+                if (binding.edittextProductRegistrationContent.isFocused) {
+                    binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
+                }
+            },
+            onHideKeyboard = {
+                binding.textviewProductRegistrationContentLength.visibility = View.INVISIBLE
+            }
+        )
+        // 툴바 뒤로가기 버튼
+        binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
+            requireActivity().onBackPressed()
         }
     }
 
@@ -117,10 +194,43 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initCollector() {
-        lifecycleScope.launchWhenStarted {
-            viewModel.productRegistrationResponse.collect {
-                if (!it.isSuccessful) {
-                    Logger.t("myImage").e(it.errorBody().toString())
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.productRegistrationResponse.collectLatest {
+                    if (it.isSuccessful) {
+                        findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+                    } else {
+                        Logger.t("myImage").e(it.errorBody().toString())
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.content.collectLatest {
+                    binding.textviewProductRegistrationContentLength.apply {
+                        text = "${it.length} / $MAX_CONTENT_LENGTH"
+                        setTextColor(if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY)
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.content.collectLatest {
+                    viewModel.checkExpiration()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.condition.collectLatest {
+                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(
+                        if (it)
+                            black
+                        else
+                            grey
+                    )
                 }
             }
         }
@@ -153,5 +263,11 @@ class ProductRegistrationFragment : Fragment() {
         super.onDestroyView()
         _binding = null
         backPressedCallback.remove()
+        keyboardVisibilityUtils.deleteKeyboardListeners()
+    }
+
+    companion object {
+        const val MAX_PRICE_LENGTH = 17
+        const val MAX_CONTENT_LENGTH = 1000
     }
 }

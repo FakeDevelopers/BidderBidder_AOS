@@ -2,4 +2,6 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="fragment_horizontal_margin">32dp</dimen>
     <dimen name="fragment_vertical_margin">32dp</dimen>
+    <dimen name="product_registration_margin_vertical">12dp</dimen>
+    <dimen name="product_registration_margin_horizontal">8dp</dimen>
 </resources>

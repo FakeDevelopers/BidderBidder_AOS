@@ -8,52 +8,188 @@
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_product_registration"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:adapter="@{vm.adapter}"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        <include
+            android:id="@+id/include_product_registration_toolbar"
+            layout="@layout/toolbar_product_registration"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/cardview_product_registration"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardview_product_registration"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
-            app:cardCornerRadius="16dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/imageview_select_picture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/camera_cat" />
-        </androidx.cardview.widget.CardView>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="124dp"
-            android:text="Button"
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/include_product_registration_toolbar">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:divider="@drawable/shape_product_registration_divider"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="16dp">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_product_registration"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:adapter="@{vm.adapter}"
+                        android:orientation="horizontal"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/cardview_product_registration"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardview_product_registration"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/imageview_select_picture"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/camera_cat" />
+                    </androidx.cardview.widget.CardView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="제목"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName"
+                    android:maxLength="20"
+                    android:minHeight="48dp"
+                    android:text="@={vm.title}" />
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_hope_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="희망 가격 (선택사항)"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:minHeight="48dp"
+                    android:text="@={vm.hopePrice}" />
+
+                <Spinner
+                    android:id="@+id/spinner_product_registration_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:minHeight="48dp"
+                    android:spinnerMode="dialog"
+                    tools:ignore="SpeakableTextPresentCheck" />
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_opening_bid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="입찰 시작가"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:minHeight="48dp"
+                    android:text="@={vm.openingBid}"/>
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_tick"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="호가"
+                    android:importantForAutofill="no"
+                    android:inputType="numberDecimal"
+                    android:minHeight="48dp"
+                    android:text="@={vm.tick}" />
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_expiration"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:hint="경매 기간 (최대 72시간)"
+                    android:importantForAutofill="no"
+                    android:maxLength="3"
+                    android:minHeight="48dp"
+                    android:onTextChanged="@{(c, p1, p2, p3) -> vm.setExpiration(c)}"
+                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:text="@{vm.expiration}"
+                    android:inputType="numberDecimal"
+                    tools:ignore="TextFields" />
+
+                <EditText
+                    android:id="@+id/edittext_product_registration_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:gravity="start"
+                    android:hint="게시글 내용을 작성해주세요."
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine"
+                    android:maxLength="1000"
+                    android:minHeight="100dp"
+                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:text="@={vm.content}" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/textview_product_registration_content_length"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

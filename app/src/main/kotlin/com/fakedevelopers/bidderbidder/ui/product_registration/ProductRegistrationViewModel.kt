@@ -2,7 +2,9 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,9 +12,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Response
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Collections
 import javax.inject.Inject
 
@@ -27,13 +33,29 @@ class ProductRegistrationViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-
-    // private val imageList = mutableListOf<MultipartBody.Part>()
     private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
+    private val _expiration = MutableStateFlow("")
+    private val _condition = MutableStateFlow(false)
 
     val urlList: StateFlow<List<String>> get() = _urlList
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+    val title = MutableStateFlow("")
+    val content = MutableStateFlow("")
+    val hopePrice = MutableStateFlow("")
+    val openingBid = MutableStateFlow("")
+    val tick = MutableStateFlow("")
+    val expiration: StateFlow<String> get() = _expiration
+    // 카테고리 목록을 받아오는 api 필요
+    val category = mutableListOf(
+        "카테고리를",
+        "받아오는",
+        "api가",
+        "필요함",
+        "카테고리 선택"
+    )
+    // 등록 조건 완료
+    val condition: StateFlow<Boolean> get() = _condition
 
     private fun deleteSelectedImage(uri: String) {
         _urlList.value.remove(uri)
@@ -59,24 +81,80 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
 
-    fun productRegistrationRequest() {
-        viewModelScope.launch {
-            val map = hashMapOf<String, RequestBody>()
-            map["board_content"] = "콘텐트 내용".toPlainRequestBody()
-            map["board_title"] = "제목".toPlainRequestBody()
-            map["category"] = "1".toPlainRequestBody()
-            map["end_date"] = "2030-01-01 07:07".toPlainRequestBody()
-            map["hope_price"] = "100".toPlainRequestBody()
-            map["opening_bid"] = "50".toPlainRequestBody()
-            map["tick"] = "1".toPlainRequestBody()
-            // _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+    fun checkExpiration() {
+        if (expiration.value.toIntOrNull() != null && expiration.value.toInt() > MAX_EXPIRATION_TIME) {
+            viewModelScope.launch {
+                _expiration.emit(MAX_EXPIRATION_TIME.toString())
+                Logger.i(expiration.value)
+            }
         }
     }
 
-    fun setImageList(url: List<String>) {
-        _urlList.value.addAll(url)
+    // 게시글 등록 조건 검사
+    fun checkRegistrationCondition() {
+        viewModelScope.launch {
+            _condition.emit(
+                title.value.isNotEmpty() &&
+                    (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
+                    openingBid.value.replace(",", "").toLongOrNull() != null &&
+                    tick.value.replace(",", "").toIntOrNull() != null &&
+                    expiration.value.toIntOrNull() != null &&
+                    content.value.isNotEmpty()
+            )
+        }
+    }
+
+    fun productRegistrationRequest(imageList: List<MultipartBody.Part>) {
+        viewModelScope.launch {
+            val date = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
+                ZoneId.systemDefault()
+            )
+            val map = hashMapOf<String, RequestBody>()
+            map["productContent"] = content.value.toPlainRequestBody()
+            map["productTitle"] = title.value.toPlainRequestBody()
+            map["category"] = "0".toPlainRequestBody()
+            map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
+            map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
+            map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
+            map["representPicture"] = "0".toPlainRequestBody()
+            map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
+            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+        }
+    }
+
+    fun initState(state: ProductRegistrationDto) {
+        _urlList.value.addAll(state.urlList)
         adapter.submitList(_urlList.value.toList())
+        viewModelScope.launch {
+            title.emit(state.title)
+            hopePrice.emit(state.hopePrice)
+            openingBid.emit(state.openingBid)
+            tick.emit(state.tick)
+            _expiration.emit(state.expiration)
+            content.emit(state.content)
+        }
+    }
+
+    fun getProductRegistrationDto() = ProductRegistrationDto(
+        urlList.value,
+        title.value,
+        hopePrice.value,
+        openingBid.value,
+        tick.value,
+        expiration.value,
+        content.value
+    )
+
+    fun setExpiration(charSequence: CharSequence?) {
+        viewModelScope.launch {
+            _expiration.emit(charSequence.toString().replace("[^0-9]".toRegex(), "").ifEmpty { "" })
+        }
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
+
+    companion object {
+        const val MAX_EXPIRATION_TIME = 72
+    }
 }
