@@ -24,7 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="@string/product_registration_album_image" />
 
         <View
             android:id="@+id/background_pictrue_select"
@@ -44,8 +45,8 @@
             android:gravity="center"
             android:textSize="16sp"
             android:visibility="invisible"
-            tools:ignore="RtlHardcoded"
+            tools:ignore="RtlHardcoded,TextContrastCheck"
             tools:text="10"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        // navController.navigate(R.id.productRegistrationFragment)
+        navController.navigate(R.id.productRegistrationFragment)
     }
 
     override fun onDestroy() {

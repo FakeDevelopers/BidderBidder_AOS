@@ -11,10 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dec
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel.Companion.LIST_COUNT
-import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -148,8 +148,6 @@ class ProductListAdapter(
     companion object {
         const val TYPE_ITEM = 1
         const val TYPE_FOOTER = 2
-
-        val dec = DecimalFormat("#,###")
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =

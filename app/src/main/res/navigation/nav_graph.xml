@@ -70,8 +70,8 @@
             app:destination="@id/pictureSelectFragment"
             app:launchSingleTop="true" />
         <argument
-            android:name="selectedImageList"
-            app:argType="string[]"
+            android:name="productRegistrationDto"
+            app:argType="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -90,9 +90,7 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/pictureSelectFragment" />
         <argument
-            android:name="selectedImageList"
-            app:argType="string[]"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            android:name="productRegistrationDto"
+            app:argType="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto" />
     </fragment>
 </navigation>

@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
+import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -36,12 +37,8 @@ class AlbumListFragment : Fragment() {
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().navigate(
-                    AlbumListFragmentDirections
-                        .actionPictureSelectFragmentToProductRegistrationFragment(
-                            viewModel.selectedImageList.value.toTypedArray()
-                        )
-                )
+                val args: AlbumListFragmentArgs by navArgs()
+                toProductRegistration(args.productRegistrationDto)
             }
         }
     }
@@ -65,22 +62,27 @@ class AlbumListFragment : Fragment() {
         initCollector()
         getPictures()
         val args: AlbumListFragmentArgs by navArgs()
-        if (!args.selectedImageList.isNullOrEmpty()) {
-            viewModel.initSelectedImageList(args.selectedImageList!!.toList())
+        if (args.productRegistrationDto.urlList.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
         binding.buttonAlbumListComplete.setOnClickListener {
-            // 선택한 이미지 uri를 들고 돌아갑니다
-            findNavController().navigate(
-                AlbumListFragmentDirections
-                    .actionPictureSelectFragmentToProductRegistrationFragment(
-                        viewModel.selectedImageList.value.toTypedArray()
-                    )
-            )
+            toProductRegistration(args.productRegistrationDto)
         }
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
+    private fun toProductRegistration(dto: ProductRegistrationDto) {
+        dto.urlList = viewModel.selectedImageList.value.toList()
+        // 선택한 이미지 uri를 들고 돌아갑니다
+        findNavController().navigate(
+            AlbumListFragmentDirections
+                .actionPictureSelectFragmentToProductRegistrationFragment(
+                    dto
+                )
+        )
     }
 
     private fun getPictures() {

@@ -21,4 +21,12 @@
     <style name="MyDatePicker" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:datePickerMode">spinner</item>
     </style>
+
+    <style name="productRegistrationButtonDisable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/grey</item>
+    </style>
+
+    <style name="productRegistrationButtonEnable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/black</item>
+    </style>
 </resources>
