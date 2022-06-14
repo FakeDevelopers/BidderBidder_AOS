@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +34,6 @@ class ProductRegistrationViewModel @Inject constructor(
     }
     private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
-    private val _expiration = MutableStateFlow("")
     private val _condition = MutableStateFlow(false)
 
     val urlList: StateFlow<List<String>> get() = _urlList
@@ -45,7 +43,7 @@ class ProductRegistrationViewModel @Inject constructor(
     val hopePrice = MutableStateFlow("")
     val openingBid = MutableStateFlow("")
     val tick = MutableStateFlow("")
-    val expiration: StateFlow<String> get() = _expiration
+    val expiration = MutableStateFlow("")
     // 카테고리 목록을 받아오는 api 필요
     val category = mutableListOf(
         "카테고리를",
@@ -80,15 +78,6 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
-
-    fun checkExpiration() {
-        if (expiration.value.toIntOrNull() != null && expiration.value.toInt() > MAX_EXPIRATION_TIME) {
-            viewModelScope.launch {
-                _expiration.emit(MAX_EXPIRATION_TIME.toString())
-                Logger.i(expiration.value)
-            }
-        }
-    }
 
     // 게시글 등록 조건 검사
     fun checkRegistrationCondition() {
@@ -131,7 +120,7 @@ class ProductRegistrationViewModel @Inject constructor(
             hopePrice.emit(state.hopePrice)
             openingBid.emit(state.openingBid)
             tick.emit(state.tick)
-            _expiration.emit(state.expiration)
+            expiration.emit(state.expiration)
             content.emit(state.content)
         }
     }
@@ -146,15 +135,5 @@ class ProductRegistrationViewModel @Inject constructor(
         content.value
     )
 
-    fun setExpiration(charSequence: CharSequence?) {
-        viewModelScope.launch {
-            _expiration.emit(charSequence.toString().replace("[^0-9]".toRegex(), "").ifEmpty { "" })
-        }
-    }
-
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
-
-    companion object {
-        const val MAX_EXPIRATION_TIME = 72
-    }
 }

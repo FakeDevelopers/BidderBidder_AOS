@@ -6,8 +6,10 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
+import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -135,7 +137,7 @@ class ProductRegistrationFragment : Fragment() {
             },
             InputFilter.LengthFilter(MAX_PRICE_LENGTH)
         )
-        // 문자열 필터 등록
+        // 가격 필터 등록
         binding.edittextProductRegistrationHopePrice.also {
             it.filters = priceFilters
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
@@ -148,8 +150,45 @@ class ProductRegistrationFragment : Fragment() {
             it.filters = priceFilters
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
-        // 문자열 셀렉션
+        val expirationFilter = arrayOf(
+            object : InputFilter {
+                override fun filter(
+                    source: CharSequence?,
+                    start: Int,
+                    end: Int,
+                    dest: Spanned?,
+                    dstart: Int,
+                    dend: Int
+                ): CharSequence {
+                    return source.toString().replace("[^0-9]".toRegex(), "")
+                }
+            },
+            InputFilter.LengthFilter(MAX_EXPIRATION_LENGTH)
+        )
+        // 만료 시간 필터 등록
+        binding.edittextProductRegistrationExpiration.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    // 안써!
+                }
 
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    s.toString().replace("[^0-9]".toRegex(), "").toIntOrNull()?.let {
+                        if (it > MAX_EXPIRATION_TIME) {
+                            binding.edittextProductRegistrationExpiration.apply {
+                                setText(MAX_EXPIRATION_TIME.toString())
+                                setSelection(text.length)
+                            }
+                        }
+                    }
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    viewModel.checkRegistrationCondition()
+                }
+            })
+            filters = expirationFilter
+        }
         // 사진 가져오기
         binding.imageviewSelectPicture.setOnClickListener {
             toPictureSelectFragment()
@@ -217,13 +256,6 @@ class ProductRegistrationFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.content.collectLatest {
-                    viewModel.checkExpiration()
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.condition.collectLatest {
                     binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(
                         if (it)
@@ -269,5 +301,7 @@ class ProductRegistrationFragment : Fragment() {
     companion object {
         const val MAX_PRICE_LENGTH = 17
         const val MAX_CONTENT_LENGTH = 1000
+        const val MAX_EXPIRATION_TIME = 72
+        const val MAX_EXPIRATION_LENGTH = 3
     }
 }
