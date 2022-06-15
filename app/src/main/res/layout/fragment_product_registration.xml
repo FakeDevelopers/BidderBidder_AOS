@@ -87,7 +87,7 @@
                     android:hint="@string/product_registration_product_title"
                     android:importantForAutofill="no"
                     android:inputType="textPersonName"
-                    android:maxLength="20"
+                    android:maxLength="100"
                     android:minHeight="48dp"
                     android:text="@={vm.title}"
                     tools:ignore="TextContrastCheck" />

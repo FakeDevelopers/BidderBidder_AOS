@@ -195,7 +195,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
-            if (viewModel.condition.value) {
+            if (viewModel.condition.value && checkPriceCondition()) {
                 val list = mutableListOf<MultipartBody.Part>()
                 viewModel.urlList.value.forEach { uri ->
                     getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
@@ -266,6 +266,22 @@ class ProductRegistrationFragment : Fragment() {
                 }
             }
         }
+    }
+
+    // 희망가 <= 최소 입찰가 인지 검사
+    private fun checkPriceCondition(): Boolean {
+        runCatching {
+            Pair(
+                viewModel.openingBid.value.replace("[^0-9]".toRegex(), "").toLong(),
+                viewModel.hopePrice.value.replace("[^0-9]".toRegex(), "").toLong()
+            )
+        }.onSuccess {
+            if (it.first >= it.second) {
+                Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
+                return false
+            }
+        }
+        return true
     }
 
     private fun getMultipart(uri: Uri, contentResolver: ContentResolver): MultipartBody.Part? {
