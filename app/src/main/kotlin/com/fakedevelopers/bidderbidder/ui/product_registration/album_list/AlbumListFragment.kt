@@ -24,6 +24,7 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -33,11 +34,12 @@ class AlbumListFragment : Fragment() {
 
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
+    private val args: AlbumListFragmentArgs by navArgs()
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val args: AlbumListFragmentArgs by navArgs()
+                Logger.i("들어옴")
                 toProductRegistration(args.productRegistrationDto)
             }
         }
@@ -61,7 +63,6 @@ class AlbumListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCollector()
         getPictures()
-        val args: AlbumListFragmentArgs by navArgs()
         if (args.productRegistrationDto.urlList.isNotEmpty()) {
             viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
@@ -69,9 +70,13 @@ class AlbumListFragment : Fragment() {
         binding.buttonAlbumListComplete.setOnClickListener {
             toProductRegistration(args.productRegistrationDto)
         }
-        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     private fun toProductRegistration(dto: ProductRegistrationDto) {

@@ -69,6 +69,11 @@ class RegisterFragment : Fragment() {
         initCollector()
     }
 
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
+    }
+
     private fun initListener() {
         val now = Calendar.getInstance(Locale.getDefault())
         val mYear = now.get(Calendar.YEAR)
@@ -93,8 +98,6 @@ class RegisterFragment : Fragment() {
                 findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
     private fun initCollector() {
