@@ -113,9 +113,9 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun initState(state: ProductRegistrationDto) {
-        _urlList.value.addAll(state.urlList)
-        adapter.submitList(_urlList.value.toList())
         viewModelScope.launch {
+            _urlList.emit(state.urlList.toMutableList())
+            adapter.submitList(_urlList.value.toList())
             title.emit(state.title)
             hopePrice.emit(state.hopePrice)
             openingBid.emit(state.openingBid)

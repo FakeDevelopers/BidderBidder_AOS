@@ -101,6 +101,10 @@ class ProductRegistrationFragment : Fragment() {
         binding.spinnerProductRegistrationCategory.setSelection(adapter.count)
         initListener()
         initCollector()
+    }
+
+    override fun onStart() {
+        super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
