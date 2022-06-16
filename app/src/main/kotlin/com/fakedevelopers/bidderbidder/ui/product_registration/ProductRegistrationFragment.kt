@@ -121,12 +121,8 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initListener() {
-        val priceFilter = InputFilter { source, _, _, dest, _, _ ->
-            if (dest.toString() == "0" && source == "0") {
-                ""
-            } else {
-                source.replace("[^(0-9|,)]".toRegex(), "")
-            }
+        val priceFilter = InputFilter { source, _, _, _, _, _ ->
+            source.replace("[^(0-9|,)]".toRegex(), "")
         }
         // 가격 필터 등록
         binding.edittextProductRegistrationHopePrice.also {
@@ -142,13 +138,7 @@ class ProductRegistrationFragment : Fragment() {
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
         val expirationFilter = InputFilter { source, _, _, _, dstart, _ ->
-            source.replace(IS_NOT_NUMBER.toRegex(), "").let {
-                if (source == "0" && dstart == 0) {
-                    ""
-                } else {
-                    it
-                }
-            }
+            if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
         }
         // 만료 시간 필터 등록
         binding.edittextProductRegistrationExpiration.apply {
