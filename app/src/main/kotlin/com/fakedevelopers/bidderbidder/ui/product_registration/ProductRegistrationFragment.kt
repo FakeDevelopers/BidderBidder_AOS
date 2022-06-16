@@ -164,7 +164,7 @@ class ProductRegistrationFragment : Fragment() {
                     dstart: Int,
                     dend: Int
                 ): CharSequence {
-                    return source.toString().replace(IS_NOT_NUMBER, "")
+                    return source.toString().replace(IS_NOT_NUMBER.toRegex(), "")
                 }
             },
             InputFilter.LengthFilter(MAX_EXPIRATION_LENGTH)
@@ -177,7 +177,7 @@ class ProductRegistrationFragment : Fragment() {
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    s.toString().replace(IS_NOT_NUMBER, "").toIntOrNull()?.let {
+                    s.toString().replace(IS_NOT_NUMBER.toRegex(), "").toIntOrNull()?.let {
                         if (it > MAX_EXPIRATION_TIME) {
                             binding.edittextProductRegistrationExpiration.apply {
                                 setText(MAX_EXPIRATION_TIME.toString())
@@ -276,8 +276,8 @@ class ProductRegistrationFragment : Fragment() {
     private fun checkPriceCondition(): Boolean {
         runCatching {
             Pair(
-                viewModel.openingBid.value.replace(IS_NOT_NUMBER, "").toLong(),
-                viewModel.hopePrice.value.replace(IS_NOT_NUMBER, "").toLong()
+                viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLong(),
+                viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLong()
             )
         }.onSuccess {
             if (it.first >= it.second) {
@@ -323,6 +323,6 @@ class ProductRegistrationFragment : Fragment() {
         const val MAX_CONTENT_LENGTH = 1000
         const val MAX_EXPIRATION_TIME = 72
         const val MAX_EXPIRATION_LENGTH = 3
-        val IS_NOT_NUMBER = "[^0-9]".toRegex()
+        const val IS_NOT_NUMBER = "[^0-9]"
     }
 }
