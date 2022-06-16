@@ -82,6 +82,16 @@ class ProductRegistrationViewModel @Inject constructor(
     // 게시글 등록 조건 검사
     fun checkRegistrationCondition() {
         viewModelScope.launch {
+            // 희망가, 호가, 만료 시간은 0이 되면 안됨
+            if (hopePrice.value == "0") {
+                hopePrice.emit("")
+            }
+            if (tick.value == "0") {
+                tick.emit("")
+            }
+            if (expiration.value == "0") {
+                expiration.emit("")
+            }
             _condition.emit(
                 title.value.isNotEmpty() &&
                     (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
