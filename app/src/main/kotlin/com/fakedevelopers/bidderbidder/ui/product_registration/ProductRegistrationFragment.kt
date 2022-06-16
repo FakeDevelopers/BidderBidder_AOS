@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.InputFilter
-import android.text.Spanned
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -122,53 +121,35 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initListener() {
-        val priceFilters = arrayOf(
-            object : InputFilter {
-                override fun filter(
-                    source: CharSequence?,
-                    start: Int,
-                    end: Int,
-                    dest: Spanned?,
-                    dstart: Int,
-                    dend: Int
-                ): CharSequence {
-                    return if (dest.toString() == "0" && source.toString() == "0") {
-                        ""
-                    } else {
-                        source.toString().replace("[^(0-9|,)]".toRegex(), "")
-                    }
-                }
-            },
-            InputFilter.LengthFilter(MAX_PRICE_LENGTH)
-        )
+        val priceFilter = InputFilter { source, _, _, dest, _, _ ->
+            if (dest.toString() == "0" && source == "0") {
+                ""
+            } else {
+                source.replace("[^(0-9|,)]".toRegex(), "")
+            }
+        }
         // 가격 필터 등록
         binding.edittextProductRegistrationHopePrice.also {
-            it.filters = priceFilters
+            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_PRICE_LENGTH))
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
         binding.edittextProductRegistrationOpeningBid.also {
-            it.filters = priceFilters
+            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_PRICE_LENGTH))
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
         binding.edittextProductRegistrationTick.also {
-            it.filters = priceFilters
+            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_TICK_LENGTH))
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
-        val expirationFilter = arrayOf(
-            object : InputFilter {
-                override fun filter(
-                    source: CharSequence?,
-                    start: Int,
-                    end: Int,
-                    dest: Spanned?,
-                    dstart: Int,
-                    dend: Int
-                ): CharSequence {
-                    return source.toString().replace(IS_NOT_NUMBER.toRegex(), "")
+        val expirationFilter = InputFilter { source, _, _, _, dstart, _ ->
+            source.replace(IS_NOT_NUMBER.toRegex(), "").let {
+                if (source == "0" && dstart == 0) {
+                    ""
+                } else {
+                    it
                 }
-            },
-            InputFilter.LengthFilter(MAX_EXPIRATION_LENGTH)
-        )
+            }
+        }
         // 만료 시간 필터 등록
         binding.edittextProductRegistrationExpiration.apply {
             addTextChangedListener(object : TextWatcher {
@@ -191,7 +172,7 @@ class ProductRegistrationFragment : Fragment() {
                     viewModel.checkRegistrationCondition()
                 }
             })
-            filters = expirationFilter
+            filters = arrayOf(expirationFilter, InputFilter.LengthFilter(MAX_EXPIRATION_LENGTH))
         }
         // 사진 가져오기
         binding.imageviewSelectPicture.setOnClickListener {
@@ -210,15 +191,21 @@ class ProductRegistrationFragment : Fragment() {
         // 키보드 이벤트
         keyboardVisibilityUtils = KeyboardVisibilityUtils(
             requireActivity().window,
-            onShowKeyboard = {
-                if (binding.edittextProductRegistrationContent.isFocused) {
-                    binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
-                }
-            },
             onHideKeyboard = {
                 binding.textviewProductRegistrationContentLength.visibility = View.INVISIBLE
             }
         )
+        // 본문 에딧텍스트 터치, 포커싱
+        binding.edittextProductRegistrationContent.apply {
+            setOnClickListener {
+                binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
+            }
+            setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
+                }
+            }
+        }
         // 툴바 뒤로가기 버튼
         binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
             requireActivity().onBackPressed()
@@ -320,6 +307,7 @@ class ProductRegistrationFragment : Fragment() {
 
     companion object {
         const val MAX_PRICE_LENGTH = 17
+        const val MAX_TICK_LENGTH = 12
         const val MAX_CONTENT_LENGTH = 1000
         const val MAX_EXPIRATION_TIME = 72
         const val MAX_EXPIRATION_LENGTH = 3
