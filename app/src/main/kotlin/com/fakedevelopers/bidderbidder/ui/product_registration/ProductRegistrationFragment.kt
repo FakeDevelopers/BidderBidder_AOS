@@ -154,7 +154,11 @@ class ProductRegistrationFragment : Fragment() {
                                 setText(MAX_EXPIRATION_TIME.toString())
                                 setSelection(text.length)
                             }
+                        } else if (it.toString().length != text.length) {
+                            setText(it)
+                            setSelection(text.length)
                         }
+                        it
                     }
                 }
 
@@ -182,18 +186,16 @@ class ProductRegistrationFragment : Fragment() {
         keyboardVisibilityUtils = KeyboardVisibilityUtils(
             requireActivity().window,
             onHideKeyboard = {
-                binding.textviewProductRegistrationContentLength.visibility = View.INVISIBLE
+                viewModel.setContentLengthVisibility(false)
             }
         )
         // 본문 에딧텍스트 터치, 포커싱
         binding.edittextProductRegistrationContent.apply {
             setOnClickListener {
-                binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
+                viewModel.setContentLengthVisibility(true)
             }
             setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
-                }
+                viewModel.setContentLengthVisibility(hasFocus)
             }
         }
         // 툴바 뒤로가기 버튼
@@ -214,6 +216,7 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initCollector() {
+        // 등록 요청 api
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productRegistrationResponse.collectLatest {
@@ -225,9 +228,14 @@ class ProductRegistrationFragment : Fragment() {
                 }
             }
         }
+        // 본문
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.content.collectLatest {
+                    // 홈 화면 이동 시 글자 수 textView의 visible 처리
+                    if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
+                        viewModel.setContentLengthVisibility(true)
+                    }
                     binding.textviewProductRegistrationContentLength.apply {
                         text = "${it.length} / $MAX_CONTENT_LENGTH"
                         setTextColor(if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY)
@@ -235,6 +243,7 @@ class ProductRegistrationFragment : Fragment() {
                 }
             }
         }
+        // 등록 버튼
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.condition.collectLatest {

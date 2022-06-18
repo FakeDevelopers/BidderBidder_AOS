@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.product_registration.ProductRegistrationFragment">
     <data>
+        <import type="android.view.View"/>
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationViewModel" />
@@ -188,7 +189,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:visibility="invisible"
+            android:visibility="@{vm.contentLengthVisible ? View.VISIBLE : View.INVISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.95"
