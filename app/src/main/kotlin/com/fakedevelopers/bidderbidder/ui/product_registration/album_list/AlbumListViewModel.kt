@@ -16,13 +16,16 @@ class AlbumListViewModel : ViewModel() {
     private val currentAlbum = MutableStateFlow("")
     private val _selectedImageList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _onListChange = MutableSharedFlow<Boolean>()
+    private val _selectErrorImage = MutableSharedFlow<Boolean>()
     private lateinit var allImages: Map<String, MutableList<String>>
 
     val selectedImageList: StateFlow<List<String>> get() = _selectedImageList
     val onListChange: SharedFlow<Boolean> get() = _onListChange
+    val selectErrorImage: SharedFlow<Boolean> get() = _selectErrorImage
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        setScrollFlag = { setScrollFlag() }
+        setScrollFlag = { setScrollFlag() },
+        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } }
     ) { uri, state ->
         setSelectedState(uri, state)
     }

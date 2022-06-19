@@ -121,12 +121,8 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initListener() {
-        val priceFilter = InputFilter { source, _, _, dest, _, _ ->
-            if (dest.toString() == "0" && source == "0") {
-                ""
-            } else {
-                source.replace("[^(0-9|,)]".toRegex(), "")
-            }
+        val priceFilter = InputFilter { source, _, _, _, _, _ ->
+            source.replace("[^(0-9|,)]".toRegex(), "")
         }
         // 가격 필터 등록
         binding.edittextProductRegistrationHopePrice.also {
@@ -142,13 +138,7 @@ class ProductRegistrationFragment : Fragment() {
             it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
         }
         val expirationFilter = InputFilter { source, _, _, _, dstart, _ ->
-            source.replace(IS_NOT_NUMBER.toRegex(), "").let {
-                if (source == "0" && dstart == 0) {
-                    ""
-                } else {
-                    it
-                }
-            }
+            if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
         }
         // 만료 시간 필터 등록
         binding.edittextProductRegistrationExpiration.apply {
@@ -164,7 +154,11 @@ class ProductRegistrationFragment : Fragment() {
                                 setText(MAX_EXPIRATION_TIME.toString())
                                 setSelection(text.length)
                             }
+                        } else if (it.toString().length != text.length) {
+                            setText(it)
+                            setSelection(text.length)
                         }
+                        it
                     }
                 }
 
@@ -192,18 +186,16 @@ class ProductRegistrationFragment : Fragment() {
         keyboardVisibilityUtils = KeyboardVisibilityUtils(
             requireActivity().window,
             onHideKeyboard = {
-                binding.textviewProductRegistrationContentLength.visibility = View.INVISIBLE
+                viewModel.setContentLengthVisibility(false)
             }
         )
         // 본문 에딧텍스트 터치, 포커싱
         binding.edittextProductRegistrationContent.apply {
             setOnClickListener {
-                binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
+                viewModel.setContentLengthVisibility(true)
             }
             setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    binding.textviewProductRegistrationContentLength.visibility = View.VISIBLE
-                }
+                viewModel.setContentLengthVisibility(hasFocus)
             }
         }
         // 툴바 뒤로가기 버튼
@@ -224,6 +216,7 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initCollector() {
+        // 등록 요청 api
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productRegistrationResponse.collectLatest {
@@ -235,9 +228,14 @@ class ProductRegistrationFragment : Fragment() {
                 }
             }
         }
+        // 본문
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.content.collectLatest {
+                    // 홈 화면 이동 시 글자 수 textView의 visible 처리
+                    if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
+                        viewModel.setContentLengthVisibility(true)
+                    }
                     binding.textviewProductRegistrationContentLength.apply {
                         text = "${it.length} / $MAX_CONTENT_LENGTH"
                         setTextColor(if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY)
@@ -245,6 +243,7 @@ class ProductRegistrationFragment : Fragment() {
                 }
             }
         }
+        // 등록 버튼
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.condition.collectLatest {

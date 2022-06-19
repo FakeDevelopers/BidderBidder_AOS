@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -166,6 +167,17 @@ class AlbumListFragment : Fragment() {
                             View.INVISIBLE
                         else
                             View.VISIBLE
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectErrorImage.collectLatest {
+                    Toast.makeText(
+                        requireContext(),
+                        getText(R.string.album_selected_error_image),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

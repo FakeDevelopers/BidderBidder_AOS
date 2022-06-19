@@ -17,7 +17,7 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBind
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel.Companion.LIST_COUNT
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
+import java.util.TimeZone
 
 class ProductListAdapter(
     private val onClick: () -> Unit,
@@ -26,7 +26,9 @@ class ProductListAdapter(
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm").apply {
+        timeZone = TimeZone.getTimeZone("Asia/Seoul")
+    }
 
     inner class ItemViewHolder(
         private val binding: RecyclerProductListBinding,
@@ -38,8 +40,7 @@ class ProductListAdapter(
                 if (::timerTask.isInitialized) {
                     timerTask.cancel()
                 }
-                val timer = dateFormat.parse(item.expirationDate)!!.time - Date(System.currentTimeMillis()).time
-                timerTask = object : CountDownTimer(timer, 1000) {
+                timerTask = object : CountDownTimer(getRemainTimeMillisecond(item.expirationDate), 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         textviewProductListExpire.text = getRemainTimeString(millisUntilFinished)
                     }
@@ -66,6 +67,10 @@ class ProductListAdapter(
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
             }
         }
+
+        private fun getRemainTimeMillisecond(expirationDate: String) =
+            dateFormat.parse(expirationDate)!!.time - dateFormat.parse(dateFormat.format(Date()))!!.time
+
         private fun getRemainTimeString(millisUntilFinished: Long): String {
             val totalMinute = millisUntilFinished / 60000
             val day = totalMinute / 1440
@@ -81,7 +86,7 @@ class ProductListAdapter(
             }
             // 분, 초
             if (day == 0L && hour < 3) {
-                val minute = totalMinute % 1440 % 60
+                val minute = totalMinute % 60
                 if (minute != 0L) {
                     remainTimeString.append("${minute}분 ")
                 }

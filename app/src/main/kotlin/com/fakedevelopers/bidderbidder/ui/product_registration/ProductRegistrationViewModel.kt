@@ -35,8 +35,10 @@ class ProductRegistrationViewModel @Inject constructor(
     private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
     private val _condition = MutableStateFlow(false)
+    private val _contentLengthVisible = MutableStateFlow(false)
 
     val urlList: StateFlow<List<String>> get() = _urlList
+    val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
@@ -107,7 +109,7 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             val date = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
-                ZoneId.systemDefault()
+                ZoneId.of("Asia/Seoul")
             )
             val map = hashMapOf<String, RequestBody>()
             map["productContent"] = content.value.toPlainRequestBody()
@@ -144,6 +146,12 @@ class ProductRegistrationViewModel @Inject constructor(
         expiration.value,
         content.value
     )
+
+    fun setContentLengthVisibility(state: Boolean) {
+        viewModelScope.launch {
+            _contentLengthVisible.emit(state)
+        }
+    }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
 }
