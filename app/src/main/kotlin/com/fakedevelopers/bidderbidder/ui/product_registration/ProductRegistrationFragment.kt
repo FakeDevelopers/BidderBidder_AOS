@@ -184,7 +184,6 @@ class ProductRegistrationFragment : Fragment() {
                 viewModel.setContentLengthVisibility(true)
             }
             setOnFocusChangeListener { _, hasFocus ->
-                Logger.i("포커스")
                 viewModel.setContentLengthVisibility(hasFocus)
             }
         }
