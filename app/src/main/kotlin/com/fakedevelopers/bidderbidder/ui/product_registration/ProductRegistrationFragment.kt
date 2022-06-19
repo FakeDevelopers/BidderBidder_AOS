@@ -53,8 +53,6 @@ class ProductRegistrationFragment : Fragment() {
 
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
-    private val grey by lazy { resources.getColor(R.color.grey, requireActivity().theme) }
-    private val black by lazy { resources.getColor(R.color.black, requireActivity().theme) }
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -88,7 +86,7 @@ class ProductRegistrationFragment : Fragment() {
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
-        val adapter = object : ArrayAdapter<String>(
+        val arrayAdapter = object : ArrayAdapter<String>(
             requireContext(),
             R.layout.spinner_product_registration,
             viewModel.category
@@ -97,8 +95,10 @@ class ProductRegistrationFragment : Fragment() {
                 return super.getCount() - 1
             }
         }
-        binding.spinnerProductRegistrationCategory.adapter = adapter
-        binding.spinnerProductRegistrationCategory.setSelection(adapter.count)
+        binding.spinnerProductRegistrationCategory.apply {
+            adapter = arrayAdapter
+            setSelection(arrayAdapter.count)
+        }
         initListener()
         initCollector()
     }
@@ -184,6 +184,7 @@ class ProductRegistrationFragment : Fragment() {
                 viewModel.setContentLengthVisibility(true)
             }
             setOnFocusChangeListener { _, hasFocus ->
+                Logger.i("포커스")
                 viewModel.setContentLengthVisibility(hasFocus)
             }
         }
@@ -229,13 +230,20 @@ class ProductRegistrationFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.content.collectLatest {
-                    // 홈 화면 이동 시 글자 수 textView의 visible 처리
-                    if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
-                        viewModel.setContentLengthVisibility(true)
-                    }
                     binding.textviewProductRegistrationContentLength.apply {
                         text = "${it.length} / $MAX_CONTENT_LENGTH"
-                        setTextColor(if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY)
+                        val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
+                        setTextColor(color)
+                    }
+                }
+            }
+        }
+        // 홈 화면 이동 시 글자 수 textView의 visible 처리
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.contentLengthVisible.collect {
+                    if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
+                        viewModel.setContentLengthVisibility(true)
                     }
                 }
             }
@@ -244,12 +252,8 @@ class ProductRegistrationFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.condition.collectLatest {
-                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(
-                        if (it)
-                            black
-                        else
-                            grey
-                    )
+                    val color = if (it) Color.BLACK else Color.GRAY
+                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(color)
                 }
             }
         }
