@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -121,22 +122,10 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initListener() {
-        val priceFilter = InputFilter { source, _, _, _, _, _ ->
-            source.replace("[^(0-9|,)]".toRegex(), "")
-        }
         // 가격 필터 등록
-        binding.edittextProductRegistrationHopePrice.also {
-            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_PRICE_LENGTH))
-            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
-        }
-        binding.edittextProductRegistrationOpeningBid.also {
-            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_PRICE_LENGTH))
-            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
-        }
-        binding.edittextProductRegistrationTick.also {
-            it.filters = arrayOf(priceFilter, InputFilter.LengthFilter(MAX_TICK_LENGTH))
-            it.addTextChangedListener(PriceTextWatcher(it) { viewModel.checkRegistrationCondition() })
-        }
+        initEditTextFilter(binding.edittextProductRegistrationHopePrice, MAX_PRICE_LENGTH)
+        initEditTextFilter(binding.edittextProductRegistrationOpeningBid, MAX_PRICE_LENGTH)
+        initEditTextFilter(binding.edittextProductRegistrationTick, MAX_TICK_LENGTH)
         val expirationFilter = InputFilter { source, _, _, _, dstart, _ ->
             if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
         }
@@ -155,7 +144,7 @@ class ProductRegistrationFragment : Fragment() {
                                 setSelection(text.length)
                             }
                         } else if (it.toString().length != text.length) {
-                            setText(it)
+                            setText(it.toString())
                             setSelection(text.length)
                         }
                         it
@@ -202,6 +191,14 @@ class ProductRegistrationFragment : Fragment() {
         binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
             requireActivity().onBackPressed()
         }
+    }
+
+    private fun initEditTextFilter(editText: EditText, length: Int) {
+        val priceFilter = InputFilter { source, _, _, _, _, _ ->
+            source.replace("[^(0-9|,)]".toRegex(), "")
+        }
+        editText.filters = arrayOf(priceFilter, InputFilter.LengthFilter(length))
+        editText.addTextChangedListener(PriceTextWatcher(editText) { viewModel.checkRegistrationCondition() })
     }
 
     private fun initResultLauncher() {
