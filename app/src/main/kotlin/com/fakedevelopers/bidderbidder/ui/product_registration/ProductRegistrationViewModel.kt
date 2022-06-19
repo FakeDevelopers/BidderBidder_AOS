@@ -109,7 +109,7 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             val date = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
-                ZoneId.systemDefault()
+                ZoneId.of("Asia/Seoul")
             )
             val map = hashMapOf<String, RequestBody>()
             map["productContent"] = content.value.toPlainRequestBody()

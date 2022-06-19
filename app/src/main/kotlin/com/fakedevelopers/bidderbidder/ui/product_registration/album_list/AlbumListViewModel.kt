@@ -25,7 +25,7 @@ class AlbumListViewModel : ViewModel() {
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
         setScrollFlag = { setScrollFlag() },
-        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) }}
+        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } }
     ) { uri, state ->
         setSelectedState(uri, state)
     }
