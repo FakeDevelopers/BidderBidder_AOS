@@ -16,20 +16,23 @@ class AlbumListViewModel : ViewModel() {
     private val currentAlbum = MutableStateFlow("")
     private val _selectedImageList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _onListChange = MutableSharedFlow<Boolean>()
+    private val _selectErrorImage = MutableSharedFlow<Boolean>()
     private lateinit var allImages: Map<String, MutableList<String>>
 
     val selectedImageList: StateFlow<List<String>> get() = _selectedImageList
     val onListChange: SharedFlow<Boolean> get() = _onListChange
+    val selectErrorImage: SharedFlow<Boolean> get() = _selectErrorImage
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        setScrollFlag = { setScrollFlag() }
+        setScrollFlag = { setScrollFlag() },
+        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } }
     ) { uri, state ->
         setSelectedState(uri, state)
     }
     val selectedPictureAdapter = SelectedPictureListAdapter(
         deleteSelectedImage = { setSelectedState(it) },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        swapComplete = { setAlbumList() }
+        swapComplete = { swapComplete() }
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
@@ -66,8 +69,12 @@ class AlbumListViewModel : ViewModel() {
         scrollToTopFlag = !scrollToTopFlag
     }
 
+    private fun swapComplete() {
+        setAlbumList()
+    }
+
     private fun setSelectedImageList() {
-        selectedPictureAdapter.submitList(_selectedImageList.value.toList())
+        selectedPictureAdapter.submitList(_selectedImageList.value.toMutableList())
         setAlbumList()
         viewModelScope.launch {
             _onListChange.emit(true)
@@ -84,7 +91,7 @@ class AlbumListViewModel : ViewModel() {
                 Collections.swap(_selectedImageList.value, i, i - 1)
             }
         }
-        selectedPictureAdapter.notifyItemMoved(fromPosition, toPosition)
+        selectedPictureAdapter.submitList(_selectedImageList.value.toMutableList())
     }
 
     private fun findSelectedImageIndex(uri: String) = _selectedImageList.value.indexOf(uri)

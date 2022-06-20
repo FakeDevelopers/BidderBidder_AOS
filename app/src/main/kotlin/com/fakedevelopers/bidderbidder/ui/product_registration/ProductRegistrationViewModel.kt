@@ -2,6 +2,7 @@ package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,8 +11,12 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.threeten.bp.Instant
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 import retrofit2.Response
 import java.util.Collections
 import javax.inject.Inject
@@ -27,17 +32,34 @@ class ProductRegistrationViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-
-    // private val imageList = mutableListOf<MultipartBody.Part>()
     private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
+    private val _condition = MutableStateFlow(false)
+    private val _contentLengthVisible = MutableStateFlow(false)
 
     val urlList: StateFlow<List<String>> get() = _urlList
+    val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
     val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+    val title = MutableStateFlow("")
+    val content = MutableStateFlow("")
+    val hopePrice = MutableStateFlow("")
+    val openingBid = MutableStateFlow("")
+    val tick = MutableStateFlow("")
+    val expiration = MutableStateFlow("")
+    // 카테고리 목록을 받아오는 api 필요
+    val category = mutableListOf(
+        "카테고리를",
+        "받아오는",
+        "api가",
+        "필요함",
+        "카테고리 선택"
+    )
+    // 등록 조건 완료
+    val condition: StateFlow<Boolean> get() = _condition
 
     private fun deleteSelectedImage(uri: String) {
         _urlList.value.remove(uri)
-        adapter.submitList(_urlList.value.toList())
+        adapter.submitList(_urlList.value.toMutableList())
         // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
         if (_urlList.value.isNotEmpty()) {
             adapter.notifyItemChanged(1)
@@ -54,28 +76,81 @@ class ProductRegistrationViewModel @Inject constructor(
                 Collections.swap(_urlList.value, i, i - 1)
             }
         }
-        adapter.notifyItemMoved(fromPosition, toPosition)
+        adapter.submitList(_urlList.value.toMutableList())
     }
 
     private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
 
-    fun productRegistrationRequest() {
+    // 게시글 등록 조건 검사
+    fun checkRegistrationCondition() {
         viewModelScope.launch {
-            val map = hashMapOf<String, RequestBody>()
-            map["board_content"] = "콘텐트 내용".toPlainRequestBody()
-            map["board_title"] = "제목".toPlainRequestBody()
-            map["category"] = "1".toPlainRequestBody()
-            map["end_date"] = "2030-01-01 07:07".toPlainRequestBody()
-            map["hope_price"] = "100".toPlainRequestBody()
-            map["opening_bid"] = "50".toPlainRequestBody()
-            map["tick"] = "1".toPlainRequestBody()
-            // _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+            // 희망가, 호가, 만료 시간은 0이 되면 안됨
+            if (hopePrice.value == "0") {
+                hopePrice.emit("")
+            }
+            if (tick.value == "0") {
+                tick.emit("")
+            }
+            if (expiration.value == "0") {
+                expiration.emit("")
+            }
+            _condition.emit(
+                title.value.isNotEmpty() &&
+                    (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
+                    openingBid.value.replace(",", "").toLongOrNull() != null &&
+                    tick.value.replace(",", "").toIntOrNull() != null &&
+                    expiration.value.toIntOrNull() != null &&
+                    content.value.isNotEmpty()
+            )
         }
     }
 
-    fun setImageList(url: List<String>) {
-        _urlList.value.addAll(url)
-        adapter.submitList(_urlList.value.toList())
+    fun productRegistrationRequest(imageList: List<MultipartBody.Part>) {
+        viewModelScope.launch {
+            val date = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
+                ZoneId.of("Asia/Seoul")
+            )
+            val map = hashMapOf<String, RequestBody>()
+            map["productContent"] = content.value.toPlainRequestBody()
+            map["productTitle"] = title.value.toPlainRequestBody()
+            map["category"] = "0".toPlainRequestBody()
+            map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
+            map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
+            map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
+            map["representPicture"] = "0".toPlainRequestBody()
+            map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
+            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+        }
+    }
+
+    fun initState(state: ProductRegistrationDto) {
+        viewModelScope.launch {
+            _urlList.emit(state.urlList.toMutableList())
+            adapter.submitList(_urlList.value.toMutableList())
+            title.emit(state.title)
+            hopePrice.emit(state.hopePrice)
+            openingBid.emit(state.openingBid)
+            tick.emit(state.tick)
+            expiration.emit(state.expiration)
+            content.emit(state.content)
+        }
+    }
+
+    fun getProductRegistrationDto() = ProductRegistrationDto(
+        urlList.value,
+        title.value,
+        hopePrice.value,
+        openingBid.value,
+        tick.value,
+        expiration.value,
+        content.value
+    )
+
+    fun setContentLengthVisibility(state: Boolean) {
+        viewModelScope.launch {
+            _contentLengthVisible.emit(state)
+        }
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

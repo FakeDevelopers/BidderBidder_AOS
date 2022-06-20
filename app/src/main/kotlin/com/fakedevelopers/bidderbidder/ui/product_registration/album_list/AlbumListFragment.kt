@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
+import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -32,16 +34,12 @@ class AlbumListFragment : Fragment() {
 
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
+    private val args: AlbumListFragmentArgs by navArgs()
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().navigate(
-                    AlbumListFragmentDirections
-                        .actionPictureSelectFragmentToProductRegistrationFragment(
-                            viewModel.selectedImageList.value.toTypedArray()
-                        )
-                )
+                toProductRegistration(args.productRegistrationDto)
             }
         }
     }
@@ -64,23 +62,31 @@ class AlbumListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCollector()
         getPictures()
-        val args: AlbumListFragmentArgs by navArgs()
-        if (!args.selectedImageList.isNullOrEmpty()) {
-            viewModel.initSelectedImageList(args.selectedImageList!!.toList())
+        if (args.productRegistrationDto.urlList.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
         binding.buttonAlbumListComplete.setOnClickListener {
-            // 선택한 이미지 uri를 들고 돌아갑니다
-            findNavController().navigate(
-                AlbumListFragmentDirections
-                    .actionPictureSelectFragmentToProductRegistrationFragment(
-                        viewModel.selectedImageList.value.toTypedArray()
-                    )
-            )
+            toProductRegistration(args.productRegistrationDto)
         }
-        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
+    }
+
+    private fun toProductRegistration(dto: ProductRegistrationDto) {
+        dto.urlList = viewModel.selectedImageList.value.toList()
+        // 선택한 이미지 uri를 들고 돌아갑니다
+        findNavController().navigate(
+            AlbumListFragmentDirections
+                .actionPictureSelectFragmentToProductRegistrationFragment(
+                    dto
+                )
+        )
     }
 
     private fun getPictures() {
@@ -161,6 +167,17 @@ class AlbumListFragment : Fragment() {
                             View.INVISIBLE
                         else
                             View.VISIBLE
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectErrorImage.collectLatest {
+                    Toast.makeText(
+                        requireContext(),
+                        getText(R.string.album_selected_error_image),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }

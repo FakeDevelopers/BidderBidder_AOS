@@ -45,4 +45,21 @@
     <!-- Strings related to Toolbar -->
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
+    <!-- Strings related to Product Registration -->
+    <string name="product_registration_button">등록</string>
+    <string name="product_registration_category">카테고리</string>
+    <string name="product_registration_title">내 물건 등록</string>
+    <string name="product_registration_button_to_album">이미지 선택 버튼</string>
+    <string name="product_registration_product_title">제목</string>
+    <string name="product_registration_product_hope_price">희망 가격 (선택사항)</string>
+    <string name="product_registration_product_opening_bid">입찰 시작가</string>
+    <string name="product_registration_product_tick">호가</string>
+    <string name="product_registration_product_expiration">경매 기간 (최대 72시간)</string>
+    <string name="product_registration_product_content">게시글 내용을 작성해주세요.</string>
+    <string name="product_registration_album_image">앨범 이미지</string>
+    <string name="product_registration_selected_image">선택한 이미지</string>
+    <string name="product_registration_represent_image">대 표</string>
+    <!-- Strings related to album list -->
+    <string name="album_selected_button_complete">완료</string>
+    <string name="album_selected_error_image">불러올 수 없는 이미지 입니다.</string>
 </resources>

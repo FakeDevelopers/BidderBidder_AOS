@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        AndroidThreeTen.init(this)
         navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -37,7 +39,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        // navController.navigate(R.id.productRegistrationFragment)
     }
 
     override fun onDestroy() {

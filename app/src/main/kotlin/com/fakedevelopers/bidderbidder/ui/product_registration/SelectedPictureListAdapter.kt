@@ -14,8 +14,8 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBi
 class SelectedPictureListAdapter(
     private val deleteSelectedImage: (String) -> Unit,
     private val findSelectedImageIndex: (String) -> Int,
-    private val swapComplete: () -> Unit = {},
-    private val swapSelectedImage: (Int, Int) -> Unit = { _, _ -> }
+    private val swapComplete: (() -> Unit)? = null,
+    private val swapSelectedImage: ((Int, Int) -> Unit)? = null
 ) : ListAdapter<String, SelectedPictureListAdapter.ViewHolder>(diffUtil) {
 
     inner class ViewHolder(
@@ -58,11 +58,11 @@ class SelectedPictureListAdapter(
     }
 
     fun onItemDragMove(fromPosition: Int, toPosition: Int) {
-        swapSelectedImage(fromPosition, toPosition)
+        swapSelectedImage?.invoke(fromPosition, toPosition)
     }
 
     fun changeMoveEvent() {
-        swapComplete()
+        swapComplete?.invoke()
     }
 
     companion object {
