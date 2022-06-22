@@ -54,11 +54,11 @@ class LoginFragment : Fragment() {
 
     private fun initListener() {
         // 로그인 버튼
-        binding.buttonLoginSignin.setOnClickListener {
+        binding.includeLoginSignin.button.setOnClickListener {
             viewModel.loginRequest()
         }
         // 회원가입 버튼
-        binding.buttonLoginResgister.setOnClickListener {
+        binding.textviewLoginRegistration.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_phoneAuthFragment)
         }
     }

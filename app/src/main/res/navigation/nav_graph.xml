@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_loginTypeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_loginTypeFragment_to_phoneAuthFragment"
+            app:destination="@id/phoneAuthFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
