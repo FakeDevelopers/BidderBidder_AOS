@@ -47,9 +47,9 @@
                 android:ems="10"
                 android:hint="@string/login_id"
                 android:text="@={vm.email}"
-                android:textSize="@dimen/login_edittext_text_size"
                 android:textColorHint="@color/edit_text_hint"
-                tools:ignore="TextContrastCheck" />
+                android:textSize="@dimen/login_edittext_text_size"
+                tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -71,9 +71,9 @@
                 android:ems="10"
                 android:hint="@string/login_password"
                 android:text="@={vm.passwd}"
-                android:textSize="@dimen/login_edittext_text_size"
                 android:textColorHint="@color/edit_text_hint"
-                tools:ignore="TextContrastCheck" />
+                android:textSize="@dimen/login_edittext_text_size"
+                tools:ignore="TextContrastCheck,TouchTargetSizeCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <include
@@ -81,11 +81,12 @@
             layout="@layout/include_long_button"
             android:layout_width="0dp"
             android:layout_height="@dimen/long_button_height"
-            android:layout_marginBottom="@dimen/login_bottom_margin"
             app:buttonText="@{@string/login_signin}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.75" />
 
         <TextView
             android:id="@+id/textview_login_registration"

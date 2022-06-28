@@ -9,7 +9,7 @@
     <string name="logintype_naverlogin">네이버로 로그인</string>
     <string name="logintype_applelogin">Apple로 로그인</string>
     <string name="logintype_commonlogin">이메일로 로그인</string>
-    <string name="logintype_registration"><u>회원가입 하기</u></string>
+    <string name="logintype_registration">비더비더가 처음이라면?  <u>회원가입 하기</u></string>
     <!-- Strings related to login -->
     <string name="login_id">아이디</string>
     <string name="login_password">비밀번호</string>
