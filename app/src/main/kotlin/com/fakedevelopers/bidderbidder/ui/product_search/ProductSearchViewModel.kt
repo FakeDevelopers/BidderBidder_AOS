@@ -88,6 +88,7 @@ class ProductSearchViewModel(
     }
 
     fun clearResult() {
+        prevSearchBar = ""
         viewModelScope.launch {
             searchResultAdapter.submitList(emptyList())
         }
