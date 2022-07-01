@@ -70,6 +70,7 @@
                 android:layout_height="match_parent"
                 android:ems="10"
                 android:hint="@string/login_password"
+                android:inputType="textPassword"
                 android:text="@={vm.passwd}"
                 android:textColorHint="@color/edit_text_hint"
                 android:textSize="@dimen/login_edittext_text_size"
