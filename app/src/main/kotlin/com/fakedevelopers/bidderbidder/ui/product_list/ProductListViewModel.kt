@@ -17,14 +17,15 @@ class ProductListViewModel @Inject constructor(
 
     private val productList = MutableStateFlow(listOf<ProductListDto>())
     private val _isLoading = MutableStateFlow(false)
-    private var _isInitialize = false
+    private var _isInitialize = true
+    private val _searchWord = MutableStateFlow("")
     private val isReadMoreVisible = MutableStateFlow(true)
     private val isLastProduct = MutableStateFlow(false)
     private val startNumber = MutableStateFlow(-1L)
-    private val searchWord = MutableStateFlow("")
 
     val isInitialize get() = _isInitialize
     val isLoading: StateFlow<Boolean> get() = _isLoading
+    val searchWord: StateFlow<String> get() = _searchWord
 
     val adapter = ProductListAdapter(
         onClick = { clickReadMore() },
@@ -48,6 +49,12 @@ class ProductListViewModel @Inject constructor(
         _isInitialize = state
     }
 
+    fun setSearchWord(word: String) {
+        viewModelScope.launch {
+            _searchWord.emit(word)
+        }
+    }
+
     fun requestProductList(isInitialize: Boolean) {
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
@@ -63,7 +70,9 @@ class ProductListViewModel @Inject constructor(
                     val currentList = if (isInitialize) mutableListOf() else productList.value.toMutableList()
                     currentList.addAll(it.body()!!)
                     productList.emit(currentList)
-                    startNumber.emit(productList.value[productList.value.size - 1].productId)
+                    if (productList.value.isNotEmpty()) {
+                        startNumber.emit(productList.value[productList.value.size - 1].productId)
+                    }
                     adapter.submitList(productList.value.toList())
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
                     if (it.body()!!.size < LIST_COUNT) {
