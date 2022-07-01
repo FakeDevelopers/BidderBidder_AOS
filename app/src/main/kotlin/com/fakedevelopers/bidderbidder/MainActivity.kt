@@ -30,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                         selectedItemId = R.id.menu_product_list
                     }
                 }
-                R.id.productRegistrationFragment -> binding.bottomNavigationMain.visibility = View.GONE
+                else -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
