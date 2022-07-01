@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class ProductSearchViewModel(
@@ -36,19 +35,17 @@ class ProductSearchViewModel(
     fun searchEvent(word: String) {
         val list = mutableListOf<String>()
         list.addAll(searchHistoryAdapter.currentList)
-        viewModelScope.launch {
+        viewModelScope.launch(defaultDispatcher) {
             // 중복 단어 선택시 set이 순서 변경을 인식 못함
             // 그래서 set을 비운 다음 다시 채워줌
             if (list.contains(word)) {
                 list.remove(word)
                 _historySet.emit(emptySet())
             }
-            withContext(defaultDispatcher) {
-                list.add(0, word)
-                _historySet.emit(list.toSet())
-                // 작업이 다 끝나면 검색을 수행
-                _searchWord.emit(word)
-            }
+            list.add(0, word)
+            _historySet.emit(list.toSet())
+            // 작업이 다 끝나면 검색을 수행
+            _searchWord.emit(word)
         }
     }
 
