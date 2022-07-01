@@ -2,6 +2,7 @@ package com.fakedevelopers.bidderbidder.ui.product_search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,7 +11,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
-class ProductSearchViewModel : ViewModel() {
+class ProductSearchViewModel(
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+) : ViewModel() {
 
     private val _searchWord = MutableSharedFlow<String>()
     private val _historySet = MutableSharedFlow<Set<String>>()
@@ -43,7 +46,7 @@ class ProductSearchViewModel : ViewModel() {
             list.add(0, word)
             _historySet.emit(list.toSet())
             // 작업이 다 끝나면 검색을 수행
-            withContext(Dispatchers.IO) {
+            withContext(defaultDispatcher) {
                 _searchWord.emit(word)
             }
         }

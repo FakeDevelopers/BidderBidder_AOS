@@ -72,8 +72,6 @@ class ProductListViewModel @Inject constructor(
                     productList.emit(currentList)
                     if (productList.value.isNotEmpty()) {
                         startNumber.emit(productList.value[productList.value.size - 1].productId)
-                    } else {
-                        startNumber.emit(-1)
                     }
                     adapter.submitList(productList.value.toList())
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
