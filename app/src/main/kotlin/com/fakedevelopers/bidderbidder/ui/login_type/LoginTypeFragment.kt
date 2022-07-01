@@ -1,15 +1,13 @@
 package com.fakedevelopers.bidderbidder.ui.login_type
 
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
+import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 
@@ -35,15 +33,20 @@ class LoginTypeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val sp = SpannableStringBuilder(getString(R.string.logintype_welcometext)).apply {
-            setSpan(
-                ForegroundColorSpan(requireActivity().getColor(R.color.bidderbidder_primary)),
+        (requireContext().applicationContext as HiltApplication).let {
+            binding.textviewLogintypeWelcometext.text = it.setPartialTextColor(
+                binding.textviewLogintypeWelcometext.text,
+                R.color.bidderbidder_primary,
                 0,
-                4,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                4
+            )
+            binding.textViewLogintypeRegistration.text = it.setPartialTextColor(
+                binding.textViewLogintypeRegistration.text,
+                R.color.bidderbidder_primary,
+                0,
+                binding.textViewLogintypeRegistration.text.indexOf('?') + 1
             )
         }
-        binding.textviewLogintypeWelcometext.text = sp
         binding.buttonLogintypeCommon.layoutLoginType.setOnClickListener {
             findNavController().navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }

@@ -1,32 +1,30 @@
 <resources>
-    <dimen name="fragment_horizontal_margin">32dp</dimen>
-    <dimen name="fragment_vertical_margin">32dp</dimen>
+    <dimen name="fragment_horizontal_margin">28dp</dimen>
+    <dimen name="fragment_vertical_margin">28dp</dimen>
     <!-- related to common -->
-    <dimen name="long_button_height">56dp</dimen>
-    <dimen name="long_button_text_size">14sp</dimen>
+    <dimen name="long_button_height">40dp</dimen>
+    <dimen name="long_button_text_size">12sp</dimen>
     <dimen name="long_button_corner">5dp</dimen>
     <dimen name="small_text_button_size">10sp</dimen>
     <!-- related to loginType -->
-    <dimen name="login_type_layout_horizontal_margin">32dp</dimen>
-    <dimen name="login_type_layout_vertical_margin">32dp</dimen>
+    <dimen name="login_type_layout_horizontal_margin">28dp</dimen>
+    <dimen name="login_type_layout_vertical_margin">28dp</dimen>
     <dimen name="login_type_title_margin">8dp</dimen>
     <dimen name="login_type_button_corner">5dp</dimen>
     <dimen name="login_type_button_margin">8dp</dimen>
-    <dimen name="login_type_button_text_size">14sp</dimen>
+    <dimen name="login_type_button_text_size">12sp</dimen>
     <dimen name="login_type_button_image_margin_start">24dp</dimen>
-    <dimen name="login_type_button_height">48dp</dimen>
-    <dimen name="login_type_bottom_margin">106dp</dimen>
-    <dimen name="login_type_top_margin">72dp</dimen>
-    <dimen name="login_type_title_text_size">22sp</dimen>
-    <dimen name="login_type_registration_text_size">12sp</dimen>
+    <dimen name="login_type_button_height">40dp</dimen>
+    <dimen name="login_type_title_text_size">18sp</dimen>
+    <dimen name="login_type_registration_text_size">10sp</dimen>
+    <dimen name="login_type_logo_size">32sp</dimen>
     <!-- related to login -->
     <dimen name="login_text_button_margin">8dp</dimen>
-    <dimen name="login_bottom_margin">136dp</dimen>
     <dimen name="login_password_to_signin_margin">64dp</dimen>
-    <dimen name="login_edittext_height">56dp</dimen>
+    <dimen name="login_edittext_height">48dp</dimen>
     <dimen name="login_edittext_id_margin">16dp</dimen>
     <dimen name="login_edittext_text_size">12sp</dimen>
-    <dimen name="login_logo_size">60sp</dimen>
+    <dimen name="login_logo_size">58sp</dimen>
     <!-- related to productRegistration -->
     <dimen name="product_registration_margin_vertical">12dp</dimen>
     <dimen name="product_registration_margin_horizontal">8dp</dimen>

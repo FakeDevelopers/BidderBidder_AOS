@@ -14,14 +14,15 @@
             android:id="@+id/textView2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
             android:text="BDBD"
             android:textColor="@color/bidderbidder_primary"
             android:textSize="@dimen/login_type_logo_size"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.15" />
 
         <TextView
             android:id="@+id/textview_logintype_welcometext"
@@ -29,8 +30,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/login_type_title_margin"
             android:text="@string/logintype_welcometext"
-            android:textSize="@dimen/login_type_title_text_size"
             android:textColor="@android:color/black"
+            android:textSize="@dimen/login_type_title_text_size"
             app:layout_constraintBottom_toTopOf="@+id/button_logintype_kakao"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +48,6 @@
             app:buttonIcon="@{@drawable/login_type_kakao}"
             app:layout_constraintBottom_toTopOf="@+id/button_logintype_naver"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.75"
             app:layout_constraintStart_toStartOf="parent"
             app:textColor="@{@color/kakao_text}"
             app:titleText="@{@string/logintype_kakaologin}" />
@@ -76,7 +76,6 @@
             app:buttonIcon="@{@drawable/login_type_apple}"
             app:layout_constraintBottom_toTopOf="@+id/button_logintype_common"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
             app:textColor="@{@color/white}"
             app:titleText="@{@string/logintype_applelogin}" />
@@ -86,12 +85,12 @@
             layout="@layout/include_login_type_button"
             android:layout_width="0dp"
             android:layout_height="@dimen/login_type_button_height"
-            android:layout_marginBottom="@dimen/login_type_bottom_margin"
             app:backgroundColor="@{@color/common_login_background}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8"
             app:textColor="@{@color/black}"
             app:titleText="@{@string/logintype_commonlogin}" />
 
@@ -99,13 +98,13 @@
             android:id="@+id/textView_logintype_registration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/login_type_button_margin"
             android:text="@string/logintype_registration"
             android:textSize="@dimen/login_type_registration_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_logintype_common" />
+            app:layout_constraintTop_toBottomOf="@+id/button_logintype_common"
+            app:layout_constraintVertical_bias="0.2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

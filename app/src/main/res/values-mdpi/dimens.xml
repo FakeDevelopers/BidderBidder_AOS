@@ -12,17 +12,14 @@
     <dimen name="login_type_title_margin">8dp</dimen>
     <dimen name="login_type_button_corner">5dp</dimen>
     <dimen name="login_type_button_margin">8dp</dimen>
-    <dimen name="login_type_button_text_size">12sp</dimen>
+    <dimen name="login_type_button_text_size">11sp</dimen>
     <dimen name="login_type_button_image_margin_start">20dp</dimen>
     <dimen name="login_type_button_height">40dp</dimen>
-    <dimen name="login_type_bottom_margin">106dp</dimen>
-    <dimen name="login_type_top_margin">72dp</dimen>
     <dimen name="login_type_title_text_size">18sp</dimen>
-    <dimen name="login_type_registration_text_size">10sp</dimen>
+    <dimen name="login_type_registration_text_size">9sp</dimen>
     <dimen name="login_type_logo_size">32sp</dimen>
     <!-- related to login -->
     <dimen name="login_text_button_margin">8dp</dimen>
-    <dimen name="login_bottom_margin">120dp</dimen>
     <dimen name="login_password_to_signin_margin">56dp</dimen>
     <dimen name="login_edittext_height">48dp</dimen>
     <dimen name="login_edittext_id_margin">12dp</dimen>
