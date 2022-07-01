@@ -46,6 +46,12 @@
             android:id="@+id/action_productListFragment_to_productRegistrationFragment"
             app:destination="@id/productRegistrationFragment"
             app:launchSingleTop="true" />
+        <action
+            android:id="@+id/action_productListFragment_to_productSearchFragment"
+            app:destination="@id/productSearchFragment" />
+        <argument
+            android:name="searchWord"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/registerFragment"
@@ -92,5 +98,19 @@
         <argument
             android:name="productRegistrationDto"
             app:argType="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto" />
+    </fragment>
+    <fragment
+        android:id="@+id/productSearchFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_search.ProductSearchFragment"
+        android:label="ProductSearchFragment" >
+        <action
+            android:id="@+id/action_productSearchFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:popUpTo="@id/productListFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="searchWord"
+            app:argType="string"
+            android:defaultValue="" />
     </fragment>
 </navigation>
