@@ -20,6 +20,7 @@ class AlbumListAdapter(
     private val findSelectedImageIndex: (String) -> Int,
     private val setScrollFlag: () -> Unit,
     private val sendErrorToast: () -> Unit,
+    private val showViewPager: (String) -> Unit,
     private val setSelectedImageList: (String, Boolean) -> Unit
 ) : ListAdapter<String, AlbumListAdapter.ViewHolder>(diffUtil) {
 
@@ -28,7 +29,9 @@ class AlbumListAdapter(
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
+        lateinit var uri: String
         fun bind(item: String) {
+            uri = item
             binding.imageviewPictureSelect.let { image ->
                 Glide.with(context)
                     .load(item)
@@ -57,30 +60,39 @@ class AlbumListAdapter(
                         }
                     })
                     .into(image)
-
-                // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
-                findSelectedImageIndex(item).let {
-                    val visibility = if (it != -1) View.VISIBLE else View.INVISIBLE
-                    binding.backgroundPictrueSelect.visibility = visibility
-                    binding.textviewPictureSelectCount.visibility = visibility
-                    if (it != -1) {
-                        binding.textviewPictureSelectCount.text = (it + 1).toString()
-                    }
-                }
-
-                image.setOnClickListener {
+            }
+            // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
+            findSelectedImageIndex(item).let { count ->
+                setPictureSelectCount(count != -1, count + 1)
+                binding.layoutPictureSelectChoice.setOnClickListener {
                     if (!isErrorImage) {
-                        val visibility =
-                            if (binding.backgroundPictrueSelect.visibility == View.VISIBLE)
-                                View.INVISIBLE
-                            else
-                                View.VISIBLE
-                        binding.backgroundPictrueSelect.visibility = visibility
-                        binding.textviewPictureSelectCount.visibility = visibility
-                        setSelectedImageList(item, visibility == View.VISIBLE)
+                        setSelectedImageList(item, binding.backgroundPictrueSelect.visibility != View.VISIBLE)
+                        setPictureSelectCount(binding.backgroundPictrueSelect.visibility != View.VISIBLE, count + 1)
                     } else {
                         sendErrorToast()
                     }
+                }
+            }
+            // 뷰 페이저
+            binding.layoutPictureSelectPager.setOnClickListener {
+                if (!isErrorImage) {
+                    showViewPager(item)
+                } else {
+                    sendErrorToast()
+                }
+            }
+        }
+
+        private fun setPictureSelectCount(state: Boolean, count: Int) {
+            binding.textviewPictureSelectCount.apply {
+                text = if (state) {
+                    binding.backgroundPictrueSelect.visibility = View.VISIBLE
+                    setBackgroundResource(R.drawable.shape_picture_select_count)
+                    count.toString()
+                } else {
+                    binding.backgroundPictrueSelect.visibility = View.INVISIBLE
+                    setBackgroundResource(R.drawable.shape_picture_select_empty)
+                    ""
                 }
             }
         }
