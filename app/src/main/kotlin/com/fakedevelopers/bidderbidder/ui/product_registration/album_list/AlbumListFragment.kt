@@ -21,12 +21,22 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.collections.MutableList
+import kotlin.collections.get
+import kotlin.collections.isNotEmpty
+import kotlin.collections.lastIndex
+import kotlin.collections.mutableListOf
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.toList
+import kotlin.collections.toTypedArray
 
 class AlbumListFragment : Fragment() {
 
@@ -39,7 +49,24 @@ class AlbumListFragment : Fragment() {
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                toProductRegistration(args.productRegistrationDto)
+                // 뷰 페이저가 열려있으면 페이저만 닫는다.
+                if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
+                    viewModel.setAlbumViewMode(AlbumViewState.GRID)
+                } else {
+                    toProductRegistration(args.productRegistrationDto)
+                }
+            }
+        }
+    }
+    private val onPageChangeCallback by lazy {
+        object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
+                // 사진 선택 표시 설정
+                setPictureSelectCount(
+                    viewModel.findSelectedImageIndex(viewModel.albumPagerAdapter.currentList[position])
+                )
             }
         }
     }
@@ -61,16 +88,12 @@ class AlbumListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initCollector()
+        initListener()
         getPictures()
         if (args.productRegistrationDto.urlList.isNotEmpty()) {
             viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
-        binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.productRegistrationDto)
-        }
-        ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
-            .attachToRecyclerView(binding.recyclerSelectedPicture)
     }
 
     override fun onStart() {
@@ -82,10 +105,7 @@ class AlbumListFragment : Fragment() {
         dto.urlList = viewModel.selectedImageList.value.toList()
         // 선택한 이미지 uri를 들고 돌아갑니다
         findNavController().navigate(
-            AlbumListFragmentDirections
-                .actionPictureSelectFragmentToProductRegistrationFragment(
-                    dto
-                )
+            AlbumListFragmentDirections.actionPictureSelectFragmentToProductRegistrationFragment(dto)
         )
     }
 
@@ -158,6 +178,15 @@ class AlbumListFragment : Fragment() {
         }
     }
 
+    private fun initListener() {
+        binding.buttonAlbumListComplete.setOnClickListener {
+            toProductRegistration(args.productRegistrationDto)
+        }
+        binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
+        ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
+            .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -181,6 +210,37 @@ class AlbumListFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.startViewPagerIndex.collectLatest {
+                    binding.viewpagerPictureSelect.setCurrentItem(it, false)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.pagerSelectedState.collectLatest {
+                    // 추가 됐다면 반드시 가장 마지막 자리에 추가됐을것임
+                    if (it) {
+                        setPictureSelectCount(viewModel.selectedImageList.value.lastIndex)
+                    } else {
+                        setPictureSelectCount(-1)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setPictureSelectCount(index: Int) {
+        binding.textviewPictureSelectCount.apply {
+            text = if (index != -1) {
+                setBackgroundResource(R.drawable.shape_picture_select_count)
+                (index + 1).toString()
+            } else {
+                setBackgroundResource(R.drawable.shape_picture_select_empty)
+                ""
+            }
+        }
     }
 
     companion object {
@@ -189,6 +249,7 @@ class AlbumListFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
+        binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
         _binding = null
         backPressedCallback.remove()
     }
