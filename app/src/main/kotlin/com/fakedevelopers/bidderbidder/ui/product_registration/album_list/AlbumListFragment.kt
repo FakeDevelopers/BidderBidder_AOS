@@ -1,7 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 
 import android.content.ContentUris
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
