@@ -149,11 +149,11 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun setUrlList(list: List<String>) {
         viewModelScope.launch {
-            _urlList.emit(list.toMutableList())
             adapter.submitList(list)
-            if (list.isNotEmpty()) {
+            if (list.isNotEmpty() && !list.contains(urlList.value[0])) {
                 adapter.notifyItemChanged(1)
             }
+            _urlList.emit(list.toMutableList())
         }
     }
 

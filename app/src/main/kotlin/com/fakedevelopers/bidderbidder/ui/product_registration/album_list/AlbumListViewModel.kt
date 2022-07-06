@@ -101,12 +101,12 @@ class AlbumListViewModel : ViewModel() {
 
     fun setSelectedImage(list: List<String>) {
         viewModelScope.launch {
-            _selectedImageList.emit(list.toMutableList())
             selectedPictureAdapter.submitList(list.toMutableList())
-            if (list.isNotEmpty()) {
+            if (list.isNotEmpty() && !list.contains(selectedImageList.value[0])) {
                 selectedPictureAdapter.notifyItemChanged(1)
             }
             albumListAdapter.notifyDataSetChanged()
+            _selectedImageList.emit(list.toMutableList())
         }
     }
 
