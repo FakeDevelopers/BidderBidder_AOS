@@ -12,7 +12,6 @@ import java.util.Collections
 
 class AlbumListViewModel : ViewModel() {
 
-    private val imageList = MutableStateFlow<List<String>>(emptyList())
     private val currentAlbum = MutableStateFlow("")
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     private val _onListChange = MutableSharedFlow<Boolean>()
@@ -65,8 +64,7 @@ class AlbumListViewModel : ViewModel() {
                 albumListAdapter.notifyDataSetChanged()
             } else {
                 allImages[albumName]?.let {
-                    imageList.emit(it)
-                    albumListAdapter.submitList(imageList.value.toMutableList())
+                    albumListAdapter.submitList(it.toMutableList())
                     currentAlbum.emit(albumName)
                     totalPictureCount = it.size
                     // 페이저 갱신
@@ -105,6 +103,9 @@ class AlbumListViewModel : ViewModel() {
         viewModelScope.launch {
             _selectedImageList.emit(list.toMutableList())
             selectedPictureAdapter.submitList(list.toMutableList())
+            if (list.isNotEmpty()) {
+                selectedPictureAdapter.notifyItemChanged(1)
+            }
             albumListAdapter.notifyDataSetChanged()
         }
     }
