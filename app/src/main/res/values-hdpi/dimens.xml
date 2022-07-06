@@ -20,7 +20,6 @@
     <dimen name="login_type_logo_size">28sp</dimen>
     <!-- related to login -->
     <dimen name="login_text_button_margin">8dp</dimen>
-    <dimen name="login_password_to_signin_margin">56dp</dimen>
     <dimen name="login_edittext_height">44dp</dimen>
     <dimen name="login_edittext_id_margin">12dp</dimen>
     <dimen name="login_edittext_text_size">10sp</dimen>

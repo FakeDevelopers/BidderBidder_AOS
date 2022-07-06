@@ -15,7 +15,8 @@
     <string name="login_password">비밀번호</string>
     <string name="login_signin">로그인</string>
     <string name="login_registration">회원가입</string>
-    <string name="login_find_account">아이디/비밀번호 찾기</string>
+    <string name="login_find_id">아이디 찾기</string>
+    <string name="login_find_password">비밀번호 찾기</string>
     <!-- Strings related to PhoneAuth-->
     <string name="phoneauth_authtext">휴대폰 번호를\n인증해주세요</string>
     <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
