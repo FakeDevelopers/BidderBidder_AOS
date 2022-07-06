@@ -48,7 +48,7 @@ class AlbumListViewModel : ViewModel() {
     val selectedPictureAdapter = SelectedPictureListAdapter(
         deleteSelectedImage = { setSelectedState(it) },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        swapComplete = { swapComplete() }
+        swapComplete = { setAlbumList() }
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
@@ -101,6 +101,14 @@ class AlbumListViewModel : ViewModel() {
         }
     }
 
+    fun setSelectedImage(list: List<String>) {
+        viewModelScope.launch {
+            _selectedImageList.emit(list.toMutableList())
+            selectedPictureAdapter.submitList(list.toMutableList())
+            albumListAdapter.notifyDataSetChanged()
+        }
+    }
+
     fun findSelectedImageIndex(uri: String) = _selectedImageList.value.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
@@ -118,10 +126,6 @@ class AlbumListViewModel : ViewModel() {
                 }
             }
         }
-    }
-
-    private fun swapComplete() {
-        setAlbumList()
     }
 
     private fun setSelectedImageList() {

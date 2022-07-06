@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 
 import android.content.ContentUris
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -26,17 +27,10 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
+import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.collections.MutableList
-import kotlin.collections.get
-import kotlin.collections.isNotEmpty
-import kotlin.collections.lastIndex
-import kotlin.collections.mutableListOf
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.toList
-import kotlin.collections.toTypedArray
 
 class AlbumListFragment : Fragment() {
 
@@ -99,6 +93,29 @@ class AlbumListFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
+        // 선택 이미지 리스트가 존재한다면 유효한지 검사
+        if (viewModel.selectedImageList.value.isNotEmpty()) {
+            ContentResolverUtil(requireContext()).apply {
+                // 유효한 선택 이미지 리스트
+                val validSelectedImageList = viewModel.selectedImageList.value.filter { isExist(Uri.parse(it)) }
+                // 유효하지 않은 선택 이미지 리스트
+                val invalidSelectedImageList = viewModel.selectedImageList.value.filter {
+                    !validSelectedImageList.contains(it)
+                }
+                // 유효하지 않은 선택 이미지가 있다!
+                if (invalidSelectedImageList.isNotEmpty()) {
+                    // 유효한 선택 이미지 리스트로 갱신
+                    viewModel.setSelectedImage(validSelectedImageList)
+                }
+            }
+            if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
+                setPictureSelectCount(
+                    viewModel.findSelectedImageIndex(
+                        viewModel.albumPagerAdapter.currentList[binding.viewpagerPictureSelect.currentItem]
+                    )
+                )
+            }
+        }
     }
 
     private fun toProductRegistration(dto: ProductRegistrationDto) {
