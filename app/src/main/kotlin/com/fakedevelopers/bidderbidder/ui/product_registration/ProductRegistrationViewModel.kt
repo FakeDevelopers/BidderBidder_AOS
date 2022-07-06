@@ -147,6 +147,16 @@ class ProductRegistrationViewModel @Inject constructor(
         content.value
     )
 
+    fun setUrlList(list: List<String>) {
+        viewModelScope.launch {
+            _urlList.emit(list.toMutableList())
+            adapter.submitList(list)
+            if (list.isNotEmpty()) {
+                adapter.notifyItemChanged(1)
+            }
+        }
+    }
+
     fun setContentLengthVisibility(state: Boolean) {
         viewModelScope.launch {
             _contentLengthVisible.emit(state)

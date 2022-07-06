@@ -64,6 +64,9 @@ class AlbumListFragment : Fragment() {
             }
         }
     }
+    private val contentResolverUtil by lazy {
+        ContentResolverUtil(requireContext())
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DataBindingUtil.inflate(
@@ -95,19 +98,8 @@ class AlbumListFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         // 선택 이미지 리스트가 존재한다면 유효한지 검사
         if (viewModel.selectedImageList.value.isNotEmpty()) {
-            ContentResolverUtil(requireContext()).apply {
-                // 유효한 선택 이미지 리스트
-                val validSelectedImageList = viewModel.selectedImageList.value.filter { isExist(Uri.parse(it)) }
-                // 유효하지 않은 선택 이미지 리스트
-                val invalidSelectedImageList = viewModel.selectedImageList.value.filter {
-                    !validSelectedImageList.contains(it)
-                }
-                // 유효하지 않은 선택 이미지가 있다!
-                if (invalidSelectedImageList.isNotEmpty()) {
-                    // 유효한 선택 이미지 리스트로 갱신
-                    viewModel.setSelectedImage(validSelectedImageList)
-                }
-            }
+            // 유효한 선택 이미지 리스트로 갱신
+            viewModel.setSelectedImage(contentResolverUtil.getValidList(viewModel.selectedImageList.value))
             if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                 setPictureSelectCount(
                     viewModel.findSelectedImageIndex(

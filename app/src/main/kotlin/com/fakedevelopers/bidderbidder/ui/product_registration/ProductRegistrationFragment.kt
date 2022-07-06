@@ -31,6 +31,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +60,9 @@ class ProductRegistrationFragment : Fragment() {
                 findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
             }
         }
+    }
+    private val contentResolverUtil by lazy {
+        ContentResolverUtil(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -106,6 +110,11 @@ class ProductRegistrationFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
+        // 선택 이미지 리스트가 존재한다면 유효한지 검사
+        if (viewModel.urlList.value.isNotEmpty()) {
+            // 유효한 선택 이미지 리스트로 갱신
+            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.urlList.value))
+        }
     }
 
     private fun toPictureSelectFragment() {
