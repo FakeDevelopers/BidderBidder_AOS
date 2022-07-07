@@ -100,12 +100,17 @@ class AlbumListViewModel : ViewModel() {
     }
 
     fun setSelectedImage(list: List<String>) {
+        removeInvalidImage(selectedImageList.value.filter { !list.contains(it) })
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
             if (list.isNotEmpty() && !list.contains(selectedImageList.value[0])) {
-                selectedPictureAdapter.notifyItemChanged(1)
+                selectedPictureAdapter.notifyItemChanged(selectedImageList.value.indexOf(list[0]))
             }
             albumListAdapter.notifyDataSetChanged()
+            allImages[currentAlbum.value]?.let {
+                albumListAdapter.submitList(it.toMutableList())
+                albumPagerAdapter.submitList(it.toMutableList())
+            }
             _selectedImageList.emit(list.toMutableList())
         }
     }
@@ -113,6 +118,17 @@ class AlbumListViewModel : ViewModel() {
     fun findSelectedImageIndex(uri: String) = _selectedImageList.value.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
+
+    fun getPictureUri(albumName: String = currentAlbum.value, position: Int) =
+        allImages[albumName]?.get(position) ?: ""
+
+    private fun removeInvalidImage(list: List<String>) {
+        for (invalidImage in list) {
+            for (key in allImages.keys) {
+                allImages[key]?.remove(invalidImage)
+            }
+        }
+    }
 
     // 앨범 뷰 페이저
     private fun showViewPager(uri: String) {
@@ -154,9 +170,10 @@ class AlbumListViewModel : ViewModel() {
         if (state) {
             _selectedImageList.value.add(uri)
         } else {
-            _selectedImageList.value.remove(uri)
-            // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-            if (_selectedImageList.value.isNotEmpty()) {
+            val idx = _selectedImageList.value.indexOf(uri)
+            _selectedImageList.value.removeAt(idx)
+            // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
+            if (_selectedImageList.value.isNotEmpty() && idx == 0) {
                 selectedPictureAdapter.notifyItemChanged(1)
             }
         }

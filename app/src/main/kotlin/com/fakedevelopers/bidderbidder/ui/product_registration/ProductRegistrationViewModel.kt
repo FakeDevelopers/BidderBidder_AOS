@@ -32,7 +32,7 @@ class ProductRegistrationViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-    private val _urlList = MutableStateFlow<MutableList<String>>(mutableListOf())
+    private val _urlList = MutableStateFlow<List<String>>(mutableListOf())
     private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
     private val _condition = MutableStateFlow(false)
     private val _contentLengthVisible = MutableStateFlow(false)
@@ -58,25 +58,33 @@ class ProductRegistrationViewModel @Inject constructor(
     val condition: StateFlow<Boolean> get() = _condition
 
     private fun deleteSelectedImage(uri: String) {
-        _urlList.value.remove(uri)
-        adapter.submitList(_urlList.value.toMutableList())
-        // 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-        if (_urlList.value.isNotEmpty()) {
+        val list = _urlList.value.filter { it != uri }
+        adapter.submitList(list)
+        // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
+        if (_urlList.value.isNotEmpty() && !list.contains(_urlList.value[0])) {
             adapter.notifyItemChanged(1)
+        }
+        viewModelScope.launch {
+            _urlList.emit(list)
         }
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
+        val list = mutableListOf<String>()
+        list.addAll(_urlList.value)
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(_urlList.value, i, i + 1)
+                Collections.swap(list, i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(_urlList.value, i, i - 1)
+                Collections.swap(list, i, i - 1)
             }
         }
-        adapter.submitList(_urlList.value.toMutableList())
+        adapter.submitList(list)
+        viewModelScope.launch {
+            _urlList.emit(list)
+        }
     }
 
     private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
@@ -151,9 +159,9 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             adapter.submitList(list)
             if (list.isNotEmpty() && !list.contains(urlList.value[0])) {
-                adapter.notifyItemChanged(1)
+                adapter.notifyItemChanged(_urlList.value.indexOf(list[0]))
             }
-            _urlList.emit(list.toMutableList())
+            _urlList.emit(list)
         }
     }
 
