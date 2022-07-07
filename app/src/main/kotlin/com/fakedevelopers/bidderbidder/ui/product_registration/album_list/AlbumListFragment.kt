@@ -102,7 +102,7 @@ class AlbumListFragment : Fragment() {
             if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                 setPictureSelectCount(
                     viewModel.findSelectedImageIndex(
-                        viewModel.albumPagerAdapter.currentList[binding.viewpagerPictureSelect.currentItem]
+                        viewModel.getPictureUri(position = binding.viewpagerPictureSelect.currentItem)
                     )
                 )
             }
