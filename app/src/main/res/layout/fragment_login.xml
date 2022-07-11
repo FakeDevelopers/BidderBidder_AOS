@@ -57,12 +57,13 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="@dimen/login_edittext_height"
-            android:layout_marginBottom="@dimen/login_password_to_signin_margin"
             app:boxStrokeColor="@color/bidderbidder_primary"
             app:hintTextColor="@color/bidderbidder_primary"
             app:layout_constraintBottom_toTopOf="@+id/include_login_signin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.80">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_login_password"
@@ -89,33 +90,56 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.75" />
 
-        <TextView
-            android:id="@+id/textview_login_registration"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/login_text_button_margin"
-            android:text="@string/login_registration"
-            android:textColor="@color/small_text_button"
-            android:textSize="@dimen/small_text_button_size"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include_login_signin"
-            tools:ignore="TextContrastCheck" />
+            app:layout_constraintVertical_bias="0.1">
 
-        <TextView
-            android:id="@+id/textview_login_find_account"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/login_text_button_margin"
-            android:text="@string/login_find_account"
-            android:textColor="@color/small_text_button"
-            android:textSize="@dimen/small_text_button_size"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_login_signin"
-            tools:ignore="TextContrastCheck" />
+            <TextView
+                android:id="@+id/textview_login_find_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_find_id"
+                android:textColor="@color/small_text_button"
+                android:textSize="@dimen/small_text_button_size"
+                tools:ignore="TextContrastCheck" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/textview_login_find_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_find_password"
+                android:textColor="@color/small_text_button"
+                android:textSize="@dimen/small_text_button_size"
+                tools:ignore="TextContrastCheck" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/listDivider" />
+
+            <TextView
+                android:id="@+id/textview_login_registration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_registration"
+                android:textColor="@color/bidderbidder_primary"
+                android:textSize="@dimen/small_text_button_size"
+                tools:ignore="TextContrastCheck" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

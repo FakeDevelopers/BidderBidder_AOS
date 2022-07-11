@@ -7,15 +7,16 @@
     <string name="logintype_welcometext">비더비더로\n나만의 경매를 시작해보세요.</string>
     <string name="logintype_kakaologin">카카오로 로그인</string>
     <string name="logintype_naverlogin">네이버로 로그인</string>
-    <string name="logintype_applelogin">Apple로 로그인</string>
-    <string name="logintype_commonlogin">이메일로 로그인</string>
+    <string name="logintype_googlelogin">구글로 로그인</string>
+    <string name="logintype_commonlogin">아이디로 로그인</string>
     <string name="logintype_registration">비더비더가 처음이라면?  <u>회원가입 하기</u></string>
     <!-- Strings related to login -->
     <string name="login_id">아이디</string>
     <string name="login_password">비밀번호</string>
     <string name="login_signin">로그인</string>
     <string name="login_registration">회원가입</string>
-    <string name="login_find_account">아이디/비밀번호 찾기</string>
+    <string name="login_find_id">아이디 찾기</string>
+    <string name="login_find_password">비밀번호 찾기</string>
     <!-- Strings related to PhoneAuth-->
     <string name="phoneauth_authtext">휴대폰 번호를\n인증해주세요</string>
     <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
