@@ -31,7 +31,6 @@ class AlbumListViewModel : ViewModel() {
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        setScrollFlag = { setScrollFlag() },
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
         showViewPager = { uri -> showViewPager(uri) }
     ) { uri, state ->
@@ -64,11 +63,14 @@ class AlbumListViewModel : ViewModel() {
                 albumListAdapter.notifyDataSetChanged()
             } else {
                 allImages[albumName]?.let {
-                    albumListAdapter.submitList(it.toMutableList())
+                    val currentList = mutableListOf<String>().apply { addAll(it) }
+                    albumListAdapter.submitList(currentList)
                     currentAlbum.emit(albumName)
                     totalPictureCount = it.size
                     // 페이저 갱신
-                    albumPagerAdapter.submitList(it.toMutableList())
+                    albumPagerAdapter.submitList(currentList)
+                    // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
+                    setScrollFlag()
                 }
             }
         }
@@ -108,8 +110,9 @@ class AlbumListViewModel : ViewModel() {
             }
             albumListAdapter.notifyDataSetChanged()
             allImages[currentAlbum.value]?.let {
-                albumListAdapter.submitList(it.toMutableList())
-                albumPagerAdapter.submitList(it.toMutableList())
+                val currentList = mutableListOf<String>().apply { addAll(it) }
+                albumListAdapter.submitList(currentList)
+                albumPagerAdapter.submitList(currentList)
             }
             _selectedImageList.emit(list.toMutableList())
         }
@@ -146,7 +149,8 @@ class AlbumListViewModel : ViewModel() {
     }
 
     private fun setSelectedImageList() {
-        selectedPictureAdapter.submitList(_selectedImageList.value.toMutableList())
+        val list = mutableListOf<String>().apply { addAll(_selectedImageList.value) }
+        selectedPictureAdapter.submitList(list)
         setAlbumList()
         viewModelScope.launch {
             _onListChange.emit(true)
@@ -163,7 +167,8 @@ class AlbumListViewModel : ViewModel() {
                 Collections.swap(_selectedImageList.value, i, i - 1)
             }
         }
-        selectedPictureAdapter.submitList(_selectedImageList.value.toMutableList())
+        val list = mutableListOf<String>().apply { addAll(_selectedImageList.value) }
+        selectedPictureAdapter.submitList(list)
     }
 
     private fun setSelectedState(uri: String, state: Boolean = false) {

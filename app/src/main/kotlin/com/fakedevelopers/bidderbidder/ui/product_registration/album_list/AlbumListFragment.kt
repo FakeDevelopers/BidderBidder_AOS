@@ -126,45 +126,45 @@ class AlbumListFragment : Fragment() {
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
         ).let {
-            if (it != null) {
+            it?.let { cursor ->
                 val albums = mutableMapOf<String, MutableList<String>>()
                 albums[ALL_PICTURES] = mutableListOf()
                 val albumNameSummary = mutableMapOf<String, String>()
-                while (it.moveToNext()) {
+                while (cursor.moveToNext()) {
                     // 이미지 Uri
                     val imageUri = ContentUris.withAppendedId(
                         uri,
-                        it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
                     ).toString()
                     // 전체보기에 저장
-                    albums[ALL_PICTURES]!!.add(imageUri)
+                    albums[ALL_PICTURES]?.add(imageUri)
                     // 이미지 상대 경로에 저장
-                    it.getString(it.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
+                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
                         if (!albumNameSummary.containsKey(path)) {
                             path.split("/").let { split ->
                                 albumNameSummary[path] = split[split.lastIndex - 1]
                                 albums[split[split.lastIndex - 1]] = mutableListOf()
                             }
                         }
-                        albums[albumNameSummary[path]]!!.add(imageUri)
+                        albums[albumNameSummary[path]]?.add(imageUri)
                     }
                 }
                 viewModel.initAlbumInfo(albums)
                 viewModel.setAlbumList(ALL_PICTURES)
                 initSpinner(albums.keys.toTypedArray())
                 // 앨범 전환 시 가장 위로 스크롤
-                binding.recyclerAlbemList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
+                binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
                     override fun onLayoutCompleted(state: RecyclerView.State?) {
                         super.onLayoutCompleted(state)
                         // onLayoutCompleted는 정말 여러번 호출됩니다.
                         // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
                         if (viewModel.scrollToTopFlag) {
                             viewModel.setScrollFlag()
-                            binding.recyclerAlbemList.scrollToPosition(0)
+                            binding.recyclerAlbumList.scrollToPosition(0)
                         }
                     }
                 }
-                it.close()
+                cursor.close()
             }
         }
     }
