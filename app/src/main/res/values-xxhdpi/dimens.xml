@@ -14,6 +14,7 @@
     <dimen name="login_type_button_margin">8dp</dimen>
     <dimen name="login_type_button_text_size">14sp</dimen>
     <dimen name="login_type_button_image_margin_start">24dp</dimen>
+    <dimen name="login_type_button_image_margin_vertical">12dp</dimen>
     <dimen name="login_type_button_height">48dp</dimen>
     <dimen name="login_type_title_text_size">22sp</dimen>
     <dimen name="login_type_registration_text_size">11sp</dimen>

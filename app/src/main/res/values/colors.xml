@@ -13,6 +13,7 @@
     <color name="kakao_background">#FDE348</color>
     <color name="kakao_text">#391B1C</color>
     <color name="naver_background">#5DD264</color>
+    <color name="google_background">#F9F9F9</color>
     <color name="common_login_background">#DBDBDB</color>
     <color name="small_text_button">#B4B4B4</color>
     <color name="edit_text_hint">#C4C4C4</color>

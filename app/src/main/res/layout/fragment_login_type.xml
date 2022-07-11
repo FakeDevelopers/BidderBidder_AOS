@@ -75,10 +75,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
                 android:layout_marginBottom="@dimen/login_type_button_margin"
-                app:backgroundColor="@{@color/black}"
-                app:buttonIcon="@{@drawable/login_type_apple}"
-                app:textColor="@{@color/white}"
-                app:titleText="@{@string/logintype_applelogin}" />
+                app:backgroundColor="@{@color/google_background}"
+                app:buttonIcon="@{@drawable/login_type_google}"
+                app:textColor="@{@color/black}"
+                app:titleText="@{@string/logintype_googlelogin}" />
 
             <include
                 android:id="@+id/button_logintype_common"
@@ -100,7 +100,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-            app:layout_constraintVertical_bias="0.19999999" />
+            app:layout_constraintVertical_bias="0.2" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

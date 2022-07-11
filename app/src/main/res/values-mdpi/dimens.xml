@@ -13,7 +13,8 @@
     <dimen name="login_type_button_corner">5dp</dimen>
     <dimen name="login_type_button_margin">8dp</dimen>
     <dimen name="login_type_button_text_size">10sp</dimen>
-    <dimen name="login_type_button_image_margin_start">20dp</dimen>
+    <dimen name="login_type_button_image_margin_start">18dp</dimen>
+    <dimen name="login_type_button_image_margin_vertical">9dp</dimen>
     <dimen name="login_type_button_height">36dp</dimen>
     <dimen name="login_type_title_text_size">16sp</dimen>
     <dimen name="login_type_registration_text_size">9sp</dimen>

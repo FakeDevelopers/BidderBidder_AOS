@@ -7,8 +7,8 @@
     <string name="logintype_welcometext">비더비더로\n나만의 경매를 시작해보세요.</string>
     <string name="logintype_kakaologin">카카오로 로그인</string>
     <string name="logintype_naverlogin">네이버로 로그인</string>
-    <string name="logintype_applelogin">Apple로 로그인</string>
-    <string name="logintype_commonlogin">이메일로 로그인</string>
+    <string name="logintype_googlelogin">구글로 로그인</string>
+    <string name="logintype_commonlogin">아이디로 로그인</string>
     <string name="logintype_registration">비더비더가 처음이라면?  <u>회원가입 하기</u></string>
     <!-- Strings related to login -->
     <string name="login_id">아이디</string>
