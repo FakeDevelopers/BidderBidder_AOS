@@ -16,7 +16,6 @@ import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
 class AlbumListAdapter(
     private val findSelectedImageIndex: (String) -> Int,
-    private val setScrollFlag: () -> Unit,
     private val sendErrorToast: () -> Unit,
     private val showViewPager: (String) -> Unit,
     private val setSelectedImageList: (String, Boolean) -> Unit
@@ -28,9 +27,7 @@ class AlbumListAdapter(
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
-        lateinit var uri: String
         fun bind(item: String) {
-            uri = item
             binding.imageviewPictureSelect.let { image ->
                 Glide.with(context)
                     .load(item)
@@ -95,13 +92,6 @@ class AlbumListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
-    }
-
-    override fun submitList(list: MutableList<String>?) {
-        super.submitList(list)
-        // submitList 호출 = 앨범 전환
-        // 앨범이 전환되면 딱 한번 스크롤을 최상단으로 올리기 위해 Flag를 true로 바꿉니다.
-        setScrollFlag()
     }
 
     companion object {
