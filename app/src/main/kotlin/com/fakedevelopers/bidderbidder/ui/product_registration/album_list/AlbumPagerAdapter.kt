@@ -4,13 +4,13 @@ import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerAlbumPagerBinding
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListAdapter.Companion.diffUtil
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
@@ -62,15 +62,5 @@ class AlbumPagerAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
-    }
-
-    companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<Pair<String, Long>>() {
-            override fun areItemsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
-                oldItem.first == newItem.first && oldItem.second == newItem.second
-
-            override fun areContentsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
-                oldItem.first == newItem.first && oldItem.second == newItem.second
-        }
     }
 }
