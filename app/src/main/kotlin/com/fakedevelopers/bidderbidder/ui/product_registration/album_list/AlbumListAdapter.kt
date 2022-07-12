@@ -29,20 +29,18 @@ class AlbumListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
         fun bind(item: Pair<String, Long>) {
-            binding.imageviewPictureSelect.let { image ->
-                Glide.with(context)
-                    .load(item.first)
-                    .placeholder(R.drawable.the_cat)
-                    .error(R.drawable.error_cat)
-                    .signature(ObjectKey(item.second))
-                    .listener(
-                        GlideRequestListener(
-                            loadFailed = { isErrorImage = true },
-                            resourceReady = { isErrorImage = false }
-                        )
+            Glide.with(context)
+                .load(item.first)
+                .placeholder(R.drawable.the_cat)
+                .error(R.drawable.error_cat)
+                .signature(ObjectKey(item.second))
+                .listener(
+                    GlideRequestListener(
+                        loadFailed = { isErrorImage = true },
+                        resourceReady = { isErrorImage = false }
                     )
-                    .into(image)
-            }
+                )
+                .into(binding.imageviewPictureSelect)
             // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
             findSelectedImageIndex(item.first).let { count ->
                 setPictureSelectCount(count != -1, count + 1)

@@ -170,11 +170,8 @@ class AlbumListFragment : Fragment() {
                         super.onLayoutCompleted(state)
                         // onLayoutCompleted는 정말 여러번 호출됩니다.
                         // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
-                        if (viewModel.scrollToTopFlag) {
-                            // 리스트가 완전 교체될때까지 스크롤을 올린다.
-                            if (viewModel.isAlbumListChanged()) {
-                                viewModel.setScrollFlag()
-                            }
+                        if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
+                            viewModel.setScrollFlag()
                             binding.recyclerAlbumList.scrollToPosition(0)
                         }
                     }
