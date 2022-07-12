@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerAlbumPagerBinding
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
@@ -16,7 +17,7 @@ import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 class AlbumPagerAdapter(
     private val sendErrorToast: () -> Unit,
     private val setSelectedImageList: (String) -> Unit
-) : ListAdapter<String, AlbumPagerAdapter.ViewHolder>(diffUtil) {
+) : ListAdapter<Pair<String, Long>, AlbumPagerAdapter.ViewHolder>(diffUtil) {
     private lateinit var contentResolverUtil: ContentResolverUtil
 
     inner class ViewHolder(
@@ -24,11 +25,12 @@ class AlbumPagerAdapter(
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
-        fun bind(item: String) {
+        fun bind(item: Pair<String, Long>) {
             Glide.with(context)
-                .load(item)
+                .load(item.first)
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
+                .signature(ObjectKey(item.second))
                 .listener(
                     GlideRequestListener(
                         loadFailed = { isErrorImage = true },
@@ -37,8 +39,8 @@ class AlbumPagerAdapter(
                 )
                 .into(binding.imageviewAlbumPager)
             binding.layoutAlbumPager.setOnClickListener {
-                if (isValidImage(item)) {
-                    setSelectedImageList(item)
+                if (isValidImage(item.first)) {
+                    setSelectedImageList(item.first)
                 } else {
                     sendErrorToast()
                 }
@@ -63,12 +65,12 @@ class AlbumPagerAdapter(
     }
 
     companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<String>() {
-            override fun areItemsTheSame(oldItem: String, newItem: String) =
-                oldItem == newItem
+        val diffUtil = object : DiffUtil.ItemCallback<Pair<String, Long>>() {
+            override fun areItemsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
+                oldItem.first == newItem.first && oldItem.second == newItem.second
 
-            override fun areContentsTheSame(oldItem: String, newItem: String) =
-                oldItem == newItem
+            override fun areContentsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
+                oldItem.first == newItem.first && oldItem.second == newItem.second
         }
     }
 }

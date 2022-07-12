@@ -158,9 +158,7 @@ class ProductRegistrationViewModel @Inject constructor(
     fun setUrlList(list: List<String>) {
         viewModelScope.launch {
             adapter.submitList(list)
-            if (list.isNotEmpty() && !list.contains(urlList.value[0])) {
-                adapter.notifyItemChanged(_urlList.value.indexOf(list[0]))
-            }
+            adapter.notifyDataSetChanged()
             _urlList.emit(list)
         }
     }
