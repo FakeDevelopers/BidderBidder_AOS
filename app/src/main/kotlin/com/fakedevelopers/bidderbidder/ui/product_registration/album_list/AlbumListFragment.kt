@@ -1,7 +1,11 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 
 import android.content.ContentUris
+import android.database.ContentObserver
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -34,7 +38,6 @@ import kotlin.collections.set
 class AlbumListFragment : Fragment() {
 
     private var _binding: FragmentAlbumListBinding? = null
-
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
     private val args: AlbumListFragmentArgs by navArgs()
@@ -58,13 +61,24 @@ class AlbumListFragment : Fragment() {
                 binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
                 // 사진 선택 표시 설정
                 setPictureSelectCount(
-                    viewModel.findSelectedImageIndex(viewModel.albumPagerAdapter.currentList[position])
+                    viewModel.findSelectedImageIndex(viewModel.albumPagerAdapter.currentList[position].first)
                 )
             }
         }
     }
     private val contentResolverUtil by lazy {
         ContentResolverUtil(requireContext())
+    }
+    // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.
+    private val contentObserver by lazy {
+        object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
+                super.onChange(selfChange, uri, flags)
+                uri?.let {
+                    viewModel.onAlbumListChanged(it.toString(), flags)
+                }
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -90,23 +104,14 @@ class AlbumListFragment : Fragment() {
             viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
+        // 요소가 많아 난잡해지므로 이동 애니메이션은 없앰
+        binding.recyclerAlbumList.itemAnimator = null
     }
 
     override fun onStart() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
-        // 선택 이미지 리스트가 존재한다면 유효한지 검사
-        if (viewModel.selectedImageList.value.isNotEmpty()) {
-            // 유효한 선택 이미지 리스트로 갱신
-            viewModel.setSelectedImage(contentResolverUtil.getValidList(viewModel.selectedImageList.value))
-            if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
-                setPictureSelectCount(
-                    viewModel.findSelectedImageIndex(
-                        viewModel.getPictureUri(position = binding.viewpagerPictureSelect.currentItem)
-                    )
-                )
-            }
-        }
+        updateAlbumList()
     }
 
     private fun toProductRegistration(dto: ProductRegistrationDto) {
@@ -119,39 +124,46 @@ class AlbumListFragment : Fragment() {
 
     private fun getPictures() {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        requireActivity().contentResolver.registerContentObserver(uri, true, contentObserver)
         requireActivity().contentResolver.query(
             uri,
-            null,
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.ImageColumns.DATE_MODIFIED
+            ),
             null,
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
         ).let {
             it?.let { cursor ->
-                val albums = mutableMapOf<String, MutableList<String>>()
+                val albums = mutableMapOf<String, MutableList<Pair<String, Long>>>()
                 albums[ALL_PICTURES] = mutableListOf()
                 val albumNameSummary = mutableMapOf<String, String>()
+                albumNameSummary[ALL_PICTURES] = ALL_PICTURES
                 while (cursor.moveToNext()) {
                     // 이미지 Uri
                     val imageUri = ContentUris.withAppendedId(
                         uri,
                         cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
                     ).toString()
+                    // 최근 수정 날짜
+                    val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
                     // 전체보기에 저장
-                    albums[ALL_PICTURES]?.add(imageUri)
+                    albums[ALL_PICTURES]?.add(imageUri to date)
                     // 이미지 상대 경로에 저장
                     cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
                         if (!albumNameSummary.containsKey(path)) {
                             path.split("/").let { split ->
                                 albumNameSummary[path] = split[split.lastIndex - 1]
-                                albums[split[split.lastIndex - 1]] = mutableListOf()
+                                albums[path] = mutableListOf()
                             }
                         }
-                        albums[albumNameSummary[path]]?.add(imageUri)
+                        albums[path]?.add(imageUri to date)
                     }
                 }
                 viewModel.initAlbumInfo(albums)
-                viewModel.setAlbumList(ALL_PICTURES)
-                initSpinner(albums.keys.toTypedArray())
+                initSpinner(albumNameSummary)
                 // 앨범 전환 시 가장 위로 스크롤
                 binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
                     override fun onLayoutCompleted(state: RecyclerView.State?) {
@@ -159,7 +171,10 @@ class AlbumListFragment : Fragment() {
                         // onLayoutCompleted는 정말 여러번 호출됩니다.
                         // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
                         if (viewModel.scrollToTopFlag) {
-                            viewModel.setScrollFlag()
+                            // 리스트가 완전 교체될때까지 스크롤을 올린다.
+                            if (viewModel.isAlbumListChanged()) {
+                                viewModel.setScrollFlag()
+                            }
                             binding.recyclerAlbumList.scrollToPosition(0)
                         }
                     }
@@ -169,14 +184,15 @@ class AlbumListFragment : Fragment() {
         }
     }
 
-    private fun initSpinner(albumArray: Array<String>) {
+    private fun initSpinner(albumNameSummary: Map<String, String>) {
+        val (keys, values) = albumNameSummary.keys.toList() to albumNameSummary.values.toList()
         binding.spinnerAlbumList.apply {
             adapter = ArrayAdapter(
-                requireContext(), android.R.layout.simple_spinner_item, albumArray
+                requireContext(), android.R.layout.simple_spinner_item, values
             )
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.setAlbumList(albumArray[position])
+                    updateAlbumList(keys[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -251,8 +267,43 @@ class AlbumListFragment : Fragment() {
         }
     }
 
+    private fun updateAlbumList(albumName: String? = null) {
+        // 선택 이미지 리스트가 존재한다면 유효한지 검사
+        if (viewModel.selectedImageList.value.isNotEmpty()) {
+            // 유효한 선택 이미지 리스트로 갱신
+            viewModel.setSelectedImage(contentResolverUtil.getValidList(viewModel.selectedImageList.value))
+            if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
+                setPictureSelectCount(
+                    viewModel.findSelectedImageIndex(
+                        viewModel.getPictureUri(position = binding.viewpagerPictureSelect.currentItem)
+                    )
+                )
+            }
+        }
+        // 앨범 리스트 갱신
+        // 도중에 추가된 이미지들이 유효한지 검사한다.
+        val list = mutableListOf<Triple<String, String, Long>>()
+        for (uri in viewModel.addedImageList) {
+            // 해당 uri이 유효하면 list에 추가
+            Uri.parse(uri).let {
+                if (contentResolverUtil.isExist(it)) {
+                    val (rel, date) = contentResolverUtil.getDateModifiedFromUri(it)
+                    list.add(Triple(uri, rel, date))
+                }
+            }
+        }
+        if (albumName != null) {
+            viewModel.updateAlbumList(list, albumName)
+        } else {
+            viewModel.updateAlbumList(list)
+        }
+    }
+
     companion object {
         const val ALL_PICTURES = "전체보기"
+        const val ADD_IMAGE = 32772
+        const val REMOVE_IMAGE = 32784
+        const val MODIFY_IMAGE = 32776
     }
 
     override fun onDestroy() {

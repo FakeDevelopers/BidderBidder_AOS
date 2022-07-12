@@ -3,6 +3,10 @@ package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.product_registration.SelectedPictureListAdapter
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.ADD_IMAGE
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.ALL_PICTURES
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.MODIFY_IMAGE
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.REMOVE_IMAGE
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -19,8 +23,10 @@ class AlbumListViewModel : ViewModel() {
     private val _selectedImageList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _selectErrorImage = MutableSharedFlow<Boolean>()
     private val _startViewPagerIndex = MutableSharedFlow<Int>()
+    private val _addedImageList = mutableListOf<String>()
+    private val removedImageList = mutableListOf<String>()
     private var totalPictureCount = 0
-    private lateinit var allImages: Map<String, MutableList<String>>
+    private lateinit var allImages: Map<String, MutableList<Pair<String, Long>>>
 
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
     val onListChange: SharedFlow<Boolean> get() = _onListChange
@@ -28,6 +34,8 @@ class AlbumListViewModel : ViewModel() {
     val selectedImageList: StateFlow<List<String>> get() = _selectedImageList
     val startViewPagerIndex: SharedFlow<Int> get() = _startViewPagerIndex
     val selectErrorImage: SharedFlow<Boolean> get() = _selectErrorImage
+    val addedImageList: List<String> get() = _addedImageList
+
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
         findSelectedImageIndex = { findSelectedImageIndex(it) },
@@ -36,45 +44,25 @@ class AlbumListViewModel : ViewModel() {
     ) { uri, state ->
         setSelectedState(uri, state)
     }
+
     // 뷰 페이저 앨범 리스트 어뎁터
     val albumPagerAdapter = AlbumPagerAdapter(
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } }
     ) { uri ->
         setSelectedState(uri, findSelectedImageIndex(uri) == -1)
     }
+
     // 선택 사진 리스트 어뎁터
     val selectedPictureAdapter = SelectedPictureListAdapter(
         deleteSelectedImage = { setSelectedState(it) },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        swapComplete = { setAlbumList() }
+        swapComplete = { albumPagerAdapter.notifyDataSetChanged() }
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
+
     // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
     var scrollToTopFlag = false
-
-    fun setAlbumList(albumName: String = currentAlbum.value) {
-        viewModelScope.launch {
-            // ViewHolder의 bind를 통해 사진 선택 순서를 표시한다.
-            // 하지만 사진을 선택하는 행위는 리스트에 영향을 주지 않는다.
-            // 리스트에 영향이 없으면 bind를 호출하지 않는다.
-            // 그러므로 notifyDataSetChanged를 이용해 강제로 갱신 시켜야 한다.
-            if (albumName == currentAlbum.value) {
-                albumListAdapter.notifyDataSetChanged()
-            } else {
-                allImages[albumName]?.let {
-                    val currentList = mutableListOf<String>().apply { addAll(it) }
-                    albumListAdapter.submitList(currentList)
-                    currentAlbum.emit(albumName)
-                    totalPictureCount = it.size
-                    // 페이저 갱신
-                    albumPagerAdapter.submitList(currentList)
-                    // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
-                    setScrollFlag()
-                }
-            }
-        }
-    }
 
     fun initSelectedImageList(list: List<String>) {
         viewModelScope.launch {
@@ -83,7 +71,7 @@ class AlbumListViewModel : ViewModel() {
         }
     }
 
-    fun initAlbumInfo(map: Map<String, MutableList<String>>) {
+    fun initAlbumInfo(map: Map<String, MutableList<Pair<String, Long>>>) {
         allImages = map
     }
 
@@ -102,18 +90,17 @@ class AlbumListViewModel : ViewModel() {
     }
 
     fun setSelectedImage(list: List<String>) {
-        removeInvalidImage(selectedImageList.value.filter { !list.contains(it) })
+        val invalidList = selectedImageList.value.filter { !list.contains(it) }
+        for (uri in invalidList) {
+            removeInvalidImage(uri)
+        }
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
             if (list.isNotEmpty() && !list.contains(selectedImageList.value[0])) {
                 selectedPictureAdapter.notifyItemChanged(selectedImageList.value.indexOf(list[0]))
             }
             albumListAdapter.notifyDataSetChanged()
-            allImages[currentAlbum.value]?.let {
-                val currentList = mutableListOf<String>().apply { addAll(it) }
-                albumListAdapter.submitList(currentList)
-                albumPagerAdapter.submitList(currentList)
-            }
+            setAdapterList()
             _selectedImageList.emit(list.toMutableList())
         }
     }
@@ -123,12 +110,73 @@ class AlbumListViewModel : ViewModel() {
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
     fun getPictureUri(albumName: String = currentAlbum.value, position: Int) =
-        allImages[albumName]?.get(position) ?: ""
+        allImages[albumName]?.get(position)?.first ?: ""
 
-    private fun removeInvalidImage(list: List<String>) {
-        for (invalidImage in list) {
+    fun isAlbumListChanged() =
+        albumListAdapter.currentList[0] == allImages[currentAlbum.value]?.let { it[0] }
+
+    fun onAlbumListChanged(uri: String, type: Int) {
+        when (type) {
+            ADD_IMAGE -> _addedImageList.add(uri)
+            REMOVE_IMAGE -> removedImageList.add(uri)
+            MODIFY_IMAGE -> {
+                _addedImageList.add(uri)
+                removedImageList.add(uri)
+            }
+        }
+    }
+
+    fun updateAlbumList(
+        validAddedImageList: List<Triple<String, String, Long>>,
+        albumName: String = currentAlbum.value
+    ) {
+        if (removedImageList.isNotEmpty()) {
+            // 앨범 리스트 갱신
+            for (uri in removedImageList) {
+                removeInvalidImage(uri)
+            }
+            removedImageList.clear()
+        }
+        if (validAddedImageList.isNotEmpty()) {
+            // 앨범 리스트 갱신
+            for ((uri, rel, date) in validAddedImageList) {
+                allImages[ALL_PICTURES]?.add(uri to date)
+                allImages[rel]?.add(uri to date)
+            }
+            // 수정된 날짜 기준으로 소팅
             for (key in allImages.keys) {
-                allImages[key]?.remove(invalidImage)
+                allImages[key]?.sortByDescending { it.second }
+            }
+            _addedImageList.clear()
+        }
+        setAdapterList(albumName)
+    }
+
+    // 유효하지 않은 이미지 제거
+    private fun removeInvalidImage(uri: String) {
+        val invalidImage = allImages[ALL_PICTURES]?.find { it.first == uri }
+        allImages[ALL_PICTURES]?.remove(invalidImage)
+        for (key in allImages.keys) {
+            if (allImages[key]?.remove(invalidImage) == true) {
+                break
+            }
+        }
+    }
+
+    private fun setAdapterList(albumName: String = currentAlbum.value) {
+        allImages[albumName]?.let { list ->
+            val currentList = mutableListOf<Pair<String, Long>>().apply { addAll(list) }
+            albumListAdapter.submitList(currentList)
+            albumPagerAdapter.submitList(currentList)
+            totalPictureCount = list.size
+        }
+        albumListAdapter.notifyDataSetChanged()
+        selectedPictureAdapter.notifyDataSetChanged()
+        if (albumName != currentAlbum.value) {
+            viewModelScope.launch {
+                currentAlbum.emit(albumName)
+                // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
+                setScrollFlag()
             }
         }
     }
@@ -136,7 +184,7 @@ class AlbumListViewModel : ViewModel() {
     // 앨범 뷰 페이저
     private fun showViewPager(uri: String) {
         allImages[currentAlbum.value]?.let { album ->
-            album.indexOf(uri).let {
+            album.indexOf(album.find { it.first == uri }).let {
                 if (it != -1) {
                     viewModelScope.launch {
                         _startViewPagerIndex.emit(it)
@@ -149,9 +197,8 @@ class AlbumListViewModel : ViewModel() {
     }
 
     private fun setSelectedImageList() {
-        val list = mutableListOf<String>().apply { addAll(_selectedImageList.value) }
-        selectedPictureAdapter.submitList(list)
-        setAlbumList()
+        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(_selectedImageList.value) })
+        albumListAdapter.notifyDataSetChanged()
         viewModelScope.launch {
             _onListChange.emit(true)
         }
@@ -167,8 +214,7 @@ class AlbumListViewModel : ViewModel() {
                 Collections.swap(_selectedImageList.value, i, i - 1)
             }
         }
-        val list = mutableListOf<String>().apply { addAll(_selectedImageList.value) }
-        selectedPictureAdapter.submitList(list)
+        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(_selectedImageList.value) })
     }
 
     private fun setSelectedState(uri: String, state: Boolean = false) {

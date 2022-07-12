@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.signature.ObjectKey
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerPictureSelectBinding
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
@@ -19,7 +20,7 @@ class AlbumListAdapter(
     private val sendErrorToast: () -> Unit,
     private val showViewPager: (String) -> Unit,
     private val setSelectedImageList: (String, Boolean) -> Unit
-) : ListAdapter<String, AlbumListAdapter.ViewHolder>(diffUtil) {
+) : ListAdapter<Pair<String, Long>, AlbumListAdapter.ViewHolder>(diffUtil) {
     private lateinit var contentResolverUtil: ContentResolverUtil
 
     inner class ViewHolder(
@@ -27,12 +28,13 @@ class AlbumListAdapter(
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
-        fun bind(item: String) {
+        fun bind(item: Pair<String, Long>) {
             binding.imageviewPictureSelect.let { image ->
                 Glide.with(context)
-                    .load(item)
+                    .load(item.first)
                     .placeholder(R.drawable.the_cat)
                     .error(R.drawable.error_cat)
+                    .signature(ObjectKey(item.second))
                     .listener(
                         GlideRequestListener(
                             loadFailed = { isErrorImage = true },
@@ -42,11 +44,11 @@ class AlbumListAdapter(
                     .into(image)
             }
             // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
-            findSelectedImageIndex(item).let { count ->
+            findSelectedImageIndex(item.first).let { count ->
                 setPictureSelectCount(count != -1, count + 1)
                 binding.layoutPictureSelectChoice.setOnClickListener {
-                    if (isValidImage(item)) {
-                        setSelectedImageList(item, binding.backgroundPictrueSelect.visibility != View.VISIBLE)
+                    if (isValidImage(item.first)) {
+                        setSelectedImageList(item.first, binding.backgroundPictrueSelect.visibility != View.VISIBLE)
                         setPictureSelectCount(binding.backgroundPictrueSelect.visibility != View.VISIBLE, count + 1)
                     } else {
                         sendErrorToast()
@@ -55,8 +57,8 @@ class AlbumListAdapter(
             }
             // 뷰 페이저
             binding.layoutPictureSelectPager.setOnClickListener {
-                if (isValidImage(item)) {
-                    showViewPager(item)
+                if (isValidImage(item.first)) {
+                    showViewPager(item.first)
                 } else {
                     sendErrorToast()
                 }
@@ -95,12 +97,12 @@ class AlbumListAdapter(
     }
 
     companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<String>() {
-            override fun areItemsTheSame(oldItem: String, newItem: String) =
-                oldItem == newItem
+        val diffUtil = object : DiffUtil.ItemCallback<Pair<String, Long>>() {
+            override fun areItemsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
+                oldItem.first == newItem.first && oldItem.second == newItem.second
 
-            override fun areContentsTheSame(oldItem: String, newItem: String) =
-                oldItem == newItem
+            override fun areContentsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
+                oldItem.first == newItem.first && oldItem.second == newItem.second
         }
     }
 }
