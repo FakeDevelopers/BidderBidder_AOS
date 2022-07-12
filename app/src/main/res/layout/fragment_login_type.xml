@@ -1,76 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintlayout_logintype"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingStart="@dimen/fragment_horizontal_margin"
-    android:paddingEnd="@dimen/fragment_horizontal_margin"
-    tools:context=".ui.login_type.LoginTypeFragment">
+    xmlns:tools="http://schemas.android.com/tools">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintlayout_logintype"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingStart="@dimen/fragment_horizontal_margin"
+        android:paddingEnd="@dimen/fragment_horizontal_margin"
+        tools:context=".ui.login_type.LoginTypeFragment">
 
-    <ImageView
-        android:id="@+id/imageView_logintype_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:contentDescription="@string/logintype_logo"
-        android:src="@drawable/hammer"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.38" />
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="BDBD"
+            android:textColor="@color/bidderbidder_primary"
+            android:textSize="@dimen/login_type_logo_size"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.25" />
 
-    <TextView
-        android:id="@+id/textview_logintype_welcometext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/logintype_welcometext"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView_logintype_logo"
-        app:layout_constraintVertical_bias="0.05" />
+        <TextView
+            android:id="@+id/textview_logintype_welcometext"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/logintype_welcometext"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/login_type_title_text_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
-    <Button
-        android:id="@+id/button_logintype_kakaologin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/grey"
-        android:text="@string/logintype_naverlogin"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.87" />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8">
 
-    <Button
-        android:id="@+id/button_logintype_naverlogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/grey"
-        android:text="@string/logintype_kakaologin"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.79" />
+            <include
+                android:id="@+id/button_logintype_kakao"
+                layout="@layout/include_login_type_button"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_type_button_height"
+                android:layout_marginBottom="@dimen/login_type_button_margin"
+                app:backgroundColor="@{@color/kakao_background}"
+                app:buttonIcon="@{@drawable/login_type_kakao}"
+                app:textColor="@{@color/kakao_text}"
+                app:titleText="@{@string/logintype_kakaologin}" />
 
-    <Button
-        android:id="@+id/button_logintype_commonlogin"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/grey"
-        android:text="@string/logintype_commonlogin"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95" />
+            <include
+                android:id="@+id/button_logintype_naver"
+                layout="@layout/include_login_type_button"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_type_button_height"
+                android:layout_marginBottom="@dimen/login_type_button_margin"
+                app:backgroundColor="@{@color/naver_background}"
+                app:buttonIcon="@{@drawable/login_type_naver}"
+                app:textColor="@{@color/white}"
+                app:titleText="@{@string/logintype_naverlogin}" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <include
+                android:id="@+id/button_logintype_apple"
+                layout="@layout/include_login_type_button"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_type_button_height"
+                android:layout_marginBottom="@dimen/login_type_button_margin"
+                app:backgroundColor="@{@color/google_background}"
+                app:buttonIcon="@{@drawable/login_type_google}"
+                app:textColor="@{@color/black}"
+                app:titleText="@{@string/logintype_googlelogin}" />
+
+            <include
+                android:id="@+id/button_logintype_common"
+                layout="@layout/include_login_type_button"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_type_button_height"
+                app:backgroundColor="@{@color/common_login_background}"
+                app:textColor="@{@color/black}"
+                app:titleText="@{@string/logintype_commonlogin}" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView_logintype_registration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/logintype_registration"
+            android:textSize="@dimen/login_type_registration_text_size"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+            app:layout_constraintVertical_bias="0.2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
