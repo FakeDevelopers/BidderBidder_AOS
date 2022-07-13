@@ -23,8 +23,8 @@ class AlbumListViewModel : ViewModel() {
     private val _selectedImageList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val _selectErrorImage = MutableSharedFlow<Boolean>()
     private val _startViewPagerIndex = MutableSharedFlow<Int>()
-    private val _addedImageList = mutableListOf<String>()
-    private val removedImageList = mutableListOf<String>()
+    private val _addedImageList = hashSetOf<String>()
+    private val removedImageList = hashSetOf<String>()
     private var totalPictureCount = 0
     private lateinit var allImages: Map<String, MutableList<Pair<String, Long>>>
 
@@ -34,7 +34,7 @@ class AlbumListViewModel : ViewModel() {
     val selectedImageList: StateFlow<List<String>> get() = _selectedImageList
     val startViewPagerIndex: SharedFlow<Int> get() = _startViewPagerIndex
     val selectErrorImage: SharedFlow<Boolean> get() = _selectErrorImage
-    val addedImageList: List<String> get() = _addedImageList
+    val addedImageList: Set<String> get() = _addedImageList
 
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
