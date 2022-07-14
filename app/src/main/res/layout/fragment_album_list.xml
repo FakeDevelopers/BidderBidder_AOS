@@ -3,50 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View"/>
+        <import type="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumViewState" />
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListViewModel" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_selected_picture"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:adapter="@{vm.selectedPictureAdapter}"
-            android:orientation="horizontal"
-            android:visibility="visible"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-            tools:visibility="visible" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_albem_list"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:adapter="@{vm.albumListAdapter}"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recycler_selected_picture"
-            app:spanCount="3"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <Button
                 android:id="@+id/button_album_list_complete"
@@ -65,11 +37,81 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.INVISIBLE}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:ignore="SpeakableTextPresentCheck" />
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+            <TextView
+                android:id="@+id/textview_album_list_index"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.INVISIBLE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <FrameLayout
+            android:id="@+id/test"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.GONE}">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewpager_picture_select"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:adapter="@{vm.albumPagerAdapter}"
+                app:contentPaddingTop="0dp"
+                app:contentPaddingBottom="0dp"/>
+
+            <TextView
+                android:id="@+id/textview_picture_select_count"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="right"
+                android:layout_margin="10dp"
+                android:background="@drawable/shape_picture_select_count"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                tools:ignore="RtlHardcoded,TextContrastCheck"
+                tools:text="10"
+                tools:visibility="visible" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.GONE}">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_selected_picture"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:adapter="@{vm.selectedPictureAdapter}"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_album_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adapter="@{vm.albumListAdapter}"
+                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                app:spanCount="3" />
+        </LinearLayout>
+
+    </LinearLayout>
 </layout>

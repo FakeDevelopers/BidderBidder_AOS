@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductRegistrationBinding
 
@@ -24,10 +25,14 @@ class SelectedPictureListAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: String) {
             setRepresentImage(findSelectedImageIndex(item) == 0)
+            // 얘는 따로 시그니처를 쓰지 않았습니다.
+            // 시그니처를 쓸라면 코드를 많이 바까야 해요 ㅎㅎ..
             Glide.with(context)
                 .load(item)
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(binding.imageviewProductRegistration)
             // 선택 사진 터치 시 제거
             binding.imageviewProductRegistration.setOnClickListener {
