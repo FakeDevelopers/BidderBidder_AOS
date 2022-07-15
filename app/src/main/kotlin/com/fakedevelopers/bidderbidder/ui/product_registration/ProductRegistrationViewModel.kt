@@ -70,8 +70,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
-        val list = mutableListOf<String>()
-        list.addAll(_urlList.value)
+        val list = _urlList.value.toMutableList()
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
                 Collections.swap(list, i, i + 1)

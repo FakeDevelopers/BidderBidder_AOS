@@ -1,5 +1,8 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration.album_list
 
+import android.content.ContentResolver.NOTIFY_DELETE
+import android.content.ContentResolver.NOTIFY_INSERT
+import android.content.ContentResolver.NOTIFY_UPDATE
 import android.content.ContentUris
 import android.database.ContentObserver
 import android.net.Uri
@@ -298,14 +301,17 @@ class AlbumListFragment : Fragment() {
 
     companion object {
         const val ALL_PICTURES = "전체보기"
-        const val ADD_IMAGE = 32772
-        const val REMOVE_IMAGE = 32784
-        const val MODIFY_IMAGE = 32776
+
+        private const val BASE_FLAG = 32768
+        const val ADD_IMAGE = BASE_FLAG + NOTIFY_INSERT
+        const val REMOVE_IMAGE = BASE_FLAG + NOTIFY_DELETE
+        const val MODIFY_IMAGE = BASE_FLAG + NOTIFY_UPDATE
     }
 
     override fun onDestroy() {
         super.onDestroy()
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
+        requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         _binding = null
         backPressedCallback.remove()
     }
