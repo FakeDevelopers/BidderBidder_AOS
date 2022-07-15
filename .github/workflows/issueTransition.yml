@@ -23,7 +23,7 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         id: jira-ticket
         with:
-          from: branch
+          from: commits
       - name: Transition issue to review
         if: ${{ steps.jira-ticket.outputs.issue != '' && github.event_name == 'pull_request' }}
         uses: atlassian/gajira-transition@master
