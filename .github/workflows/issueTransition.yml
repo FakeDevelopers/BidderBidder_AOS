@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ develop ]
     types: [ opened ]
+  pull_request_target:
 
 jobs:
   build:
@@ -23,7 +24,7 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         id: jira-ticket
         with:
-          from: commits
+          string: ${{ github.event.ref }}
       - name: Transition issue to review
         if: ${{ steps.jira-ticket.outputs.issue != '' && github.event_name == 'pull_request' }}
         uses: atlassian/gajira-transition@master
