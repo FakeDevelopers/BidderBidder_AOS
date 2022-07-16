@@ -1,4 +1,4 @@
-name: issueTransitionForPR
+name: issueTransition
 
 on:
   push:
