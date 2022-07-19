@@ -51,6 +51,7 @@ class ProductRegistrationFragment : Fragment() {
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var _binding: FragmentProductRegistrationBinding? = null
+    private var isClicked = false
 
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
@@ -172,7 +173,8 @@ class ProductRegistrationFragment : Fragment() {
         }
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
-            if (viewModel.condition.value && checkPriceCondition()) {
+            if (isClicked.not() && viewModel.condition.value && checkPriceCondition()) {
+                isClicked = true
                 val list = mutableListOf<MultipartBody.Part>()
                 viewModel.urlList.value.forEach { uri ->
                     getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
