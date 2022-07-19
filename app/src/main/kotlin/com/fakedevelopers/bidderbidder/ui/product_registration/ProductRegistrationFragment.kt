@@ -172,10 +172,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
-            if (binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled &&
-                viewModel.condition.value &&
-                checkPriceCondition()
-            ) {
+            if (viewModel.condition.value && checkPriceCondition()) {
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 val list = mutableListOf<MultipartBody.Part>()
                 viewModel.urlList.value.forEach { uri ->
