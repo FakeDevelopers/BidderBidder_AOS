@@ -173,6 +173,7 @@ class ProductRegistrationFragment : Fragment() {
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
+                binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 val list = mutableListOf<MultipartBody.Part>()
                 viewModel.urlList.value.forEach { uri ->
                     getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
@@ -229,6 +230,7 @@ class ProductRegistrationFragment : Fragment() {
                     if (it.isSuccessful) {
                         findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
                     } else {
+                        binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
                         Logger.t("myImage").e(it.errorBody().toString())
                     }
                 }
