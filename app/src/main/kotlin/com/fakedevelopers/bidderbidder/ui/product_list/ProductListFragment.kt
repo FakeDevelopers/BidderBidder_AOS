@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,6 +18,7 @@ import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.fakedevelopers.bidderbidder.MainViewModel
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductListBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +33,7 @@ class ProductListFragment : Fragment() {
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val binding get() = _binding!!
     private val args: ProductListFragmentArgs by navArgs()
 
@@ -71,6 +74,16 @@ class ProductListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.isLoading.collectLatest {
                     binding.swipeProductList.isRefreshing = it
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.isLoading.collectLatest {
+                    if(it) {
+                        viewModel.setSearchWord("")
+                        viewModel.requestProductList(true)
+                    }
                 }
             }
         }

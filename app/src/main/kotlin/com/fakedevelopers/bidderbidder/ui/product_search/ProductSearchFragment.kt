@@ -11,12 +11,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.fakedevelopers.bidderbidder.MainViewModel
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.SEARCH_HISTORY
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.datastore
@@ -33,6 +35,7 @@ class ProductSearchFragment : Fragment() {
     private var _binding: FragmentProductSearchBinding? = null
 
     private val viewModel: ProductSearchViewModel by viewModels()
+    private val mainViewModel: MainViewModel by activityViewModels()
     private val binding get() = _binding!!
     private val args: ProductSearchFragmentArgs by navArgs()
     private val imm by lazy {
@@ -113,6 +116,16 @@ class ProductSearchFragment : Fragment() {
                         binding.recyclerProductSearchResult.visibility = View.INVISIBLE
                         binding.layoutProductSearchBeforeSearch.visibility = View.VISIBLE
                         viewModel.clearResult()
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                mainViewModel.isRefreshed.collectLatest {
+                    if(it){
+                        binding.toolbarProductSearch.edittextToolbarSearch.setText("")
+                        mainViewModel.setRefresh(false)
                     }
                 }
             }
