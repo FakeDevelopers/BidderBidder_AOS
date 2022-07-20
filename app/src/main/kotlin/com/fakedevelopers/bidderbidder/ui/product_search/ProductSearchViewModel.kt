@@ -16,6 +16,7 @@ class ProductSearchViewModel(
 
     private val _searchWord = MutableSharedFlow<String>()
     private val _historySet = MutableSharedFlow<Set<String>>()
+
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private val popularList = MutableStateFlow<MutableList<String>>(mutableListOf())
@@ -70,7 +71,7 @@ class ProductSearchViewModel(
                 "${searchBar.value}${Random.nextInt(100)}",
                 "${searchBar.value}${Random.nextInt(100)}",
                 "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
+                "${searchBar.value}${Random.nextInt(100)}"
             )
         )
         prevSearchBar = searchBar.value

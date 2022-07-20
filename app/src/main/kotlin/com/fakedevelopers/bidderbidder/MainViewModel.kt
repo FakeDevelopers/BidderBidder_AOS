@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel: ViewModel() {
+class MainViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     private val _isRefreshed = MutableStateFlow(false)
 
@@ -17,7 +17,7 @@ class MainViewModel: ViewModel() {
         viewModelScope.launch {
             _isLoading.emit(state)
         }
-        if(state) {
+        if (state) {
             setRefresh(true)
         }
     }

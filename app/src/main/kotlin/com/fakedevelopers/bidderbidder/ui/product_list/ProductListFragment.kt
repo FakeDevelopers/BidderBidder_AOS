@@ -80,7 +80,7 @@ class ProductListFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 mainViewModel.isLoading.collectLatest {
-                    if(it) {
+                    if (it) {
                         viewModel.setSearchWord("")
                         viewModel.requestProductList(true)
                     }
