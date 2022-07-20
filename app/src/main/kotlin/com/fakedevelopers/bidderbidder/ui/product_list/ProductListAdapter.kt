@@ -16,8 +16,7 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel.Companion.LIST_COUNT
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
+import java.util.*
 
 class ProductListAdapter(
     private val onClick: () -> Unit,
@@ -141,7 +140,8 @@ class ProductListAdapter(
     override fun getItemViewType(position: Int) =
         if (position <= LIST_COUNT && position == itemCount - 1) TYPE_FOOTER else TYPE_ITEM
 
-    override fun getItemCount() = if (listSize == 0 || listSize > LIST_COUNT) super.getItemCount() else listSize
+    //override fun getItemCount() = if (listSize == 0 || listSize > LIST_COUNT) super.getItemCount() else listSize
+    override fun getItemCount() =  listSize
 
     override fun submitList(list: List<ProductListDto>?) {
         if (!list.isNullOrEmpty()) {
