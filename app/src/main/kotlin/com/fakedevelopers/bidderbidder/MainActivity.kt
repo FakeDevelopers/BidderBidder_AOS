@@ -41,19 +41,14 @@ class MainActivity : AppCompatActivity() {
             true
         }
         binding.bottomNavigationMain.setItemOnTouchListener(R.id.menu_product_list) { view, motionEvent ->
-            when (motionEvent.actionMasked) {
-                MotionEvent.ACTION_UP -> {
-                    view.performClick()
-                    navController.apply {
-                        getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                        navigate(R.id.action_productListFragment_self)
-                    }
-                    true
-                }
-                else -> {
-                    true
+            if (motionEvent.actionMasked == MotionEvent.ACTION_UP) {
+                view.performClick()
+                navController.apply {
+                    getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
+                    navigate(R.id.action_productListFragment_self)
                 }
             }
+            true
         }
     }
 
