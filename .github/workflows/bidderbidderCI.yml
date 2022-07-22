@@ -25,7 +25,7 @@ jobs:
       - name: Create data dir
         run: mkdir ./app/src/main/kotlin/com/fakedevelopers/bidderbidder/api/data
       - name: Create Constants
-        run: echo '${{ secrets.CONSTANTS }}' > ./app/src/main/kotlin/com/fakedevelopers/bidderbidder/api/data/Constants.kt
+        run: echo '${{ secrets.CONSTANTS_SANDBOX }}' > ./app/src/main/kotlin/com/fakedevelopers/bidderbidder/api/data/Constants.kt
       - name: Build with Gradle
         run: ./gradlew build
       - name: Build Signed APK
