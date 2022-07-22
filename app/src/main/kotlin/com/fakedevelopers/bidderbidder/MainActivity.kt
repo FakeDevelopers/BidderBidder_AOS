@@ -2,7 +2,6 @@ package com.fakedevelopers.bidderbidder
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -15,8 +14,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private var _binding: ActivityMainBinding? = null
-
-    private val viewModel: MainViewModel by viewModels()
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,14 +38,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_product_registration -> navController.navigate(R.id.productRegistrationFragment)
             }
             true
-        }
-        binding.bottomNavigationMain.setOnItemReselectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_product_list -> {
-                    viewModel.setReload(true)
-                    viewModel.setReload(false)
-                }
-            }
         }
     }
 
