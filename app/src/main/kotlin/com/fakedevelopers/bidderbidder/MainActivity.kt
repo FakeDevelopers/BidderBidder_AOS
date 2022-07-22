@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder
 
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
@@ -38,6 +39,24 @@ class MainActivity : AppCompatActivity() {
                 R.id.menu_product_registration -> navController.navigate(R.id.productRegistrationFragment)
             }
             true
+        }
+        binding.bottomNavigationMain.setItemOnTouchListener(R.id.menu_product_list) {
+                view: View, motionEvent: MotionEvent ->
+            when (motionEvent.actionMasked) {
+                MotionEvent.ACTION_UP -> {
+                    navController.apply {
+                        getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
+                        navigate(R.id.action_productListFragment_self)
+                    }
+                    true
+                }
+                MotionEvent.ACTION_DOWN -> {
+                    view.performClick()
+                }
+                else -> {
+                    true
+                }
+            }
         }
     }
 
