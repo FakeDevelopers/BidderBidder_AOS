@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_registration_graph"
+    app:startDestination="@id/acceptTermsFragment">
+    <fragment
+        android:id="@+id/acceptTermsFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.accept_terms.AcceptTermsFragment"
+        android:label="AcceptTermsFragment" />
+    <fragment
+        android:id="@+id/phoneAuthFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthFragment"
+        android:label="fragment_phone_auth"
+        tools:layout="@layout/fragment_phone_auth" />
+    <fragment
+        android:id="@+id/userRegistrationBirthFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.birth.UserRegistrationBirthFragment"
+        android:label="UserRegistrationBirthFragment" />
+    <fragment
+        android:id="@+id/userRegistrationIdFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.id.UserRegistrationIdFragment"
+        android:label="UserRegistrationIdFragment" />
+    <fragment
+        android:id="@+id/userRegistrationPasswordFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.password.UserRegistrationPasswordFragment"
+        android:label="UserRegistrationPasswordFragment" />
+</navigation>
