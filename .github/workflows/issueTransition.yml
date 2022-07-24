@@ -22,23 +22,23 @@ jobs:
       - name: Find in branch
         if: ${{ github.event_name == 'push' }}
         uses: atlassian/gajira-find-issue-key@master
-        id: jira-ticket
+        id: jira-ticket-push
         with:
           from: branch
       - name: Find in head ref
         if: ${{ github.event_name == 'pull_request' }}
         uses: atlassian/gajira-find-issue-key@master
-        id: jira-ticket
+        id: jira-ticket-pr
         with:
           string: ${{ github.head_ref }}
       - name: Transition issue to review
-        if: ${{ steps.jira-ticket.outputs.issue != '' && github.event_name == 'pull_request' }}
+        if: ${{ steps.jira-ticket-pr.outputs.issue != '' && github.event_name == 'pull_request' }}
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.jira-ticket.outputs.issue }}
           transition: "리뷰 대기"
       - name: Transition issue to complete
-        if: ${{ steps.jira-ticket.outputs.issue != '' && github.event_name == 'push' }}
+        if: ${{ steps.jira-ticket-push.outputs.issue != '' && github.event_name == 'push' }}
         uses: atlassian/gajira-transition@master
         with:
           issue: ${{ steps.jira-ticket.outputs.issue }}
