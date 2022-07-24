@@ -4,7 +4,7 @@ on:
   push:
     branches: [ develop ]
   pull_request:
-    branches: [ develop ]
+    branches: [ feature/**, fix/** ]
     types: [ opened, reopened ]
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
         uses: atlassian/gajira-find-issue-key@master
         id: jira-ticket
         with:
-          string: ${{ github.event.pull_request.title }}
+          from: branch
       - name: Transition issue to review
         if: ${{ steps.jira-ticket.outputs.issue != '' && github.event_name == 'pull_request' }}
         uses: atlassian/gajira-transition@master
