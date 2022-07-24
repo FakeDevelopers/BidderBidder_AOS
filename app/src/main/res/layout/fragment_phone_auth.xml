@@ -71,28 +71,45 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textinputlayout_phoneauth_authcode"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edittext_phoneauth_authcode"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textinputlayout_phoneauth_authcode"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:ems="10"
-                android:enabled="false"
-                android:hint="@string/phoneauth_hint_authcode"
-                android:inputType="numberDecimal"
-                android:text="@={vm.authCode}"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edittext_phoneauth_authcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:hint="@string/phoneauth_hint_authcode"
+                    android:inputType="numberDecimal"
+                    android:text="@={vm.authCode}"
+                    android:textSize="12sp"
+                    tools:ignore="TextContrastCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/textview_phoneauth_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:text="@={vm.remainTime}"
                 android:textSize="12sp"
-                tools:ignore="TextContrastCheck" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:visibility="invisible"
+                tools:text="02:00"
+                tools:visibility="visible" />
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

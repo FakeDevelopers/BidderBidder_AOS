@@ -1,14 +1,19 @@
 package com.fakedevelopers.bidderbidder.ui.register.phone_auth
 
+import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthFragment.Companion.EXPIRE_TIME
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,13 +21,33 @@ class PhoneAuthViewModel @Inject constructor(
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
+    private val timerFormat = DecimalFormat("00")
+    private val _timerVisibility = MutableSharedFlow<Boolean>()
     private val resendingToken = MutableStateFlow<PhoneAuthProvider.ForceResendingToken?>(null)
     private val _codeSendingStates = MutableStateFlow(PhoneAuthState.INIT)
     private var verificationId = ""
 
     val phoneNumber = MutableStateFlow("")
     val authCode = MutableStateFlow("")
+    val remainTime = MutableStateFlow("")
+    val timerVisibility: SharedFlow<Boolean> get() = _timerVisibility
     val codeSendingStates: StateFlow<PhoneAuthState> get() = _codeSendingStates
+
+    private val timerTask by lazy {
+        object : CountDownTimer(EXPIRE_TIME * 1000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                setRemainTime(millisUntilFinished)
+            }
+
+            override fun onFinish() {
+                // 타임오바 됐다면 초기 상태로 돌아간다.
+                viewModelScope.launch {
+                    _timerVisibility.emit(false)
+                }
+                setCodeSendingStates(PhoneAuthState.INIT)
+            }
+        }
+    }
 
     init {
         auth.useAppLanguage()
@@ -52,6 +77,21 @@ class PhoneAuthViewModel @Inject constructor(
         if (state == PhoneAuthState.INIT) {
             resendingToken.value = null
             authCode.value = ""
+        }
+    }
+
+    fun startTimer() {
+        viewModelScope.launch {
+            _timerVisibility.emit(true)
+        }
+        timerTask.start()
+    }
+
+    private fun setRemainTime(millisUntilFinished: Long) {
+        val minute = millisUntilFinished / 60000
+        val second = millisUntilFinished % 60000 / 1000
+        viewModelScope.launch {
+            remainTime.emit("${timerFormat.format(minute)}:${timerFormat.format(second)}")
         }
     }
 }

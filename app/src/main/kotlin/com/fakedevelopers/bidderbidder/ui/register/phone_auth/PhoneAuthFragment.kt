@@ -53,10 +53,14 @@ class PhoneAuthFragment : Fragment() {
             }
             // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
             override fun onCodeSent(verificationCode: String, resendingToken: PhoneAuthProvider.ForceResendingToken) {
-                // 인증 id 저장
-                phoneAuthViewModel.setVerificationCodeAndResendingToken(verificationCode, resendingToken)
+                phoneAuthViewModel.apply {
+                    // 타이머 시작
+                    startTimer()
+                    // 인증 id 저장
+                    setVerificationCodeAndResendingToken(verificationCode, resendingToken)
+                    setCodeSendingStates(PhoneAuthState.SENT)
+                }
                 userRegistrationViewModel.setCurrentStep(PHONE_AUTH_CHECK_AUTH_CODE)
-                phoneAuthViewModel.setCodeSendingStates(PhoneAuthState.SENT)
                 super.onCodeSent(verificationCode, resendingToken)
             }
         }
@@ -110,16 +114,26 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
         }
+        // 타이머 visibility
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                phoneAuthViewModel.timerVisibility.collectLatest {
+                    binding.textviewPhoneauthTimer.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                }
+            }
+        }
     }
 
     private fun handlePhoneAuthEvent(state: PhoneAuthState) {
-        when (state) {
-            PhoneAuthState.INIT -> binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
-            PhoneAuthState.SENDING -> binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_sending_authcode)
-            PhoneAuthState.SENT -> binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_resend)
+        binding.buttonPhoneauthSendCode.apply {
+            when (state) {
+                PhoneAuthState.INIT -> setText(R.string.phoneauth_getauthcode)
+                PhoneAuthState.SENDING -> setText(R.string.phoneauth_sending_authcode)
+                PhoneAuthState.SENT -> setText(R.string.phoneauth_resend)
+            }
+            isEnabled = state != PhoneAuthState.SENDING
         }
         binding.edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
-        binding.buttonPhoneauthSendCode.isEnabled = state != PhoneAuthState.SENDING
     }
 
     private fun handleAuthResult(task: Task<AuthResult>) {
@@ -166,6 +180,6 @@ class PhoneAuthFragment : Fragment() {
     }
 
     companion object {
-        private const val EXPIRE_TIME = 120L
+        const val EXPIRE_TIME = 120L
     }
 }
