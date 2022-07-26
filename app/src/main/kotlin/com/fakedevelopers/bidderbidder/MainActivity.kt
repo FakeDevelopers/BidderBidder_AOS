@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
+import com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragmentDirections
 import com.jakewharton.threetenabp.AndroidThreeTen
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,7 +47,11 @@ class MainActivity : AppCompatActivity() {
                 view.performClick()
                 navController.apply {
                     getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                    navigate(R.id.action_productListFragment_self)
+                    try {
+                        navigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
+                    } catch (e: Exception) {
+                        Logger.e(e.toString())
+                    }
                 }
             }
             true
