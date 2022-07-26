@@ -70,7 +70,7 @@
                 app:titleText="@{@string/logintype_naverlogin}" />
 
             <include
-                android:id="@+id/button_logintype_apple"
+                android:id="@+id/button_logintype_google"
                 layout="@layout/include_login_type_button"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
