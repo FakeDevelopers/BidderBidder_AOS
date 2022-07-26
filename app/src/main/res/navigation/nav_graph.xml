@@ -16,6 +16,7 @@
         <action
             android:id="@+id/action_loginTypeFragment_to_userRegistrationFragment"
             app:destination="@id/userRegistrationFragment" />
+        <action
             android:id="@+id/action_loginTypeFragment_to_phoneAuthFragment"
             app:destination="@id/phoneAuthFragment" />
         <action
