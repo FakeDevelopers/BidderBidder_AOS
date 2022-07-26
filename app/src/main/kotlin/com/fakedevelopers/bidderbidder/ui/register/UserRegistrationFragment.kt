@@ -120,7 +120,9 @@ class UserRegistrationFragment : Fragment() {
             INPUT_ID -> navController.navigate(R.id.userRegistrationIdFragment)
             INPUT_PASSWORD -> navController.navigate(R.id.userRegistrationPasswordFragment)
             CONGRATULATIONS -> findNavController().navigate(R.id.action_userRegistrationFragment_to_productListFragment)
-            else -> {}
+            else -> {
+                // 여긴 아무것도 안해!
+            }
         }
     }
 

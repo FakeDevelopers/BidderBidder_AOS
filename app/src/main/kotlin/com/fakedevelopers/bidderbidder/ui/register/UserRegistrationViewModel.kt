@@ -196,7 +196,9 @@ class UserRegistrationViewModel : ViewModel() {
             INPUT_BIRTH -> checkBirth()
             INPUT_ID -> checkUserId()
             INPUT_PASSWORD -> checkUserPassword()
-            else -> {}
+            else -> {
+                // 여긴 갈 일 없어!
+            }
         }
     }
 
