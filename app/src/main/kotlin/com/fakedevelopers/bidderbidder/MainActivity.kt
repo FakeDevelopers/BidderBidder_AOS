@@ -5,6 +5,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragmentDirections
@@ -25,6 +26,15 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         AndroidThreeTen.init(this)
         navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
+
+        val changeBottomNavigation = fun(navDirections: NavDirections) {
+            runCatching {
+                navController.navigate(navDirections)
+            }.onFailure {
+                Logger.e(it.toString())
+            }
+        }
+
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.productListFragment -> {
@@ -47,11 +57,7 @@ class MainActivity : AppCompatActivity() {
                 view.performClick()
                 navController.apply {
                     getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                    try {
-                        navigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
-                    } catch (e: Exception) {
-                        Logger.e(e.toString())
-                    }
+                    changeBottomNavigation(ProductListFragmentDirections.actionProductListFragmentSelf(""))
                 }
             }
             true
