@@ -155,6 +155,9 @@ class UserRegistrationViewModel : ViewModel() {
             _userPasswordConditionCharacterState.emit(characterCondition)
             _userPasswordConfirmVisible.emit(lengthCondition && characterCondition)
         }
+        if (lengthCondition && characterCondition) {
+            checkPasswordConfirm()
+        }
     }
 
     // 비밀번호 확인
@@ -176,7 +179,7 @@ class UserRegistrationViewModel : ViewModel() {
             // 서버가 ok와 함께 토큰을 던져주고 그걸 저장까지 했을 때 다음 화면으로 넘어갑니다.
             setCurrentStep(CONGRATULATIONS)
         } else {
-            sendFailureMessage(INVALID_PASSWORD)
+            sendFailureMessage(INVALID_REGEX)
         }
     }
 
@@ -196,7 +199,9 @@ class UserRegistrationViewModel : ViewModel() {
             INPUT_BIRTH -> checkBirth()
             INPUT_ID -> checkUserId()
             INPUT_PASSWORD -> checkUserPassword()
-            else -> {}
+            else -> {
+                // 여긴 갈 일 없어!
+            }
         }
     }
 
@@ -235,7 +240,9 @@ class UserRegistrationViewModel : ViewModel() {
         // 비밀번호 조건
         const val PASSWORD_LENGTH_MINIMUM = 12
         const val PASSWORD_LENGTH_MAXIMUM = 24
-        val PASSWORD_CHARACTER_CONDITION = Regex("^(?=.*[A-Za-z])(?=.*[0-9])[a-zA-Z0-9]*$")
+        // 허용되는 특수문자 : !@#$%^+-=
+        // 나중에 명확히 정해지면 그걸루 가도 되겠죠
+        val PASSWORD_CHARACTER_CONDITION = Regex("^(?=.*[A-Za-z])(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
 
         // 실패 메세지
         const val NOT_GO_BACKWARDS = "가지마!!"
@@ -243,7 +250,8 @@ class UserRegistrationViewModel : ViewModel() {
         const val NOT_RECEIVED_AUTH_CODE = "인증번호를 입력해!!"
         const val EMPTY_BIRTH = "생년월일이 없잖아!!"
         const val NOT_ID_DUPLICATION_CHECK = "이게 아이디야?!"
-        const val INVALID_PASSWORD = "이게 비밀번호야?!"
+        // 소나가 뭐라캐서 이름을 고칩니다.
+        const val INVALID_REGEX = "이게 비밀번호야?!"
 
         // 테스트용 중복 ID
         const val EXIST_ID = "bidder123"
