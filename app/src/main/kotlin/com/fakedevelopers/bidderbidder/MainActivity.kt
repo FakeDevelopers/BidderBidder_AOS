@@ -5,7 +5,6 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragmentDirections
@@ -26,14 +25,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         AndroidThreeTen.init(this)
         navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
-
-        val changeBottomNavigation = fun(navDirections: NavDirections) {
-            runCatching {
-                navController.navigate(navDirections)
-            }.onFailure {
-                Logger.e(it.toString())
-            }
-        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
@@ -57,7 +48,9 @@ class MainActivity : AppCompatActivity() {
                 view.performClick()
                 navController.apply {
                     getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                    changeBottomNavigation(ProductListFragmentDirections.actionProductListFragmentSelf(""))
+                    safeCall {
+                        navigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
+                    }
                 }
             }
             true
@@ -67,5 +60,13 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private inline fun <R> safeCall(call: () -> R) {
+        runCatching {
+            call()
+        }.onFailure {
+            Logger.e(it.toString())
+        }
     }
 }
