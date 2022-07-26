@@ -88,7 +88,7 @@ class LoginTypeFragment : Fragment() {
 
     val requestActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == RESULT_OK) {
-            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(result.data)
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(result.data!!)
             // result가 성공했을 때 이 값을 firebase에 넘겨주기
             if (result!!.isSuccess) {
                 val account = result.signInAccount
