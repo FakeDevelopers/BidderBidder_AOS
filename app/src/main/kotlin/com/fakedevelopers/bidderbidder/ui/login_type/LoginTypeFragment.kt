@@ -51,7 +51,7 @@ class LoginTypeFragment : Fragment() {
             findNavController().navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
         binding.textViewLogintypeRegistration.setOnClickListener {
-            findNavController().navigate(R.id.action_loginTypeFragment_to_phoneAuthFragment)
+            findNavController().navigate(R.id.action_loginTypeFragment_to_userRegistrationFragment)
         }
     }
 

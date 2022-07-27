@@ -59,7 +59,7 @@ class LoginFragment : Fragment() {
         }
         // 회원가입 버튼
         binding.textviewLoginRegistration.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_phoneAuthFragment)
+            findNavController().navigate(R.id.action_loginFragment_to_userRegistrationFragment)
         }
     }
 
