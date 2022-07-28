@@ -44,6 +44,9 @@ class UserRegistrationPasswordFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initCollector()
+        if(viewModel.userPasswordConditionLengthState.value && viewModel.userPasswordConditionCharacterState.value) {
+            binding.textviewPasswordConfirmInfo.visibility = View.VISIBLE
+        }
     }
 
     private fun initCollector() {
