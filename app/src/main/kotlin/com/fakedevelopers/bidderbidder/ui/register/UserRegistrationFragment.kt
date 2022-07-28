@@ -12,8 +12,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
@@ -35,6 +37,9 @@ class UserRegistrationFragment : Fragment() {
     }
     private val navController by lazy {
         (childFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
+    }
+    private val singleTopOptions = navOptions {
+        launchSingleTop = true
     }
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -113,17 +118,22 @@ class UserRegistrationFragment : Fragment() {
 
     // 다음 단계 네비게이션
     private fun toNextStep(state: RegistrationProgressState) {
+        NavOptions.Builder().setLaunchSingleTop(true)
         when (state) {
-            ACCEPT_TERMS -> navController.navigate(R.id.acceptTermsFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navController.navigate(R.id.phoneAuthFragment)
-            INPUT_BIRTH -> navController.navigate(R.id.userRegistrationBirthFragment)
-            INPUT_ID -> navController.navigate(R.id.userRegistrationIdFragment)
-            INPUT_PASSWORD -> navController.navigate(R.id.userRegistrationPasswordFragment)
+            ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
+            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
+            INPUT_BIRTH -> navigate(R.id.userRegistrationBirthFragment)
+            INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
+            INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)
             CONGRATULATIONS -> findNavController().navigate(R.id.action_userRegistrationFragment_to_productListFragment)
             else -> {
                 // 여긴 아무것도 안해!
             }
         }
+    }
+
+    private fun navigate(id: Int) {
+        navController.navigate(id, null, singleTopOptions)
     }
 
     override fun onDestroy() {

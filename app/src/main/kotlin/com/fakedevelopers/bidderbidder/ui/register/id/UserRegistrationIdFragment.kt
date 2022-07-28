@@ -42,13 +42,9 @@ class UserRegistrationIdFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initListener()
         initCollector()
-    }
-
-    private fun initListener() {
-        binding.buttonIdDuplicationCheck.setOnClickListener {
-            viewModel.isUserIdDuplicated()
+        if (!viewModel.getIdDuplicationState()) {
+            setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary)
         }
     }
 
@@ -56,7 +52,6 @@ class UserRegistrationIdFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userIdDuplicationState.collectLatest {
-                    binding.textviewIdDuplicationInfo.visibility = View.VISIBLE
                     if (it) {
                         setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red)
                     } else {
@@ -70,6 +65,7 @@ class UserRegistrationIdFragment : Fragment() {
     // 중복 체크 표시
     private fun setDuplicationInfo(stringId: Int, colorId: Int) {
         binding.textviewIdDuplicationInfo.apply {
+            visibility = if (viewModel.inputUserId.value.isNotEmpty()) View.VISIBLE else View.INVISIBLE
             setText(stringId)
             setTextColor(ContextCompat.getColor(requireContext(), colorId))
         }

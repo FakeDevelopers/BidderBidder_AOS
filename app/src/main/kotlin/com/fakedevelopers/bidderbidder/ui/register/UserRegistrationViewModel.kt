@@ -113,25 +113,27 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* UserRegistrationIdFragment */
     // 아이디 중복 검사
-    fun isUserIdDuplicated(): Boolean {
+    fun isUserIdDuplicated() {
         // 비어 있다면 검사는 필요 없어
         if (inputUserId.value.isEmpty()) {
-            return true
+            setUserIdDuplicationState(true)
+            return
         }
         // 여기서는 api를 호출해서 inputId에 중복이 있는지 확인 합니다.
         // 물론 아직 그런건 없으므로 테스트용 EXIST_ID와 같은지만 비교해봅니다.
         lastDuplicationState = inputUserId.value == EXIST_ID
-        if (lastDuplicationState) {
+        if (!lastDuplicationState) {
             // 중복이 아니라면 입력칸의 id를 userId로 설정합니다.
             userId = inputUserId.value
         }
         setUserIdDuplicationState(lastDuplicationState)
-        return lastDuplicationState
     }
+
+    fun getIdDuplicationState() = lastDuplicationState
 
     // 이미 중복 체크된 아이디거나 중복 체크를 통과한 아이디면 다음 단계로 갑니다.
     private fun checkUserId() {
-        if (!lastDuplicationState && (userId == inputUserId.value || !isUserIdDuplicated())) {
+        if (!lastDuplicationState && userId == inputUserId.value) {
             setCurrentStep(INPUT_PASSWORD)
         } else {
             sendFailureMessage(NOT_ID_DUPLICATION_CHECK)
