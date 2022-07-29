@@ -1,0 +1,20 @@
+name: Linter
+
+on:
+  push:
+    branches: [ develop, stage/sandbox, feature/** ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Super-Linter
+        uses: github/super-linter@v4.9.5
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
