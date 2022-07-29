@@ -1,0 +1,20 @@
+name: Lint Code Base
+
+on:
+  push:
+    branches-ignore: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Lint Code Base
+    steps:
+      - uses: actions/checkout@v3
+      - name: Super-Linter
+        uses: github/super-linter@v4.9.5
+        env:
+          VALIDATE_KOTLIN_ANDROID: true
+          DEFAULT_BRANCH: develop
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
