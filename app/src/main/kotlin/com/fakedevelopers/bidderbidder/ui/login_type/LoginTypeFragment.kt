@@ -9,6 +9,10 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
@@ -16,18 +20,31 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.WEB_CLIENT_I
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class LoginTypeFragment : Fragment() {
-    private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
     private var _binding: FragmentLoginTypeBinding? = null
 
     private val binding get() = _binding!!
+    private val viewModel: LoginTypeViewModel by viewModels()
+    private val requestActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode == RESULT_OK) {
+            val result = it.data?.let { data -> Auth.GoogleSignInApi.getSignInResultFromIntent(data) }
+            // result가 성공했을 때 이 값을 firebase에 넘겨주기
+            if (result != null && result.isSuccess) {
+                val account = result.signInAccount
+                if (account != null) {
+                    viewModel.firebaseAuthWithGoogle(account)
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,12 +57,12 @@ class LoginTypeFragment : Fragment() {
             container,
             false
         )
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(WEB_CLIENT_ID)
             .requestEmail()
             .build()
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), gso)
-        firebaseAuth = FirebaseAuth.getInstance()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
+        viewModel.firebaseAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
@@ -65,6 +82,11 @@ class LoginTypeFragment : Fragment() {
                 binding.textViewLogintypeRegistration.text.indexOf('?') + 1
             )
         }
+        initListener()
+        initCollector()
+    }
+
+    private fun initListener() {
         binding.buttonLogintypeGoogle.layoutLoginType.setOnClickListener {
             googleLogin()
         }
@@ -76,6 +98,21 @@ class LoginTypeFragment : Fragment() {
         }
     }
 
+    private fun initCollector() {
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.signinGoogleResponse.collect {
+                    if (it.isSuccessful) {
+                        Toast.makeText(requireActivity(), "success", Toast.LENGTH_LONG).show()
+                        findNavController().navigate(R.id.action_loginTypeFragment_to_productListFragment)
+                    } else {
+                        Toast.makeText(requireActivity(), "failure", Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -84,30 +121,5 @@ class LoginTypeFragment : Fragment() {
     private fun googleLogin() {
         val signInIntent = googleSignInClient.signInIntent
         requestActivity.launch(signInIntent)
-    }
-
-    val requestActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == RESULT_OK) {
-            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(result.data!!)
-            // result가 성공했을 때 이 값을 firebase에 넘겨주기
-            if (result!!.isSuccess) {
-                val account = result.signInAccount
-                firebaseAuthWithGoogle(account)
-            }
-        }
-    }
-
-    fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
-        val credential = GoogleAuthProvider.getCredential(account!!.idToken, null)
-        firebaseAuth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                // Login, 아이디와 패스워드가 맞았을 때
-                Toast.makeText(requireActivity(), "success", Toast.LENGTH_LONG).show()
-                findNavController().navigate(R.id.action_loginTypeFragment_to_productListFragment)
-            } else {
-                // Show the error message, 아이디와 패스워드가 틀렸을 때
-                Toast.makeText(requireActivity(), task.exception?.message, Toast.LENGTH_LONG).show()
-            }
-        }
     }
 }
