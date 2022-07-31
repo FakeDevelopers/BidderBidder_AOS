@@ -43,6 +43,7 @@
             android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
             android:text="@string/registration_button_to_next"
             android:enabled="@{vm.nextStepEnabled}"
+            android:onClick="@{() -> vm.checkNextStep()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -9,24 +9,24 @@ import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INP
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
-    private val _acceptAllState = MutableSharedFlow<Boolean>()
+    private val _acceptAllState = MutableEventFlow<Boolean>()
     private val essentialTerms = Array(NUMBER_OF_ESSENTIAL_TERM) { false }
     private val optionalTerms = Array(NUMBER_OF_OPTIONAL_TERM) { false }
-    val acceptAllState: SharedFlow<Boolean> get() = _acceptAllState
+    val acceptAllState = _acceptAllState.asEventFlow()
 
     /* PhoneAuthFragment */
     private var phoneAuthToken = ""
-    private val _checkAuthCode = MutableSharedFlow<Boolean>()
-    val checkAuthCode: SharedFlow<Boolean> get() = _checkAuthCode
+    private val _checkAuthCode = MutableEventFlow<Boolean>()
+    val checkAuthCode = _checkAuthCode.asEventFlow()
 
     /* UserRegistrationBirthFragment */
     private var _birth = MutableStateFlow("")
@@ -35,8 +35,8 @@ class UserRegistrationViewModel : ViewModel() {
     /* UserRegistrationIdFragment */
     private var userId = ""
     private var lastDuplicationState = true
-    private val _userIdDuplicationState = MutableSharedFlow<Boolean>()
-    val userIdDuplicationState: SharedFlow<Boolean> get() = _userIdDuplicationState
+    private val _userIdDuplicationState = MutableEventFlow<Boolean>()
+    val userIdDuplicationState = _userIdDuplicationState.asEventFlow()
     val inputUserId = MutableStateFlow("")
 
     /* UserRegistrationPasswordFragment */
@@ -44,24 +44,24 @@ class UserRegistrationViewModel : ViewModel() {
     private val _userPasswordConditionLengthState = MutableStateFlow(false)
     private val _userPasswordConditionCharacterState = MutableStateFlow(false)
     private val _userPasswordConfirmState = MutableStateFlow(false)
-    private val _userPasswordConfirmVisible = MutableSharedFlow<Boolean>()
+    private val _userPasswordConfirmVisible = MutableEventFlow<Boolean>()
     val userPasswordConditionLengthState: StateFlow<Boolean> get() = _userPasswordConditionLengthState
     val userPasswordConditionCharacterState: StateFlow<Boolean> get() = _userPasswordConditionCharacterState
     val userPasswordConfirmState: StateFlow<Boolean> get() = _userPasswordConfirmState
-    val userPasswordConfirmVisible: SharedFlow<Boolean> get() = _userPasswordConfirmVisible
+    val userPasswordConfirmVisible = _userPasswordConfirmVisible.asEventFlow()
     val inputUserPassword = MutableStateFlow("")
     val inputConfirmUserPassword = MutableStateFlow("")
 
     // 현재 진행 상황
     private var currentStep = ACCEPT_TERMS
-    private val _changeRegistrationStep = MutableSharedFlow<RegistrationProgressState>()
+    private val _changeRegistrationStep = MutableEventFlow<RegistrationProgressState>()
     private val _nextStepEnabled = MutableStateFlow(true)
-    val changeRegistrationStep: SharedFlow<RegistrationProgressState> get() = _changeRegistrationStep
+    val changeRegistrationStep = _changeRegistrationStep.asEventFlow()
     val nextStepEnabled: StateFlow<Boolean> get() = _nextStepEnabled
 
     // 실패 토스트 메세지
-    private val _failureMessage = MutableSharedFlow<String>()
-    val failureMessage: SharedFlow<String> get() = _failureMessage
+    private val _failureMessage = MutableEventFlow<String>()
+    val failureMessage = _failureMessage.asEventFlow()
 
     /* AcceptTermsFragment */
     // 모든 약관 동의
