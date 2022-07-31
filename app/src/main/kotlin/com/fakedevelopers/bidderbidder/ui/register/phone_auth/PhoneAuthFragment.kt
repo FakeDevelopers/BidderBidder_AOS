@@ -90,6 +90,17 @@ class PhoneAuthFragment : Fragment() {
         initCollector()
     }
 
+    override fun onStart() {
+        super.onStart()
+        // 인증 검사 도중 화면을 나가면 인증 검사 요청 자체가 날라가서 다음 단계 진행이 안됨
+        // 그럴 때 다시 다음 단계 버튼을 켜줘야 한다.
+        userRegistrationViewModel.run {
+            if (!nextStepEnabled.value) {
+                setNextStepEnabled(true)
+            }
+        }
+    }
+
     private fun initListener() {
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthSendCode.setOnClickListener {
@@ -170,6 +181,8 @@ class PhoneAuthFragment : Fragment() {
             userRegistrationViewModel.setNextStepEnabled(false)
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(mainActivity) { task ->
                 handleAuthResult(task)
+            }.addOnFailureListener {
+                Toast.makeText(requireContext(), "재전송을 통해 새로운 인증 코드를 받아주세요", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -4,14 +4,15 @@ import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthFragment.Companion.EXPIRE_TIME
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.text.DecimalFormat
 import javax.inject.Inject
@@ -22,16 +23,16 @@ class PhoneAuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val timerFormat = DecimalFormat("00")
-    private val _timerVisibility = MutableSharedFlow<Boolean>()
+    private val _timerVisibility = MutableEventFlow<Boolean>()
     private val resendingToken = MutableStateFlow<PhoneAuthProvider.ForceResendingToken?>(null)
-    private val _codeSendingStates = MutableStateFlow(PhoneAuthState.INIT)
+    private val _codeSendingStates = MutableEventFlow<PhoneAuthState>()
     private var verificationId = ""
 
     val phoneNumber = MutableStateFlow("")
     val authCode = MutableStateFlow("")
     val remainTime = MutableStateFlow("")
-    val timerVisibility: SharedFlow<Boolean> get() = _timerVisibility
-    val codeSendingStates: StateFlow<PhoneAuthState> get() = _codeSendingStates
+    val timerVisibility = _timerVisibility.asEventFlow()
+    val codeSendingStates = _codeSendingStates.asEventFlow()
 
     private val timerTask by lazy {
         object : CountDownTimer(EXPIRE_TIME * 1000, 1000) {
@@ -53,7 +54,9 @@ class PhoneAuthViewModel @Inject constructor(
         auth.useAppLanguage()
     }
 
-    fun getAuthResult() = auth.signInWithCredential(PhoneAuthProvider.getCredential(verificationId, authCode.value))
+    fun getAuthResult(): Task<AuthResult> {
+        return auth.signInWithCredential(PhoneAuthProvider.getCredential(verificationId, authCode.value))
+    }
 
     fun getAuthBuilder() = PhoneAuthOptions.newBuilder(auth)
 

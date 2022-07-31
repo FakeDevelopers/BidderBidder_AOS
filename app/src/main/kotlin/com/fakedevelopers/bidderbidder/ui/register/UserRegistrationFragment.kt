@@ -78,10 +78,6 @@ class UserRegistrationFragment : Fragment() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
         }
-        // 다음 단계
-        binding.buttonUserRegistrationNext.setOnClickListener {
-            viewModel.checkNextStep()
-        }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
             viewModel.toPreviousStep()
