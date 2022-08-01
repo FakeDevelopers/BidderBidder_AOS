@@ -3,7 +3,7 @@ package com.fakedevelopers.bidderbidder.api.di
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
-import com.fakedevelopers.bidderbidder.api.repository.SiginGoogleRepository
+import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
@@ -18,27 +18,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import okhttp3.internal.EMPTY_RESPONSE
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.lang.reflect.Type
 import java.util.*
 import javax.inject.Singleton
-
-class NullOnEmptyConverterFactory : Converter.Factory() {
-    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?):
-        Converter<ResponseBody, *>? {
-        val delegate = retrofit!!.nextResponseBodyConverter<Any>(this, type!!, annotations!!)
-        return Converter<ResponseBody, Any> {
-            if (it.contentLength() == 0L) return@Converter EMPTY_RESPONSE
-            delegate.convert(it)
-        }
-    }
-}
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -69,7 +54,6 @@ object ApiModule {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
-            .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -118,11 +102,11 @@ object ApiModule {
     // 구글 로그인 요청
     @Singleton
     @Provides
-    fun provideSiginGoogleService(retrofit: Retrofit): SigninGoogleService =
+    fun provideSigninGoogleService(retrofit: Retrofit): SigninGoogleService =
         retrofit.create(SigninGoogleService::class.java)
 
     @Singleton
     @Provides
-    fun provideSiginGoogleRepository(service: SigninGoogleService): SiginGoogleRepository =
-        SiginGoogleRepository(service)
+    fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
+        SigninGoogleRepository(service)
 }

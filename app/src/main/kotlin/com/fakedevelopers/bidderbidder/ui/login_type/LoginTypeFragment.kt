@@ -22,7 +22,6 @@ import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -38,8 +37,7 @@ class LoginTypeFragment : Fragment() {
             val result = it.data?.let { data -> Auth.GoogleSignInApi.getSignInResultFromIntent(data) }
             // result가 성공했을 때 이 값을 firebase에 넘겨주기
             if (result != null && result.isSuccess) {
-                val account = result.signInAccount
-                if (account != null) {
+                result.signInAccount?.let { account ->
                     viewModel.firebaseAuthWithGoogle(account)
                 }
             }
@@ -62,7 +60,6 @@ class LoginTypeFragment : Fragment() {
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
-        viewModel.firebaseAuth = FirebaseAuth.getInstance()
         return binding.root
     }
 
@@ -119,7 +116,6 @@ class LoginTypeFragment : Fragment() {
     }
 
     private fun googleLogin() {
-        val signInIntent = googleSignInClient.signInIntent
-        requestActivity.launch(signInIntent)
+        requestActivity.launch(googleSignInClient.signInIntent)
     }
 }
