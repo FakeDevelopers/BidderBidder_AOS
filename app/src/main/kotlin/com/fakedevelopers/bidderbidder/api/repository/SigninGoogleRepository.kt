@@ -5,7 +5,7 @@ import com.fakedevelopers.bidderbidder.ui.login_type.SigninGoogleDto
 import retrofit2.Response
 import javax.inject.Inject
 
-class SiginGoogleRepository @Inject constructor(
+class SigninGoogleRepository @Inject constructor(
     private val service: SigninGoogleService
 ) {
     suspend fun postSigninGoogle(authorization: String): Response<SigninGoogleDto> {

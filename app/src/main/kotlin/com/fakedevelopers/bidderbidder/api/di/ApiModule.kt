@@ -18,27 +18,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
-import okhttp3.internal.EMPTY_RESPONSE
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Converter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import java.lang.reflect.Type
-import java.util.Locale
+import java.util.*
 import javax.inject.Singleton
-
-class NullOnEmptyConverterFactory : Converter.Factory() {
-    override fun responseBodyConverter(type: Type?, annotations: Array<Annotation>?, retrofit: Retrofit?):
-        Converter<ResponseBody, *>? {
-        val delegate = retrofit!!.nextResponseBodyConverter<Any>(this, type!!, annotations!!)
-        return Converter<ResponseBody, Any> {
-            if (it.contentLength() == 0L) return@Converter EMPTY_RESPONSE
-            delegate.convert(it)
-        }
-    }
-}
 
 @Module
 @InstallIn(SingletonComponent::class)
