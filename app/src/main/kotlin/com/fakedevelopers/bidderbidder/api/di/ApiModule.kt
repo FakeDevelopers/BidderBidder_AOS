@@ -3,7 +3,7 @@ package com.fakedevelopers.bidderbidder.api.di
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
-import com.fakedevelopers.bidderbidder.api.repository.SiginGoogleRepository
+import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
@@ -54,7 +54,6 @@ object ApiModule {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
-            .addConverterFactory(NullOnEmptyConverterFactory())
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -108,6 +107,6 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideSiginGoogleRepository(service: SigninGoogleService): SiginGoogleRepository =
-        SiginGoogleRepository(service)
+    fun provideSiginGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
+        SigninGoogleRepository(service)
 }
