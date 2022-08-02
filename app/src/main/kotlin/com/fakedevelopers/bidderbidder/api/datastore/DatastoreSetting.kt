@@ -10,11 +10,11 @@ import androidx.datastore.preferences.preferencesDataStore
 class DatastoreSetting {
     companion object {
         private const val SEARCH_HISTORY_KEY = "search_history"
-        private const val TOKEN_HISTORY_KEY = "token_history"
+        private const val BEARER_TOKEN_KEY = "bearer_token"
 
         val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "dataStore")
 
         val SEARCH_HISTORY = stringSetPreferencesKey(SEARCH_HISTORY_KEY)
-        val TOKEN_HISTORY = stringPreferencesKey(TOKEN_HISTORY_KEY)
+        val BEARER_TOKEN = stringPreferencesKey(BEARER_TOKEN_KEY)
     }
 }
