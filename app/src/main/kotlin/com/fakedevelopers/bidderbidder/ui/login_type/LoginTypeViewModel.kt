@@ -9,7 +9,9 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
@@ -19,17 +21,23 @@ class LoginTypeViewModel @Inject constructor(
     private val repository: SigninGoogleRepository,
     private val _auth: FirebaseAuth
 ) : ViewModel() {
-    private var token: String = ""
-
+    private val _token = MutableStateFlow("")
     private val _signinGoogleResponse = MutableSharedFlow<Response<SigninGoogleDto>>()
     private val bearer = "Bearer "
 
     val auth get() = _auth
+    val token: StateFlow<String> get() = _token
     val signinGoogleResponse: SharedFlow<Response<SigninGoogleDto>> get() = _signinGoogleResponse
 
     private fun signinGoogleRequest() {
         viewModelScope.launch {
-            _signinGoogleResponse.emit(repository.postSigninGoogle(token))
+            _signinGoogleResponse.emit(repository.postSigninGoogle(_token.value))
+        }
+    }
+
+    private fun setToken(token: String) {
+        viewModelScope.launch {
+            _token.emit(token)
         }
     }
 
@@ -38,12 +46,17 @@ class LoginTypeViewModel @Inject constructor(
         _auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 task.result.user!!.getIdToken(true).addOnSuccessListener { result ->
-                    token = bearer + result.token
+                    setToken(bearer + result.token)
                     signinGoogleRequest()
                 }
             } else {
                 Logger.e(task.exception.toString())
             }
         }
+    }
+
+    fun signinGoogleRequestWithDataStoreToken(token: String) {
+        setToken(token)
+        signinGoogleRequest()
     }
 }
