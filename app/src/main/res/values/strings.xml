@@ -17,29 +17,42 @@
     <string name="login_registration">회원가입</string>
     <string name="login_find_id">아이디 찾기</string>
     <string name="login_find_password">비밀번호 찾기</string>
+    <!-- Strings related to AcceptTerms-->
+    <string name="accept_terms_essential">(필수) 약관약관</string>
+    <string name="accept_terms_optional">(선택) 약관약관</string>
+    <string name="accept_terms_accept_all">약관 전체동의</string>
+    <string name="accept_terms_title">비더비더가 처음이시군요\n약관내용에 동의해주세요!</string>
     <!-- Strings related to PhoneAuth-->
-    <string name="phoneauth_authtext">휴대폰 번호를\n인증해주세요</string>
-    <string name="phoneauth_hint_phonenumber">휴대폰 번호</string>
-    <string name="phoneauth_hint_authcode">인증 번호</string>
-    <string name="phoneauth_sending_authcode">인증 번호를 보내고 있어요</string>
-    <string name="phoneauth_getauthcode">인증 번호 받기</string>
-    <string name="phoneauth_resend">인증 번호 재전송</string>
+    <string name="phoneauth_title">반가워요!\n전화번호를 알려주세요</string>
+    <string name="phoneauth_hint_phonenumber">휴대폰 번호 (-)없이 숫자만 입력</string>
+    <string name="phoneauth_hint_authcode">인증번호</string>
+    <string name="phoneauth_sending_authcode">전송중..</string>
+    <string name="phoneauth_getauthcode">인증번호 전송</string>
+    <string name="phoneauth_resend">재전송</string>
     <string name="phoneauth_nextstep">다음</string>
+    <!-- Strings related to Birth-->
+    <string name="registration_birth_title">생년월일을 입력해주세요</string>
+    <string name="registration_birth_hint">생년월일</string>
+    <string name="registration_birth_subtitle">본인이 만 14세 이상임을 확인하는 절차예요:)</string>
+    <!-- Strings related to Id-->
+    <string name="registration_id_title">영차영차!\n아이디를 입력해주세요</string>
+    <string name="registration_id_input">아이디</string>
+    <string name="registration_id_hint">아이디를 입력해주세요</string>
+    <string name="registration_id_duplication_check">중복확인</string>
+    <string name="registration_id_is_duplicated">이미 존재하는 아이디에요!</string>
+    <string name="registration_id_is_ok">사용 가능한 아이디에요!</string>
+    <!-- Strings related to Password-->
+    <string name="registration_password_title">거의 다 왔어요!\n비밀번호를 입력해주세요</string>
+    <string name="registration_password_input">비밀번호</string>
+    <string name="registration_confirm_password_input">비밀번호 확인</string>\
+    <string name="registration_password_condition_length">12자 이상 24자 이하</string>
+    <string name="registration_password_condition_character">영문자 및 숫자 포함</string>
+    <string name="registration_password_is_not_same">비밀번호가 일치하지 않아요!</string>
+    <string name="registration_password_is_same">비밀번호가 일치해요!</string>
     <!-- Strings related to Register -->
-    <string name="register_text_your_birth">생년월일을\n입력해주세요</string>
-    <string name="register_text_your_id">아이디를\n입력해주세요</string>
-    <string name="register_text_your_password">비밀번호를\n입력해주세요</string>
-    <string name="register_hint_birth">생년월일</string>
-    <string name="register_hint_id">아이디</string>
-    <string name="register_hint_password">비밀번호</string>
-    <string name="register_hint_password_check">비밀번호 확인</string>
-    <string name="register_button_duplicate_check">중복확인</string>
-    <string name="register_text_duplicate_id">이미 사용 중인 아이디 입니다!</string>
-    <string name="register_text_no_duplicate_id">사용 가능한 아이디 입니다!</string>
-    <string name="register_text_password_condition">8~16자 영문, 숫자, 특수문자를 조합하여 구성</string>
-    <string name="register_text_password_safe">안전한 비밀번호 입니다!</string>
-    <string name="register_text_password_check_fail">설정한 비밀번호와 다릅니다!</string>
-    <string name="register_button_signup">가입 완료</string>
+    <string name="registration_toolbar_accept_terms">약관 동의</string>
+    <string name="registration_toolbar_user_registration">회원가입</string>
+    <string name="registration_button_to_next">다음</string>
     <!-- Strings related to ProductList -->
     <string name="productlist_load_more">더보기</string>
     <!-- Strings related to Bottom Navigation -->

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin">
+
+        <include
+            android:id="@+id/include_accept_terms_title"
+            layout="@layout/include_user_registration_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1"
+            app:title="@{@string/accept_terms_title}" />
+
+        <CheckBox
+            android:id="@+id/checkbox_accept_terms_accept_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onCheckedChanged="@{(_, isChecked) -> vm.setAcceptAllState(isChecked)}"
+            android:text="@string/accept_terms_accept_all"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/divider_accept_terms"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/divider_accept_terms"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.35" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="16dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/divider_accept_terms">
+
+            <include
+                android:id="@+id/include_term1"
+                layout="@layout/include_term_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:termIdx="@{0}"
+                app:termTitle="@{@string/accept_terms_essential}"
+                app:termType="@{0}"
+                app:vm="@{vm}" />
+
+            <include
+                android:id="@+id/include_term2"
+                layout="@layout/include_term_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:termIdx="@{1}"
+                app:termTitle="@{@string/accept_terms_essential}"
+                app:termType="@{0}"
+                app:vm="@{vm}" />
+
+            <include
+                android:id="@+id/include_term3"
+                layout="@layout/include_term_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:termIdx="@{2}"
+                app:termTitle="@{@string/accept_terms_essential}"
+                app:termType="@{0}"
+                app:vm="@{vm}" />
+
+            <include
+                android:id="@+id/include_term4"
+                layout="@layout/include_term_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:termIdx="@{3}"
+                app:termTitle="@{@string/accept_terms_essential}"
+                app:termType="@{0}"
+                app:vm="@{vm}" />
+
+            <include
+                android:id="@+id/include_term5"
+                layout="@layout/include_term_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:termIdx="@{0}"
+                app:termTitle="@{@string/accept_terms_optional}"
+                app:termType="@{1}"
+                app:vm="@{vm}" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
