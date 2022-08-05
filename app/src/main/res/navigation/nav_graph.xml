@@ -16,6 +16,11 @@
         <action
             android:id="@+id/action_loginTypeFragment_to_userRegistrationFragment"
             app:destination="@id/userRegistrationFragment" />
+        <action
+            android:id="@+id/action_loginTypeFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:popUpTo="@id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"

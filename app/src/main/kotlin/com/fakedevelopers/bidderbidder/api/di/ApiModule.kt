@@ -2,11 +2,13 @@ package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
-import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
+import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
-import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
+import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
+import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -96,4 +98,15 @@ object ApiModule {
     @Provides
     fun provideProductListRepository(service: ProductListService): ProductListRepository =
         ProductListRepository(service)
+
+    // 구글 로그인 요청
+    @Singleton
+    @Provides
+    fun provideSigninGoogleService(retrofit: Retrofit): SigninGoogleService =
+        retrofit.create(SigninGoogleService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
+        SigninGoogleRepository(service)
 }
