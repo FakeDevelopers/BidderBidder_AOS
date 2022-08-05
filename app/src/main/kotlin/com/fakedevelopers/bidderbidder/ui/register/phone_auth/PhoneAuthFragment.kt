@@ -12,7 +12,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.fakedevelopers.bidderbidder.MainActivity
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_BIRTH
@@ -38,7 +37,6 @@ class PhoneAuthFragment : Fragment() {
     private val userRegistrationViewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
     }
-    private val mainActivity by lazy { activity as MainActivity }
 
     private val callbacks by lazy {
         object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -104,7 +102,9 @@ class PhoneAuthFragment : Fragment() {
     private fun initListener() {
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthSendCode.setOnClickListener {
-            sendPhoneAuthCode()
+            if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
+                sendPhoneAuthCode()
+            }
         }
     }
 
@@ -164,14 +164,16 @@ class PhoneAuthFragment : Fragment() {
 
     // 인증 번호 보내기
     private fun sendPhoneAuthCode() {
-        if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
-            val options = phoneAuthViewModel.getAuthBuilder()
-                .setPhoneNumber("+82${phoneAuthViewModel.phoneNumber.value}")
-                .setTimeout(EXPIRE_TIME, TimeUnit.SECONDS)
-                .setActivity(mainActivity)
-                .setCallbacks(callbacks)
-            phoneAuthViewModel.requestSendPhoneAuth(options)
-        }
+        val options = phoneAuthViewModel.getAuthBuilder()
+            .setPhoneNumber("+82${phoneAuthViewModel.phoneNumber.value}")
+            .setTimeout(EXPIRE_TIME, TimeUnit.SECONDS)
+            .setActivity(requireActivity())
+            .setCallbacks(callbacks)
+        // 재전송 토큰이 있다면 재전송
+        phoneAuthViewModel.resendingToken?.let {
+            options.setForceResendingToken(it)
+        } ?: phoneAuthViewModel.setCodeSendingStates(PhoneAuthState.SENDING)
+        PhoneAuthProvider.verifyPhoneNumber(options.build())
     }
 
     // 인증 번호 검사
@@ -179,10 +181,10 @@ class PhoneAuthFragment : Fragment() {
         // 검사 받는 동안은 버튼을 막아 둔다.
         if (phoneAuthViewModel.authCode.value.isNotEmpty()) {
             userRegistrationViewModel.setNextStepEnabled(false)
-            phoneAuthViewModel.getAuthResult().addOnCompleteListener(mainActivity) { task ->
+            phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {
-                Toast.makeText(requireContext(), "재전송을 통해 새로운 인증 코드를 받아주세요", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "나쁜 인증 코드!", Toast.LENGTH_SHORT).show()
             }
         }
     }
