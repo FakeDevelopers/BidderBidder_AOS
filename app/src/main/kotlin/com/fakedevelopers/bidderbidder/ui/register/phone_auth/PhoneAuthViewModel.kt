@@ -24,7 +24,6 @@ class PhoneAuthViewModel @Inject constructor(
 
     private val timerFormat = DecimalFormat("00")
     private val _timerVisibility = MutableEventFlow<Boolean>()
-    private val resendingToken = MutableStateFlow<PhoneAuthProvider.ForceResendingToken?>(null)
     private val _codeSendingStates = MutableEventFlow<PhoneAuthState>()
     private var verificationId = ""
 
@@ -33,6 +32,8 @@ class PhoneAuthViewModel @Inject constructor(
     val remainTime = MutableStateFlow("")
     val timerVisibility = _timerVisibility.asEventFlow()
     val codeSendingStates = _codeSendingStates.asEventFlow()
+    var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
+        private set
 
     private val timerTask by lazy {
         object : CountDownTimer(EXPIRE_TIME * 1000, 1000) {
@@ -62,15 +63,7 @@ class PhoneAuthViewModel @Inject constructor(
 
     fun setVerificationCodeAndResendingToken(id: String, token: PhoneAuthProvider.ForceResendingToken) {
         verificationId = id
-        resendingToken.value = token
-    }
-
-    fun requestSendPhoneAuth(options: PhoneAuthOptions.Builder) {
-        // 재전송 토큰이 있다면 재전송
-        resendingToken.value?.let {
-            options.setForceResendingToken(it)
-        } ?: setCodeSendingStates(PhoneAuthState.SENDING)
-        PhoneAuthProvider.verifyPhoneNumber(options.build())
+        resendingToken = token
     }
 
     fun setCodeSendingStates(state: PhoneAuthState) {
@@ -78,7 +71,7 @@ class PhoneAuthViewModel @Inject constructor(
             _codeSendingStates.emit(state)
         }
         if (state == PhoneAuthState.INIT) {
-            resendingToken.value = null
+            resendingToken = null
             authCode.value = ""
         }
     }
