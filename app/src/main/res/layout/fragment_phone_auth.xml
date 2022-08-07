@@ -95,6 +95,7 @@
                     android:inputType="numberDecimal"
                     android:text="@={vm.authCode}"
                     android:textSize="12sp"
+                    android:maxLength="6"
                     tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 

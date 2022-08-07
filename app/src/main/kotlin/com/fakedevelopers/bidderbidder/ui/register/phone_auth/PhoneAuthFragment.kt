@@ -20,6 +20,7 @@ import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -184,7 +185,7 @@ class PhoneAuthFragment : Fragment() {
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {
-                Toast.makeText(requireContext(), "나쁜 인증 코드!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), (it as FirebaseAuthException).errorCode, Toast.LENGTH_SHORT).show()
             }
         }
     }
