@@ -77,6 +77,7 @@ class PhoneAuthViewModel @Inject constructor(
     }
 
     fun startTimer() {
+        timerTask.cancel()
         viewModelScope.launch {
             _timerVisibility.emit(true)
         }

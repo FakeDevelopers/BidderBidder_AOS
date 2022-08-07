@@ -30,6 +30,10 @@
     <string name="phoneauth_getauthcode">인증번호 전송</string>
     <string name="phoneauth_resend">재전송</string>
     <string name="phoneauth_nextstep">다음</string>
+    <string name="phoneauth_invalid_verification_code_type">ERROR_INVALID_VERIFICATION_CODE</string>
+    <string name="phoneauth_invalid_verification_code_message">인증 번호가 다릅니다!</string>
+    <string name="phoneauth_session_expired_type">ERROR_SESSION_EXPIRED</string>
+    <string name="phoneauth_session_expired_message">인증 번호가 만료됐습니다.\n인증 번호 재전송을 해주세요!</string>
     <!-- Strings related to Birth-->
     <string name="registration_birth_title">생년월일을 입력해주세요</string>
     <string name="registration_birth_hint">생년월일</string>
