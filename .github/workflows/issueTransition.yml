@@ -19,27 +19,20 @@ jobs:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-      - name: Find in branch
-        if: ${{ github.event_name == 'push' }}
-        uses: atlassian/gajira-find-issue-key@master
-        id: jira-ticket-push
-        with:
-          from: branch
       - name: Find in head ref
-        if: ${{ github.event_name == 'pull_request' }}
         uses: atlassian/gajira-find-issue-key@master
-        id: jira-ticket-pr
+        id: jira-ticket
         with:
           string: ${{ github.head_ref }}
       - name: Transition issue to review
         if: ${{ github.event_name == 'pull_request' && steps.jira-ticket-pr.outputs.issue != '' }}
         uses: atlassian/gajira-transition@master
         with:
-          issue: ${{ steps.jira-ticket-pr.outputs.issue }}
+          issue: ${{ steps.jira-ticket.outputs.issue }}
           transition: "리뷰 대기"
       - name: Transition issue to complete
         if: ${{ github.event_name == 'push' && steps.jira-ticket-push.outputs.issue != '' }}
         uses: atlassian/gajira-transition@master
         with:
-          issue: ${{ steps.jira-ticket-push.outputs.issue }}
+          issue: ${{ steps.jira-ticket.outputs.issue }}
           transition: "Done"
