@@ -185,10 +185,21 @@ class PhoneAuthFragment : Fragment() {
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {
-                Toast.makeText(requireContext(), (it as FirebaseAuthException).errorCode, Toast.LENGTH_SHORT).show()
+                val e = it as FirebaseAuthException
+                Toast.makeText(requireContext(), getAuthErrorMessage(e), Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+    // 에러 메세지 추출
+    private fun getAuthErrorMessage(e: FirebaseAuthException) =
+        when (e.errorCode) {
+            getString(R.string.phoneauth_invalid_verification_code_type) ->
+                getString(R.string.phoneauth_invalid_verification_code_message)
+            getString(R.string.phoneauth_session_expired_type) ->
+                getString(R.string.phoneauth_session_expired_message)
+            else -> e.errorCode
+        }
 
     override fun onDestroyView() {
         super.onDestroyView()
