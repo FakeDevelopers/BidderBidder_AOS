@@ -24,7 +24,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
 @AndroidEntryPoint
 class LoginTypeFragment : Fragment() {
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -55,11 +54,6 @@ class LoginTypeFragment : Fragment() {
             container,
             false
         )
-        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(WEB_CLIENT_ID)
-            .requestEmail()
-            .build()
-        googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
         return binding.root
     }
 
@@ -116,6 +110,11 @@ class LoginTypeFragment : Fragment() {
     }
 
     private fun googleLogin() {
+        val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(WEB_CLIENT_ID)
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
         requestActivity.launch(googleSignInClient.signInIntent)
     }
 }
