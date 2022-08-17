@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -44,12 +45,14 @@ class PhoneAuthFragment : Fragment() {
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
                 // 인증이 끝난 상태
             }
+
             // 인증 실패 상태
             // 보통 할당량이 다 떨어지면 여기로 간다
             override fun onVerificationFailed(e: FirebaseException) {
                 Toast.makeText(requireContext(), "저런 실패했군요!", Toast.LENGTH_SHORT).show()
                 phoneAuthViewModel.setCodeSendingStates(PhoneAuthState.INIT)
             }
+
             // 전화번호는 확인 했고 인증코드를 입력해야 하는 상태
             override fun onCodeSent(verificationCode: String, resendingToken: PhoneAuthProvider.ForceResendingToken) {
                 phoneAuthViewModel.apply {
@@ -89,23 +92,16 @@ class PhoneAuthFragment : Fragment() {
         initCollector()
     }
 
-    override fun onStart() {
-        super.onStart()
-        // 인증 검사 도중 화면을 나가면 인증 검사 요청 자체가 날라가서 다음 단계 진행이 안됨
-        // 그럴 때 다시 다음 단계 버튼을 켜줘야 한다.
-        userRegistrationViewModel.run {
-            if (!nextStepEnabled.value) {
-                setNextStepEnabled(true)
-            }
-        }
-    }
-
     private fun initListener() {
         // 인증 번호 발송 버튼
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
                 sendPhoneAuthCode()
             }
+        }
+        // 인증 번호 6자리 되면 다음 버튼 활성화
+        binding.edittextPhoneauthAuthcode.addTextChangedListener() {
+            userRegistrationViewModel.setAuthCode(it.toString())
         }
     }
 
@@ -181,7 +177,6 @@ class PhoneAuthFragment : Fragment() {
     private fun signInWithPhoneAuthCredential() {
         // 검사 받는 동안은 버튼을 막아 둔다.
         if (phoneAuthViewModel.authCode.value.isNotEmpty()) {
-            userRegistrationViewModel.setNextStepEnabled(false)
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {

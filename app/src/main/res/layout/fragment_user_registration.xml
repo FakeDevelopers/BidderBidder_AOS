@@ -22,6 +22,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <include
+            android:id="@+id/include_user_registration_navigation"
+            layout="@layout/include_user_registration_navigation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/include_user_registration_toolbar" />
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/navigation_user_registration"
             android:name="androidx.navigation.fragment.NavHostFragment"
@@ -31,22 +41,26 @@
             app:layout_constraintBottom_toTopOf="@+id/button_user_registration_next"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_user_registration_toolbar"
+            app:layout_constraintTop_toBottomOf="@+id/include_user_registration_navigation"
             app:navGraph="@navigation/user_registration_graph"
             tools:layout="@layout/fragment_accept_terms" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_user_registration_next"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginHorizontal="@dimen/fragment_horizontal_margin"
-            android:text="@string/registration_button_to_next"
+            android:background="#D6D6D6"
             android:enabled="@{vm.nextStepEnabled}"
-            android:onClick="@{() -> vm.checkNextStep()}"
+            android:onClick="@{() -> vm.checkNextStep(true)}"
+            android:shadowColor="#111111"
+            android:text="@string/registration_button_to_next"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

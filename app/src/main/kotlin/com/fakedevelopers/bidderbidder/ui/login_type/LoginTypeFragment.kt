@@ -20,12 +20,13 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.WEB_CLIENT_I
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-
 @AndroidEntryPoint
 class LoginTypeFragment : Fragment() {
+    private lateinit var googleSignInClient: GoogleSignInClient
     private var _binding: FragmentLoginTypeBinding? = null
 
     private val viewModel: LoginTypeViewModel by viewModels()
@@ -113,6 +114,7 @@ class LoginTypeFragment : Fragment() {
             .requestIdToken(WEB_CLIENT_ID)
             .requestEmail()
             .build()
-        requestActivity.launch(GoogleSignIn.getClient(requireActivity(), googleSignInOptions).signInIntent)
+        googleSignInClient = GoogleSignIn.getClient(requireActivity(), googleSignInOptions)
+        requestActivity.launch(googleSignInClient.signInIntent)
     }
 }

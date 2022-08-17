@@ -54,7 +54,7 @@
             android:id="@+id/action_productListFragment_self"
             app:destination="@id/productListFragment"
             app:popUpTo="@id/productListFragment"
-            app:popUpToInclusive="true" />
+            app:popUpToInclusive="true"/>
     </fragment>
     <fragment
         android:id="@+id/productRegistrationFragment"
