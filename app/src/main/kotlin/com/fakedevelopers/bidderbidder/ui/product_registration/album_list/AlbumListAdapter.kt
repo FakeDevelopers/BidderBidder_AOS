@@ -14,7 +14,6 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.RecyclerPictureSelectBinding
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
-import com.orhanobut.logger.Logger
 
 class AlbumListAdapter(
     private val findSelectedImageIndex: (String) -> Int,
