@@ -13,8 +13,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="@dimen/fragment_horizontal_margin"
-        android:paddingEnd="@dimen/fragment_horizontal_margin">
+        android:layout_marginHorizontal="@dimen/fragment_horizontal_margin">
 
         <include
             android:id="@+id/include_phoneauth_title"

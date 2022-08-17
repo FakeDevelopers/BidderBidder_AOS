@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.get
+import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -24,6 +27,8 @@ import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INP
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
+import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -65,6 +70,8 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setNavigationBar(viewModel.getCurrentStep())
+
         initListener()
         initCollector()
     }
@@ -83,7 +90,15 @@ class UserRegistrationFragment : Fragment() {
             viewModel.toPreviousStep()
         }
     }
-
+    private fun setRegistrationNextButton(state: Boolean) {
+        binding.buttonUserRegistrationNext.let {
+            val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
+            it.isEnabled = state
+            it.setBackgroundColor(
+                ResourcesCompat.getColor(requireActivity().resources, color, null)
+            )
+        }
+    }
     private fun initCollector() {
         // 회원가입 단계 관리
         lifecycleScope.launch {
@@ -101,6 +116,14 @@ class UserRegistrationFragment : Fragment() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.nextStepEnabled.collect() {
+                    setRegistrationNextButton(it)
+                }
+            }
+        }
     }
 
     private fun setToolbarTitleByDestination(destinationId: Int) {
@@ -112,9 +135,38 @@ class UserRegistrationFragment : Fragment() {
         }
     }
 
+    private fun setNavigationBar(state: RegistrationProgressState) {
+        binding.includeUserRegistrationNavigation.let {
+            listOf(it.imageView0, it.imageView1, it.imageView2, it.imageView3, it.imageView4, it.imageView5).forEach() {
+                it.updateLayoutParams {
+                    this.width = 29
+                }
+                it.isSelected = false
+            }
+
+            when (state) {
+                ACCEPT_TERMS -> it.imageView0
+                PHONE_AUTH_BEFORE_SENDING -> it.imageView1
+                PHONE_AUTH_CHECK_AUTH_CODE -> it.imageView1
+                INPUT_BIRTH -> it.imageView2
+                INPUT_ID -> it.imageView3
+                INPUT_PASSWORD -> it.imageView4
+                CONGRATULATIONS -> it.imageView5
+                else -> null
+            }?.let { view ->
+                view.updateLayoutParams {
+                    this.width = 59
+                    view.isSelected = true
+                }
+            }
+        }
+    }
+
     // 다음 단계 네비게이션
     private fun toNextStep(state: RegistrationProgressState) {
         NavOptions.Builder().setLaunchSingleTop(true)
+        viewModel.setNextStepEnabled(false)
+        setNavigationBar(state)
         when (state) {
             ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
             PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
