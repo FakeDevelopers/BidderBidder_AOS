@@ -44,6 +44,9 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 
+// 사진 선택
+//
+
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
 
@@ -85,7 +88,7 @@ class ProductRegistrationFragment : Fragment() {
         val args: ProductRegistrationFragmentArgs by navArgs()
         args.productRegistrationDto?.let {
             viewModel.initState(it)
-            if (it.urlList.isNotEmpty()) {
+            if (it.selectedImageDto.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }

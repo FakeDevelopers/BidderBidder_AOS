@@ -7,34 +7,46 @@ import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumL
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.ALL_PICTURES
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.MODIFY_IMAGE
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment.Companion.REMOVE_IMAGE
-import kotlinx.coroutines.flow.MutableSharedFlow
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
+
+// -아래에 헤더가 존재-
+// -편집 기능 버튼-
+// 비활성화 -> 아무 사진도 선택 안됨 || 페이저 모드
+// 활성화 -> 사진이 하나라도 선택 됨 && 그리드 모드
+// 클릭 -> selectedImageList의 top 요소를 페이저로 보여줌
+// -회전 기능-
+// 비활성화 -> 그리드 모드
+// 활성화 -> 페이저 모드
+// 90 -> 180 -> 270 -> 0(0이면 회전 기능을 사용 안한 것과 같은 효과)
+// 회전 적용 시 페이저에선 회전한 사진으로 보임, 그리드에선 원본 사진으로 보임
+// 선택 취소 시 회전 효과도 사라짐
 
 class AlbumListViewModel : ViewModel() {
 
     private val currentAlbum = MutableStateFlow("")
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
-    private val _onListChange = MutableSharedFlow<Boolean>()
-    private val _pagerSelectedState = MutableSharedFlow<Boolean>()
-    private val _selectedImageList = MutableStateFlow<MutableList<String>>(mutableListOf())
-    private val _selectErrorImage = MutableSharedFlow<Boolean>()
-    private val _startViewPagerIndex = MutableSharedFlow<Int>()
+    private val _onListChange = MutableEventFlow<Boolean>()
+    private val _pagerSelectedState = MutableEventFlow<Boolean>()
+    private val _selectErrorImage = MutableEventFlow<Boolean>()
+    private val _startViewPagerIndex = MutableEventFlow<Int>()
     private val _addedImageList = hashSetOf<String>()
     private val removedImageList = hashSetOf<String>()
     private var totalPictureCount = 0
     private lateinit var allImages: Map<String, MutableList<Pair<String, Long>>>
 
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
-    val onListChange: SharedFlow<Boolean> get() = _onListChange
-    val pagerSelectedState: SharedFlow<Boolean> get() = _pagerSelectedState
-    val selectedImageList: StateFlow<List<String>> get() = _selectedImageList
-    val startViewPagerIndex: SharedFlow<Int> get() = _startViewPagerIndex
-    val selectErrorImage: SharedFlow<Boolean> get() = _selectErrorImage
+    val onListChange = _onListChange.asEventFlow()
+    val pagerSelectedState = _pagerSelectedState.asEventFlow()
+    val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
+    val selectErrorImage = _selectErrorImage.asEventFlow()
     val addedImageList: Set<String> get() = _addedImageList
+    val selectedImageDto = SelectedImageDto()
 
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
@@ -65,8 +77,8 @@ class AlbumListViewModel : ViewModel() {
     var scrollToTopFlag = false
 
     fun initSelectedImageList(list: List<String>) {
+        selectedImageDto.uris = list.toMutableList()
         viewModelScope.launch {
-            _selectedImageList.emit(list.toMutableList())
             setSelectedImageList()
         }
     }
@@ -90,22 +102,22 @@ class AlbumListViewModel : ViewModel() {
     }
 
     fun setSelectedImage(list: List<String>) {
-        val invalidList = selectedImageList.value.filter { !list.contains(it) }
+        val invalidList = selectedImageDto.uris.filter { !list.contains(it) }
         for (uri in invalidList) {
             removeInvalidImage(uri)
         }
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
-            if (list.isNotEmpty() && !list.contains(selectedImageList.value[0])) {
-                selectedPictureAdapter.notifyItemChanged(selectedImageList.value.indexOf(list[0]))
+            if (list.isNotEmpty() && !list.contains(selectedImageDto.uris[0])) {
+                selectedPictureAdapter.notifyItemChanged(findSelectedImageIndex(list[0]))
             }
             albumListAdapter.notifyDataSetChanged()
             setAdapterList()
-            _selectedImageList.emit(list.toMutableList())
         }
+        selectedImageDto.uris = list.toMutableList()
     }
 
-    fun findSelectedImageIndex(uri: String) = _selectedImageList.value.indexOf(uri)
+    fun findSelectedImageIndex(uri: String) = selectedImageDto.uris.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
@@ -197,7 +209,7 @@ class AlbumListViewModel : ViewModel() {
     }
 
     private fun setSelectedImageList() {
-        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(_selectedImageList.value) })
+        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageDto.uris) })
         albumListAdapter.notifyDataSetChanged()
         viewModelScope.launch {
             _onListChange.emit(true)
@@ -207,24 +219,24 @@ class AlbumListViewModel : ViewModel() {
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(_selectedImageList.value, i, i + 1)
+                Collections.swap(selectedImageDto.uris, i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(_selectedImageList.value, i, i - 1)
+                Collections.swap(selectedImageDto.uris, i, i - 1)
             }
         }
-        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(_selectedImageList.value) })
+        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageDto.uris) })
     }
 
     private fun setSelectedState(uri: String, state: Boolean = false) {
         if (state) {
-            _selectedImageList.value.add(uri)
+            selectedImageDto.uris.add(uri)
         } else {
-            val idx = _selectedImageList.value.indexOf(uri)
-            _selectedImageList.value.removeAt(idx)
+            val idx = findSelectedImageIndex(uri)
+            selectedImageDto.uris.removeAt(idx)
             // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-            if (_selectedImageList.value.isNotEmpty() && idx == 0) {
+            if (selectedImageDto.uris.isNotEmpty() && idx == 0) {
                 selectedPictureAdapter.notifyItemChanged(1)
             }
         }

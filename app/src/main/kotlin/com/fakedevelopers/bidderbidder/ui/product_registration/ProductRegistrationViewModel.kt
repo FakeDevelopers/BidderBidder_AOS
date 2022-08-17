@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.SelectedImageDto
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -33,13 +34,13 @@ class ProductRegistrationViewModel @Inject constructor(
         swapSelectedImage(fromPosition, toPosition)
     }
     private val _urlList = MutableStateFlow<List<String>>(mutableListOf())
-    private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
+    private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
     private val _condition = MutableStateFlow(false)
     private val _contentLengthVisible = MutableStateFlow(false)
 
     val urlList: StateFlow<List<String>> get() = _urlList
     val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
-    val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+    val productRegistrationResponse = _productRegistrationResponse.asEventFlow()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
     val hopePrice = MutableStateFlow("")
@@ -133,7 +134,7 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun initState(state: ProductRegistrationDto) {
         viewModelScope.launch {
-            _urlList.emit(state.urlList.toMutableList())
+            _urlList.emit(state.selectedImageDto.uris.toMutableList())
             adapter.submitList(_urlList.value.toMutableList())
             title.emit(state.title)
             hopePrice.emit(state.hopePrice)
@@ -145,7 +146,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun getProductRegistrationDto() = ProductRegistrationDto(
-        urlList.value,
+        SelectedImageDto(urlList.value.toMutableList()),
         title.value,
         hopePrice.value,
         openingBid.value,
