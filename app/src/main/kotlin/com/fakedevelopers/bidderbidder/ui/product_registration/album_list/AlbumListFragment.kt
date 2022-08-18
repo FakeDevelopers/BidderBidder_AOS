@@ -45,10 +45,6 @@ class AlbumListFragment : Fragment() {
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
     private val args: AlbumListFragmentArgs by navArgs()
-    // 회전
-    private val matrix = Matrix().apply {
-        postRotate(ROTATE_DEGREE)
-    }
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -315,8 +311,6 @@ class AlbumListFragment : Fragment() {
         const val ADD_IMAGE = BASE_FLAG + NOTIFY_INSERT
         const val REMOVE_IMAGE = BASE_FLAG + NOTIFY_DELETE
         const val MODIFY_IMAGE = BASE_FLAG + NOTIFY_UPDATE
-        // 회전 각도
-        private const val ROTATE_DEGREE = 90f
     }
 
     override fun onDestroy() {

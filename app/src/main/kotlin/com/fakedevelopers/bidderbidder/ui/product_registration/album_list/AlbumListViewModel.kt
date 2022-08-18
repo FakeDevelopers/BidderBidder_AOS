@@ -34,6 +34,7 @@ class AlbumListViewModel : ViewModel() {
     private val _pagerSelectedState = MutableEventFlow<Boolean>()
     private val _selectErrorImage = MutableEventFlow<Boolean>()
     private val _startViewPagerIndex = MutableEventFlow<Int>()
+    private val _editButtonEnableState = MutableStateFlow(false)
     private val _addedImageList = hashSetOf<String>()
     private val removedImageList = hashSetOf<String>()
     private var totalPictureCount = 0
@@ -43,6 +44,7 @@ class AlbumListViewModel : ViewModel() {
     val onListChange = _onListChange.asEventFlow()
     val pagerSelectedState = _pagerSelectedState.asEventFlow()
     val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
+    val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
     val selectErrorImage = _selectErrorImage.asEventFlow()
     val addedImageList: Set<String> get() = _addedImageList
     val selectedImageDto = SelectedImageDto()
@@ -78,7 +80,10 @@ class AlbumListViewModel : ViewModel() {
     fun initSelectedImageList(list: List<String>) {
         selectedImageDto.uris = list.toMutableList()
         viewModelScope.launch {
+            // 선택 이미지를 세팅 해주고
             setSelectedImageList()
+            // 편집 버튼 활성화
+            _editButtonEnableState.emit(true)
         }
     }
 
@@ -135,6 +140,11 @@ class AlbumListViewModel : ViewModel() {
                 removedImageList.add(uri)
             }
         }
+    }
+
+    // 편집 버튼 클릭
+    fun onEditButtonClick() {
+        showViewPager(selectedImageDto.uris.last())
     }
 
     fun updateAlbumList(
@@ -226,6 +236,7 @@ class AlbumListViewModel : ViewModel() {
             }
         }
         selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageDto.uris) })
+        albumListAdapter.notifyDataSetChanged()
     }
 
     private fun setSelectedState(uri: String, state: Boolean = false) {
@@ -244,6 +255,10 @@ class AlbumListViewModel : ViewModel() {
             viewModelScope.launch {
                 _pagerSelectedState.emit(state)
             }
+        }
+        // 선택 이미지가 남아 있으면 편집 버튼 활성화
+        viewModelScope.launch {
+            _editButtonEnableState.emit(selectedImageDto.uris.isNotEmpty())
         }
         setSelectedImageList()
     }

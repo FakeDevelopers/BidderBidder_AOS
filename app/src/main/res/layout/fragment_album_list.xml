@@ -142,11 +142,12 @@
                 android:text="편집"
                 android:textColor="@color/black"
                 android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.GONE}"
+                android:onClick="@{() -> vm.onEditButtonClick()}"
+                android:enabled="@{vm.editButtonEnableState}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="invisible" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <Button
                 android:id="@+id/button_album_list_rotate"
@@ -160,7 +161,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="invisible" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
