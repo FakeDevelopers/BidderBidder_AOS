@@ -42,6 +42,7 @@ class AlbumListAdapter(
                 )
                 .into(binding.imageviewPictureSelect)
             // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
+            // 수정된 이미지는 다른 색의 테두리로 수정 여부를 표시
             findSelectedImageIndex(item.first).let { count ->
                 setPictureSelectCount(count != -1, count + 1)
                 binding.layoutPictureSelectChoice.setOnClickListener {

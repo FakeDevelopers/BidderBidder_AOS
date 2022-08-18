@@ -44,9 +44,6 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 
-// 사진 선택
-//
-
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
 
@@ -88,7 +85,7 @@ class ProductRegistrationFragment : Fragment() {
         val args: ProductRegistrationFragmentArgs by navArgs()
         args.productRegistrationDto?.let {
             viewModel.initState(it)
-            if (it.selectedImageDto.uris.isNotEmpty()) {
+            if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
@@ -114,9 +111,9 @@ class ProductRegistrationFragment : Fragment() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         // 선택 이미지 리스트가 존재한다면 유효한지 검사
-        if (viewModel.urlList.value.isNotEmpty()) {
+        if (viewModel.selectedImageInfo.uris.isNotEmpty()) {
             // 유효한 선택 이미지 리스트로 갱신
-            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.urlList.value))
+            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.selectedImageInfo.uris))
         }
     }
 
@@ -178,7 +175,7 @@ class ProductRegistrationFragment : Fragment() {
             if (viewModel.condition.value && checkPriceCondition()) {
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 val list = mutableListOf<MultipartBody.Part>()
-                viewModel.urlList.value.forEach { uri ->
+                viewModel.selectedImageInfo.uris.forEach { uri ->
                     getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
                 }
                 viewModel.productRegistrationRequest(list)

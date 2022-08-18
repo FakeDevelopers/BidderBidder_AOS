@@ -16,6 +16,7 @@ import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
 class AlbumPagerAdapter(
     private val sendErrorToast: () -> Unit,
+    private val getEditedImage: (String) -> BitmapInfo?,
     private val setSelectedImageList: (String) -> Unit
 ) : ListAdapter<Pair<String, Long>, AlbumPagerAdapter.ViewHolder>(diffUtil) {
     private lateinit var contentResolverUtil: ContentResolverUtil
@@ -26,6 +27,20 @@ class AlbumPagerAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
         fun bind(item: Pair<String, Long>) {
+            // 수정된 이미지가 있다면 그걸 띄운다.
+            getEditedImage(item.first)?.let { bitmapInfo ->
+                binding.imageviewAlbumPager.setImageBitmap(bitmapInfo.bitmap)
+            } ?: setGlide(item)
+            binding.layoutAlbumPager.setOnClickListener {
+                if (isValidImage(item.first)) {
+                    setSelectedImageList(item.first)
+                } else {
+                    sendErrorToast()
+                }
+            }
+        }
+
+        private fun setGlide(item: Pair<String, Long>) {
             Glide.with(context)
                 .load(item.first)
                 .placeholder(R.drawable.the_cat)
@@ -38,13 +53,6 @@ class AlbumPagerAdapter(
                     )
                 )
                 .into(binding.imageviewAlbumPager)
-            binding.layoutAlbumPager.setOnClickListener {
-                if (isValidImage(item.first)) {
-                    setSelectedImageList(item.first)
-                } else {
-                    sendErrorToast()
-                }
-            }
         }
 
         private fun isValidImage(item: String) = !isErrorImage && contentResolverUtil.isExist(Uri.parse(item))
