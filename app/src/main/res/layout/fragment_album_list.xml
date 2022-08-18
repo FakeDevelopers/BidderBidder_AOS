@@ -10,7 +10,7 @@
             type="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -18,7 +18,10 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <Button
                 android:id="@+id/button_album_list_complete"
@@ -60,15 +63,21 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.GONE}">
+            android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
+            app:layout_constraintVertical_bias="0.0"
+            tools:visibility="gone">
 
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/viewpager_picture_select"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:adapter="@{vm.albumPagerAdapter}"
-                app:contentPaddingTop="0dp"
-                app:contentPaddingBottom="0dp"/>
+                app:contentPaddingBottom="0dp"
+                app:contentPaddingTop="0dp" />
 
             <TextView
                 android:id="@+id/textview_picture_select_count"
@@ -81,8 +90,7 @@
                 android:textAlignment="center"
                 android:textSize="18sp"
                 tools:ignore="RtlHardcoded,TextContrastCheck"
-                tools:text="10"
-                tools:visibility="visible" />
+                tools:text="10" />
 
         </FrameLayout>
 
@@ -90,7 +98,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.GONE}">
+            android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/test">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_selected_picture"
@@ -113,5 +124,44 @@
                 app:spanCount="3" />
         </LinearLayout>
 
-    </LinearLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/button_album_list_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/vector_magic_wand"
+                android:text="편집"
+                android:textColor="@color/black"
+                android:visibility="@{vm.albumViewMode == AlbumViewState.GRID ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="invisible" />
+
+            <Button
+                android:id="@+id/button_album_list_rotate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:drawableTop="@drawable/vector_image_rotate"
+                android:text="회전"
+                android:textColor="@color/black"
+                android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
