@@ -45,7 +45,6 @@ class AlbumListFragment : Fragment() {
     private val viewModel: AlbumListViewModel by viewModels()
     private val binding get() = _binding!!
     private val args: AlbumListFragmentArgs by navArgs()
-    private val albumImageUtils by lazy { AlbumImageUtils(requireContext()) }
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -288,23 +287,16 @@ class AlbumListFragment : Fragment() {
 
     // 수정된 이미지 비트맵 추가
     private fun addBitmapInfo(uri: String) {
-        val (mimeType, extension) = albumImageUtils.getMimeTypeAndExtension(uri)
         // 이미지가 선택이 안되어 있다면 이미지 선택
         if (viewModel.findSelectedImageIndex(uri) == -1) {
             viewModel.setSelectedState(uri, true)
         }
-        albumImageUtils.getBitmapByURI(uri)?.let { bitmap ->
-            val bitmapInfo = BitmapInfo(albumImageUtils.getRotateBitmap(bitmap), mimeType, extension, ROTATE_DEGREE)
-            viewModel.addBitmapInfo(uri, bitmapInfo)
-        }
+        viewModel.addBitmapInfo(uri, BitmapInfo(ROTATE_DEGREE))
     }
 
     // BitmapInfo 갱신
     private fun updateBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
-        bitmapInfo.apply {
-            bitmap = albumImageUtils.getRotateBitmap(bitmap)
-            degree += ROTATE_DEGREE
-        }
+        bitmapInfo.degree += ROTATE_DEGREE
         // 360도 돌아갔다면 변경 사항이 없는거다. bitmapInfo를 삭제한다.
         if (bitmapInfo.degree == 360f) {
             viewModel.removeBitmapInfo(uri)

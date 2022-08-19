@@ -6,14 +6,9 @@ import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import java.io.ByteArrayOutputStream
+import java.util.Locale
 
 class AlbumImageUtils(val context: Context) {
-    // 회전
-    private val matrix = Matrix().apply {
-        postRotate(ROTATE_DEGREE)
-    }
-
     fun getBitmapByURI(uri: String): Bitmap? {
         runCatching {
             ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
@@ -23,21 +18,22 @@ class AlbumImageUtils(val context: Context) {
         return null
     }
 
-    fun getURIByBitmap(bitmap: Bitmap) {
-        bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 100, ByteArrayOutputStream())
-    }
-
     fun getMimeTypeAndExtension(uri: String): Pair<String, String> {
         val mimeType = context.contentResolver.getType(Uri.parse(uri)).toString()
-        val extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType).toString()
-        return mimeType to extension
+        var extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType).toString()
+        if (extension == "jpg") {
+            extension = "jpeg"
+        }
+        return mimeType to extension.uppercase(Locale.getDefault())
     }
 
-    fun getRotateBitmap(bitmap: Bitmap) =
-        Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true) ?: bitmap
+    fun getRotateBitmap(bitmap: Bitmap, degree: Float): Bitmap {
+        val matrix = Matrix().apply { postRotate(degree) }
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true) ?: bitmap
+    }
 
     companion object {
-        // 회전 각도
+        // 1회 회전 각도
         const val ROTATE_DEGREE = 90f
     }
 }

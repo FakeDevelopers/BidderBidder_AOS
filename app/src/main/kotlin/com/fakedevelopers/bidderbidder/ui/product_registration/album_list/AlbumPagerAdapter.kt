@@ -27,10 +27,10 @@ class AlbumPagerAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
         fun bind(item: Pair<String, Long>) {
-            // 수정된 이미지가 있다면 그걸 띄운다.
             getEditedImage(item.first)?.let { bitmapInfo ->
-                binding.imageviewAlbumPager.setImageBitmap(bitmapInfo.bitmap)
-            } ?: setGlide(item)
+                binding.imageviewAlbumPager.rotation = bitmapInfo.degree
+            } ?: run { binding.imageviewAlbumPager.rotation = 0f }
+            setGlide(item)
             binding.layoutAlbumPager.setOnClickListener {
                 if (isValidImage(item.first)) {
                     setSelectedImageList(item.first)
