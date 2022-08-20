@@ -5,17 +5,32 @@ import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.webkit.MimeTypeMap
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import java.util.Locale
 
 class AlbumImageUtils(val context: Context) {
-    fun getBitmapByURI(uri: String): Bitmap? {
-        runCatching {
-            ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
-        }.onSuccess {
-            return it
+    suspend fun getBitmapByURI(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): Bitmap? {
+        val bitmap = CoroutineScope(dispatcher).async {
+            runCatching {
+                if (Build.VERSION.SDK_INT >= 28) {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
+                } else {
+                    // API 28 이하는 createSource 사용 불가
+                    @Suppress("DEPRECATION")
+                    MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(uri))
+                }
+            }.onSuccess {
+                return@async it
+            }
+            return@async null
         }
-        return null
+        return bitmap.await()
     }
 
     fun getMimeTypeAndExtension(uri: String): Pair<String, String> {
