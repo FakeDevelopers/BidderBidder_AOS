@@ -232,6 +232,7 @@ class ProductRegistrationFragment : Fragment() {
                     } else {
                         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
                         Logger.t("myImage").e(it.errorBody().toString())
+                        Toast.makeText(requireContext(), "글쓰기에 실패했어요~", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
