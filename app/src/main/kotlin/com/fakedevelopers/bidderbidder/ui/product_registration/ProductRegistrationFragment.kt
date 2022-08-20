@@ -315,7 +315,11 @@ class ProductRegistrationFragment : Fragment() {
         val (mimeType, extension) = albumImageUtils.getMimeTypeAndExtension(uri)
         return requireContext().contentResolver.query(Uri.parse(uri), null, null, null, null)?.let {
             if (it.moveToNext()) {
-                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (idx < 0) {
+                    return null
+                }
+                val displayName = it.getString(idx)
                 val requestBody = object : RequestBody() {
                     override fun contentType(): MediaType {
                         return mimeType.toMediaType()
