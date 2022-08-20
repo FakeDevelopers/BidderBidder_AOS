@@ -36,6 +36,7 @@ import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import okhttp3.MediaType
@@ -176,9 +177,11 @@ class ProductRegistrationFragment : Fragment() {
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
+                Toast.makeText(requireContext(), "게시글 등록 요청", Toast.LENGTH_SHORT).show()
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
-                getMultipartList()
-                viewModel.productRegistrationRequest(getMultipartList())
+                lifecycleScope.launch {
+                    viewModel.productRegistrationRequest(getMultipartList())
+                }
             }
         }
         // 키보드 이벤트
@@ -286,15 +289,18 @@ class ProductRegistrationFragment : Fragment() {
         return true
     }
 
-    private fun getMultipartList(): List<MultipartBody.Part> {
-        val list = mutableListOf<MultipartBody.Part>()
-        viewModel.selectedImageInfo.uris.forEach { uri ->
-            albumImageUtils.getBitmapByURI(uri)?.let { bitmap ->
-                val editedBitmap = getEditedBitmap(uri, bitmap)
-                getMultipart(uri, editedBitmap)?.let { multiPart -> list.add(multiPart) }
+    private suspend fun getMultipartList(): List<MultipartBody.Part> {
+        val result = lifecycleScope.async {
+            val list = mutableListOf<MultipartBody.Part>()
+            viewModel.selectedImageInfo.uris.forEach { uri ->
+                albumImageUtils.getBitmapByURI(uri)?.let { bitmap ->
+                    val editedBitmap = getEditedBitmap(uri, bitmap)
+                    getMultipart(uri, editedBitmap)?.let { multiPart -> list.add(multiPart) }
+                }
             }
+            return@async list.toList()
         }
-        return list.toList()
+        return result.await()
     }
 
     private fun getEditedBitmap(uri: String, bitmap: Bitmap): Bitmap {
