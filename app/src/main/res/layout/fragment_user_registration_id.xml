@@ -29,6 +29,8 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:boxStrokeColor="@color/bidderbidder_primary"
+            app:hintTextColor="@color/bidderbidder_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,10 +40,11 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edittext_id"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="61dp"
                 android:ems="10"
                 android:hint="@string/registration_id_input"
                 android:text="@={vm.inputUserId}"
+                android:textColorHint="@color/edit_text_hint"
                 tools:ignore="TextContrastCheck" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,15 +61,21 @@
             tools:text="@string/registration_id_is_ok"
             tools:visibility="visible" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_id_duplication_check"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
             android:text="@string/registration_id_duplication_check"
+            android:textSize="12sp"
+            android:background="@drawable/dub_check_button"
             android:onClick="@{() -> vm.isUserIdDuplicated()}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textview_id_duplication_info" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
