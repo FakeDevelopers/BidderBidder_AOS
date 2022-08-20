@@ -1,11 +1,9 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
-import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
-import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumImageUtils
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.SelectedImageInfo
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
