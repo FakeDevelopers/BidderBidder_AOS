@@ -1,7 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.Manifest
-import android.content.ContentResolver
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -31,6 +31,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumImageUtils
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
 import com.orhanobut.logger.Logger
@@ -42,7 +43,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
-import okio.source
 
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
@@ -63,6 +63,9 @@ class ProductRegistrationFragment : Fragment() {
     }
     private val contentResolverUtil by lazy {
         ContentResolverUtil(requireContext())
+    }
+    private val albumImageUtils by lazy {
+        AlbumImageUtils(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -85,7 +88,7 @@ class ProductRegistrationFragment : Fragment() {
         val args: ProductRegistrationFragmentArgs by navArgs()
         args.productRegistrationDto?.let {
             viewModel.initState(it)
-            if (it.urlList.isNotEmpty()) {
+            if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
@@ -111,9 +114,9 @@ class ProductRegistrationFragment : Fragment() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         // 선택 이미지 리스트가 존재한다면 유효한지 검사
-        if (viewModel.urlList.value.isNotEmpty()) {
+        if (viewModel.selectedImageInfo.uris.isNotEmpty()) {
             // 유효한 선택 이미지 리스트로 갱신
-            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.urlList.value))
+            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.selectedImageInfo.uris))
         }
     }
 
@@ -174,11 +177,8 @@ class ProductRegistrationFragment : Fragment() {
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
-                val list = mutableListOf<MultipartBody.Part>()
-                viewModel.urlList.value.forEach { uri ->
-                    getMultipart(Uri.parse(uri), requireActivity().contentResolver)?.let { it1 -> list.add(it1) }
-                }
-                viewModel.productRegistrationRequest(list)
+                getMultipartList()
+                viewModel.productRegistrationRequest(getMultipartList())
             }
         }
         // 키보드 이벤트
@@ -232,6 +232,7 @@ class ProductRegistrationFragment : Fragment() {
                     } else {
                         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
                         Logger.t("myImage").e(it.errorBody().toString())
+                        Toast.makeText(requireContext(), "글쓰기에 실패했어요~", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -285,18 +286,36 @@ class ProductRegistrationFragment : Fragment() {
         return true
     }
 
-    private fun getMultipart(uri: Uri, contentResolver: ContentResolver): MultipartBody.Part? {
-        return contentResolver.query(uri, null, null, null, null)?.let {
+    private fun getMultipartList(): List<MultipartBody.Part> {
+        val list = mutableListOf<MultipartBody.Part>()
+        viewModel.selectedImageInfo.uris.forEach { uri ->
+            albumImageUtils.getBitmapByURI(uri)?.let { bitmap ->
+                val editedBitmap = getEditedBitmap(uri, bitmap)
+                getMultipart(uri, editedBitmap)?.let { multiPart -> list.add(multiPart) }
+            }
+        }
+        return list.toList()
+    }
+
+    private fun getEditedBitmap(uri: String, bitmap: Bitmap): Bitmap {
+        // 맵에 없다면 변경 사항이 없는 것이므로 쌩 비트맵 반환
+        return viewModel.selectedImageInfo.changeBitmaps[uri]?.let { bitmapInfo ->
+            // 회전. 나중엔 이미지 자르는 작업도 들어가겠죠
+            albumImageUtils.getRotateBitmap(bitmap, bitmapInfo.degree)
+        } ?: bitmap
+    }
+
+    private fun getMultipart(uri: String, bitmap: Bitmap): MultipartBody.Part? {
+        val (mimeType, extension) = albumImageUtils.getMimeTypeAndExtension(uri)
+        return requireContext().contentResolver.query(Uri.parse(uri), null, null, null, null)?.let {
             if (it.moveToNext()) {
-                // 절대 경로 얻기
-                val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                val displayName = it.getString(idx)
+                val displayName = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                 val requestBody = object : RequestBody() {
-                    override fun contentType(): MediaType? {
-                        return contentResolver.getType(uri)?.toMediaType()
+                    override fun contentType(): MediaType {
+                        return mimeType.toMediaType()
                     }
                     override fun writeTo(sink: BufferedSink) {
-                        sink.writeAll(contentResolver.openInputStream(uri)?.source()!!)
+                        bitmap.compress(Bitmap.CompressFormat.valueOf(extension), 100, sink.outputStream())
                     }
                 }
                 it.close()
