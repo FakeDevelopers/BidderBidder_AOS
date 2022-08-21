@@ -38,6 +38,7 @@ import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.collections.set
+import kotlin.math.roundToInt
 
 class AlbumListFragment : Fragment() {
 
@@ -62,16 +63,11 @@ class AlbumListFragment : Fragment() {
         object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                // 사진 편집 대상을 알기 위해 현재 보고 있는 이미지의 인덱스 저장
-                viewModel.setCurrentViewPagerIdx(position)
-                binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
-                // 사진 선택 표시 설정
-                setPictureSelectCount(
-                    viewModel.findSelectedImageIndex(viewModel.albumPagerAdapter.currentList[position].first)
-                )
+                setPagerUI(position)
             }
         }
     }
+
     private val contentResolverUtil by lazy {
         ContentResolverUtil(requireContext())
     }
@@ -254,8 +250,12 @@ class AlbumListFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startViewPagerIndex.collectLatest {
-                    binding.viewpagerPictureSelect.setCurrentItem(it, false)
+                viewModel.startViewPagerIndex.collectLatest { position ->
+                    // 같은 요소를
+                    if (viewModel.currentViewPagerIdx == position) {
+                        setPagerUI(position)
+                    }
+                    binding.viewpagerPictureSelect.setCurrentItem(position, false)
                 }
             }
         }
@@ -271,6 +271,16 @@ class AlbumListFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setPagerUI(position: Int) {
+        // 사진 편집 대상을 알기 위해 현재 보고 있는 이미지의 인덱스 저장
+        viewModel.setCurrentViewPagerIdx(position)
+        binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
+        // 사진 선택 표시 설정
+        setPictureSelectCount(
+            viewModel.findSelectedImageIndex(viewModel.getCurrentUri())
+        )
     }
 
     private fun setPictureSelectCount(index: Int) {
@@ -298,7 +308,7 @@ class AlbumListFragment : Fragment() {
     private fun updateBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
         bitmapInfo.degree += ROTATE_DEGREE
         // 360도 돌아갔다면 변경 사항이 없는거다. bitmapInfo를 삭제한다.
-        if (bitmapInfo.degree == 360f) {
+        if (bitmapInfo.degree.roundToInt() == 360) {
             viewModel.removeBitmapInfo(uri)
         }
     }
