@@ -15,6 +15,9 @@ import kotlinx.coroutines.async
 import java.util.Locale
 
 class AlbumImageUtils(val context: Context) {
+
+    // getBitmap은 API 29에서 Deprecated 됐읍니다.
+    @Suppress("DEPRECATION")
     suspend fun getBitmapByURI(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): Bitmap? {
         val bitmap = CoroutineScope(dispatcher).async {
             runCatching {
@@ -22,7 +25,6 @@ class AlbumImageUtils(val context: Context) {
                     ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
                 } else {
                     // API 28 이하는 createSource 사용 불가
-                    @Suppress("DEPRECATION")
                     MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(uri))
                 }
             }.onSuccess {
