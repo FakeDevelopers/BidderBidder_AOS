@@ -17,9 +17,9 @@ class ProductDetailViewModel @Inject constructor(
 
     private val _productDetailResponse = MutableEventFlow<Response<ProductDetailDto>>()
 
-    private val productDetailResponse = _productDetailResponse.asEventFlow()
+    val productDetailResponse = _productDetailResponse.asEventFlow()
 
-    private fun productDetailRequest(productId: Long) {
+    fun productDetailRequest(productId: Long) {
         viewModelScope.launch {
             _productDetailResponse.emit(repository.getProductDetail(productId))
         }

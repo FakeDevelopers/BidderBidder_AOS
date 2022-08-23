@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 interface ProductDetailService {
-    @GET("product/get/{productId}")
+    @GET("product/getProductInfo/{productId}")
     suspend fun getProductDetail(
         @Path("productId") productId: Long
     ): Response<ProductDetailDto>
