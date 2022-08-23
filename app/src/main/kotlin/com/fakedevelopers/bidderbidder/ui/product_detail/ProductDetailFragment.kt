@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
 import com.orhanobut.logger.Logger
@@ -37,6 +38,10 @@ class ProductDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args: ProductDetailFragmentArgs by navArgs()
+        if (args.productId != -1L) {
+            viewModel.productDetailRequest(args.productId)
+        }
         initCollector()
     }
 
@@ -46,6 +51,8 @@ class ProductDetailFragment : Fragment() {
                 viewModel.productDetailResponse.collectLatest {
                     if (it.isSuccessful) {
                         Logger.i(it.body().toString())
+                    } else {
+                        Logger.e(it.errorBody().toString())
                     }
                 }
             }

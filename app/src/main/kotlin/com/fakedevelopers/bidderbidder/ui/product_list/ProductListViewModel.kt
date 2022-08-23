@@ -3,6 +3,8 @@ package com.fakedevelopers.bidderbidder.ui.product_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +18,7 @@ class ProductListViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val productList = MutableStateFlow(listOf<ProductListDto>())
+    private val _toProductDetail = MutableEventFlow<Long>()
     private val _isLoading = MutableStateFlow(false)
     private var _isInitialize = true
     private val _searchWord = MutableStateFlow("")
@@ -23,16 +26,16 @@ class ProductListViewModel @Inject constructor(
     private val isLastProduct = MutableStateFlow(false)
     private val startNumber = MutableStateFlow(-1L)
 
+    val toProductDetail = _toProductDetail.asEventFlow()
     val isInitialize get() = _isInitialize
     val isLoading: StateFlow<Boolean> get() = _isLoading
     val searchWord: StateFlow<String> get() = _searchWord
 
     val adapter = ProductListAdapter(
-        onClick = { clickReadMore() },
+        clickLoadMore = { clickLoadMore() },
+        clickProductDetail = { productId -> clickProductDetail(productId) },
         isReadMoreVisible = { isReadMoreVisible.value }
-    ) {
-        "${it}원"
-    }
+    )
 
     fun getNextProductList() {
         // 이미 로딩 중일 때
@@ -87,9 +90,15 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun clickReadMore() {
+    private fun clickLoadMore() {
         isReadMoreVisible.value = false
         getNextProductList()
+    }
+
+    private fun clickProductDetail(productId: Long) {
+        viewModelScope.launch {
+            _toProductDetail.emit(productId)
+        }
     }
 
     private fun setLoadingState(state: Boolean) {

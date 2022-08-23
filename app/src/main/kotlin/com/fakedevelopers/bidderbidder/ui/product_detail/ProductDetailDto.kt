@@ -22,6 +22,6 @@ data class ProductDetailDto(
         sb.appendLine("productContent = $productContent")
         sb.appendLine("productTitle = $productTitle")
         sb.appendLine("tick = $tick")
-        return super.toString()
+        return sb.toString()
     }
 }

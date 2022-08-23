@@ -20,9 +20,9 @@ import java.util.Date
 import java.util.TimeZone
 
 class ProductListAdapter(
-    private val onClick: () -> Unit,
-    private val isReadMoreVisible: () -> Boolean,
-    private val getPriceInfo: (String) -> String
+    private val clickLoadMore: () -> Unit,
+    private val clickProductDetail: (Long) -> Unit,
+    private val isReadMoreVisible: () -> Boolean
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
@@ -61,10 +61,15 @@ class ProductListAdapter(
                 } else {
                     hopePrice.visibility = View.VISIBLE
                     textviewProductListHopePrice.visibility = View.VISIBLE
-                    textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                    textviewProductListHopePrice.text = "${dec.format(item.hopePrice)}원"
                 }
-                textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
+
+                textviewProductListOpeningBid.text = "${dec.format(item.openingBid)}원"
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
+                // 상품 상세 정보로 넘어가기
+                layoutProductList.setOnClickListener {
+                    clickProductDetail(item.productId)
+                }
             }
         }
 
@@ -106,7 +111,7 @@ class ProductListAdapter(
                 visibility = if (isReadMoreVisible()) View.VISIBLE else View.GONE
                 setOnClickListener {
                     binding.buttonLoadMore.visibility = View.GONE
-                    onClick()
+                    clickLoadMore()
                 }
             }
         }
