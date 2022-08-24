@@ -33,7 +33,11 @@ class ProductDetailFragment : Fragment() {
             container,
             false
         )
-        return binding.root
+        return binding.run {
+            vm = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            root
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -50,7 +54,7 @@ class ProductDetailFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productDetailResponse.collectLatest {
                     if (it.isSuccessful) {
-                        Logger.i(it.body().toString())
+                        viewModel.initProductDetail(it.body())
                     } else {
                         Logger.e(it.errorBody().toString())
                     }
