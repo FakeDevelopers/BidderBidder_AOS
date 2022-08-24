@@ -24,7 +24,7 @@ class ExpirationTimerTask(
         val totalMinute = millisUntilFinished / 60000
         val day = totalMinute / 1440
         val hour = totalMinute % 1440 / 60
-        val remainTimeString = StringBuilder("마감까지 ")
+        val remainTimeString = StringBuilder()
         // 일
         if (day > 0) {
             remainTimeString.append("${day}일 ")

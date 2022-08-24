@@ -37,7 +37,7 @@ class ProductListAdapter(
                 timerTask = ExpirationTimerTask(
                     item.expirationDate,
                     1000,
-                    tick = { remainTimeString -> textviewProductListExpire.text = remainTimeString },
+                    tick = { remainTimeString -> textviewProductListExpire.text = "마감까지 $remainTimeString" },
                     finish = { textviewProductListExpire.text = "마감" }
                 )
                 timerTask.start()
