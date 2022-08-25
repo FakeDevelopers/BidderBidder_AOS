@@ -84,13 +84,28 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.inputUserPassword.collectLatest {
+                    if (viewModel.inputConfirmUserPassword.value.isNotEmpty()) {
+                        if (it == viewModel.inputConfirmUserPassword.value) {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                        } else {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                        }
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.inputConfirmUserPassword.collectLatest {
-                    if (it.isNotEmpty()) {
+                    if (it.isEmpty() && it == viewModel.inputUserPassword.value) {
                         if (it == viewModel.inputUserPassword.value) {
                             setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
                         } else {
                             setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
                         }
+                    } else {
+                        setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
                     }
                 }
             }
@@ -107,7 +122,7 @@ class UserRegistrationPasswordFragment : Fragment() {
                 it.setText(R.string.registration_password_is_not_same)
                 it.isSelected = false
             }
-            setTextViewColor(it, getColorId(state))
+            it.setTextColor(ContextCompat.getColor(requireContext(), getColorId(state)))
         }
     }
 
@@ -116,8 +131,13 @@ class UserRegistrationPasswordFragment : Fragment() {
     }
 
     private fun setTextViewColor(tv: TextView, colorId: Int) {
-        tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
-        tv.isSelected = colorId == R.color.bidderbidder_primary
+        if (viewModel.inputUserPassword.value.isEmpty()) {
+            tv.isEnabled = false
+        } else {
+            tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
+            tv.isEnabled = true
+            tv.isSelected = colorId == R.color.bidderbidder_primary
+        }
     }
 
     private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.alert_red

@@ -53,10 +53,10 @@ class UserRegistrationIdFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userIdDuplicationState.collectLatest {
                     if (it) {
-                        setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red, it)
+                        setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red, false)
                         setTextInputBackground(R.drawable.text_input_white_background_error)
                     } else {
-                        setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, it)
+                        setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
                         setTextInputBackground(R.drawable.text_input_white_background)
                     }
                 }
