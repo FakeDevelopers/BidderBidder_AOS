@@ -25,6 +25,7 @@ class ProductDetailViewModel @Inject constructor(
     private val _hopePrice = MutableStateFlow("")
     private val _minimumBid = MutableStateFlow("")
     private val _tick = MutableStateFlow("")
+    private val _remainTimeState = MutableStateFlow("마감까지")
     private val _remainTime = MutableStateFlow("")
     private val _bidderCount = MutableStateFlow("")
     private val _bidInfoVisibility = MutableStateFlow(false)
@@ -38,6 +39,7 @@ class ProductDetailViewModel @Inject constructor(
     val hopePrice: StateFlow<String> get() = _hopePrice
     val minimumBid: StateFlow<String> get() = _minimumBid
     val tick: StateFlow<String> get() = _tick
+    val remainTimeState: StateFlow<String> get() = _remainTimeState
     val remainTime: StateFlow<String> get() = _remainTime
     val bidderCount: StateFlow<String> get() = _bidderCount
     val bidInfoVisibility: StateFlow<Boolean> get() = _bidInfoVisibility
@@ -89,7 +91,8 @@ class ProductDetailViewModel @Inject constructor(
             },
             finish = {
                 viewModelScope.launch {
-                    _remainTime.emit("마감")
+                    _remainTime.emit("")
+                    _remainTimeState.emit("마감")
                 }
             }
         )
