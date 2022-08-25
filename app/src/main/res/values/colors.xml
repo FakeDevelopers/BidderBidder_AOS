@@ -19,4 +19,9 @@
     <color name="common_login_background">#DBDBDB</color>
     <color name="small_text_button">#B4B4B4</color>
     <color name="edit_text_hint">#C4C4C4</color>
+    <color name="text_input_white_background">#FFFFFF</color>
+    <color name="text_input_white_border">#F2F2F2</color>
+    <color name="button_warn_border">#F93D5D</color>
+    <color name="button_warn_background">#12F93D5D</color>
+    <color name="text_input_hint_color_normal">#979797</color>
 </resources>

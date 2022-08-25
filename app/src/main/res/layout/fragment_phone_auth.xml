@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintVertical_bias="0.103"
             app:title="@{@string/phoneauth_title}" />
 
         <LinearLayout
@@ -43,7 +43,9 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="2">
+                android:layout_weight="2"
+                app:boxStrokeColor="@color/bidderbidder_primary"
+                app:hintTextColor="@color/bidderbidder_primary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_register_birth"
@@ -53,7 +55,7 @@
                     android:hint="@string/phoneauth_hint_phonenumber"
                     android:inputType="numberDecimal"
                     android:text="@={vm.phoneNumber}"
-                    android:textSize="12sp"
+                    android:textColorHint="@color/edit_text_hint"
                     tools:ignore="TextContrastCheck" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -82,10 +84,13 @@
                 android:id="@+id/textinputlayout_phoneauth_authcode"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:boxStrokeColor="@color/bidderbidder_primary"
+                app:hintTextColor="@color/bidderbidder_primary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edittext_phoneauth_authcode"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:ems="10"
@@ -95,6 +100,7 @@
                     android:text="@={vm.authCode}"
                     android:textSize="12sp"
                     android:maxLength="6"
+                    android:textColorHint="@color/edit_text_hint"
                     tools:ignore="TextContrastCheck" />
             </com.google.android.material.textfield.TextInputLayout>
 

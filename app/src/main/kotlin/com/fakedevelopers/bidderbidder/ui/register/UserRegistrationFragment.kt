@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.get
 import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -28,7 +27,6 @@ import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INP
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -70,7 +68,7 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setNavigationBar(viewModel.getCurrentStep())
+        setTabBar(viewModel.getCurrentStep())
 
         initListener()
         initCollector()
@@ -135,27 +133,30 @@ class UserRegistrationFragment : Fragment() {
         }
     }
 
-    private fun setNavigationBar(state: RegistrationProgressState) {
+    private fun setTabBar(state: RegistrationProgressState) {
         binding.includeUserRegistrationNavigation.let {
-            listOf(it.imageView0, it.imageView1, it.imageView2, it.imageView3, it.imageView4, it.imageView5).forEach() {
+            if (state == ACCEPT_TERMS) {
+                binding.includeUserRegistrationNavigation.root.visibility = View.GONE
+            } else {
+                binding.includeUserRegistrationNavigation.root.visibility = View.VISIBLE
+            }
+            listOf(it.phoneAuth, it.tabInputBirth, it.tabInputId, it.tabInputPassword, it.tabInputNickname).forEach() {
                 it.updateLayoutParams {
-                    this.width = 29
+                    this.width = (11 * resources.displayMetrics.density).toInt()
                 }
                 it.isSelected = false
             }
-
             when (state) {
-                ACCEPT_TERMS -> it.imageView0
-                PHONE_AUTH_BEFORE_SENDING -> it.imageView1
-                PHONE_AUTH_CHECK_AUTH_CODE -> it.imageView1
-                INPUT_BIRTH -> it.imageView2
-                INPUT_ID -> it.imageView3
-                INPUT_PASSWORD -> it.imageView4
-                CONGRATULATIONS -> it.imageView5
+                PHONE_AUTH_BEFORE_SENDING -> it.phoneAuth
+                PHONE_AUTH_CHECK_AUTH_CODE -> it.phoneAuth
+                INPUT_BIRTH -> it.tabInputBirth
+                INPUT_ID -> it.tabInputId
+                INPUT_PASSWORD -> it.tabInputPassword
+                CONGRATULATIONS -> it.tabInputNickname
                 else -> null
             }?.let { view ->
                 view.updateLayoutParams {
-                    this.width = 59
+                    this.width = (22 * resources.displayMetrics.density).toInt()
                     view.isSelected = true
                 }
             }
@@ -166,7 +167,7 @@ class UserRegistrationFragment : Fragment() {
     private fun toNextStep(state: RegistrationProgressState) {
         NavOptions.Builder().setLaunchSingleTop(true)
         viewModel.setNextStepEnabled(false)
-        setNavigationBar(state)
+        setTabBar(state)
         when (state) {
             ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
             PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
