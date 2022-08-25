@@ -82,21 +82,42 @@ class UserRegistrationPasswordFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.inputConfirmUserPassword.collectLatest {
+                    if (it.isNotEmpty()) {
+                        if (it == viewModel.inputUserPassword.value) {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                        } else {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setPasswordConfirmInfo(state: Boolean) {
         binding.textviewPasswordConfirmInfo.let {
             if (state) {
                 it.setText(R.string.registration_password_is_same)
+                it.onCheckIsTextEditor()
+                it.isSelected = true
             } else {
                 it.setText(R.string.registration_password_is_not_same)
+                it.isSelected = false
             }
             setTextViewColor(it, getColorId(state))
         }
     }
 
+    private fun setEditPasswordConfirmBackground(drawableId: Int) {
+        binding.edittextPasswordConfirm.background = ContextCompat.getDrawable(requireContext(), drawableId)
+    }
+
     private fun setTextViewColor(tv: TextView, colorId: Int) {
         tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
+        tv.isSelected = colorId == R.color.bidderbidder_primary
     }
 
     private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.alert_red

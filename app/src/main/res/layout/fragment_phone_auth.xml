@@ -24,7 +24,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
+            app:layout_constraintVertical_bias="0.103"
             app:title="@{@string/phoneauth_title}" />
 
         <LinearLayout
@@ -55,7 +55,6 @@
                     android:hint="@string/phoneauth_hint_phonenumber"
                     android:inputType="numberDecimal"
                     android:text="@={vm.phoneNumber}"
-                    android:textSize="12sp"
                     android:textColorHint="@color/edit_text_hint"
                     tools:ignore="TextContrastCheck" />
 

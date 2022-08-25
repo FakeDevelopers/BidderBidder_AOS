@@ -44,7 +44,7 @@ class UserRegistrationIdFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initCollector()
         if (!viewModel.getIdDuplicationState()) {
-            setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary)
+            setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
         }
     }
 
@@ -53,9 +53,11 @@ class UserRegistrationIdFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userIdDuplicationState.collectLatest {
                     if (it) {
-                        setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red)
+                        setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red, it)
+                        setTextInputBackground(R.drawable.text_input_white_background_error)
                     } else {
-                        setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary)
+                        setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, it)
+                        setTextInputBackground(R.drawable.text_input_white_background)
                     }
                 }
             }
@@ -63,12 +65,18 @@ class UserRegistrationIdFragment : Fragment() {
     }
 
     // 중복 체크 표시
-    private fun setDuplicationInfo(stringId: Int, colorId: Int) {
+    private fun setDuplicationInfo(stringId: Int, colorId: Int, state: Boolean) {
         binding.textviewIdDuplicationInfo.apply {
             visibility = if (viewModel.inputUserId.value.isNotEmpty()) View.VISIBLE else View.INVISIBLE
             setText(stringId)
             setTextColor(ContextCompat.getColor(requireContext(), colorId))
+            this.isSelected = state
         }
+    }
+
+    private fun setTextInputBackground(drawableId: Int) {
+        binding.edittextId.background =
+            ContextCompat.getDrawable(requireContext(), drawableId)
     }
 
     override fun onDestroy() {

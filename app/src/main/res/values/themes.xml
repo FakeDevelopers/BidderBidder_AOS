@@ -29,4 +29,31 @@
     <style name="productRegistrationButtonEnable" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="actionMenuTextColor">@color/black</item>
     </style>
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="materialThemeOverlay">@style/CustomTextInputLayoutThemeOverlay</item>
+        <item name="shapeAppearanceOverlay">@style/CustomTextInputLayoutShapeAppearanceOverlay</item>
+        <item name="textInputLayoutErrorDrawable">@drawable/text_input_white_background_error</item>
+        <item name="textInputLayoutNormalSelectorDrawable">@drawable/text_input_white_background</item>
+        <item name="boxCollapsedPaddingTop">4dp</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="boxStrokeColor">@color/bidderbidder_primary</item>
+        <item name="hintTextColor">@color/text_input_hint_color_normal</item>
+        <item name="hintEnabled">true</item>
+    </style>
+
+    <style name="CustomTextInputLayoutThemeOverlay" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="editTextStyle">@style/CustomTextInputLayoutEditTextStyle</item>
+    </style>
+
+    <style name="CustomTextInputLayoutEditTextStyle" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <!-- Padding values that total 34dp to visually match the spec. -->
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="CustomTextInputLayoutShapeAppearanceOverlay" parent="">
+        <item name="cornerSizeBottomLeft">4dp</item>
+        <item name="cornerSizeBottomRight">4dp</item>
+    </style>
 </resources>

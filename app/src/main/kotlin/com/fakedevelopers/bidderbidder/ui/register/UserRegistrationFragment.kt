@@ -142,7 +142,7 @@ class UserRegistrationFragment : Fragment() {
             }
             listOf(it.phoneAuth, it.tabInputBirth, it.tabInputId, it.tabInputPassword, it.tabInputNickname).forEach() {
                 it.updateLayoutParams {
-                    this.width = 29
+                    this.width = (11 * resources.displayMetrics.density).toInt()
                 }
                 it.isSelected = false
             }
@@ -156,7 +156,7 @@ class UserRegistrationFragment : Fragment() {
                 else -> null
             }?.let { view ->
                 view.updateLayoutParams {
-                    this.width = 59
+                    this.width = (22 * resources.displayMetrics.density).toInt()
                     view.isSelected = true
                 }
             }

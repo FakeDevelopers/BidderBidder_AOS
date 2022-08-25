@@ -26,11 +26,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textinputlayout_id"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/TextInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:boxStrokeColor="@color/bidderbidder_primary"
-            app:hintTextColor="@color/bidderbidder_primary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,12 +53,14 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:visibility="invisible"
+            android:drawablePadding="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textinputlayout_id"
             tools:text="@string/registration_id_is_ok"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            app:drawableLeftCompat="@drawable/bang_mark" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_id_duplication_check"
