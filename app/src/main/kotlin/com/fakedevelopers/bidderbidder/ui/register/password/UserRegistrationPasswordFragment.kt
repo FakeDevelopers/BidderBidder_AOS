@@ -98,7 +98,7 @@ class UserRegistrationPasswordFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.inputConfirmUserPassword.collectLatest {
-                    if (it.isEmpty() && it == viewModel.inputUserPassword.value) {
+                    if (it.isNotEmpty()) {
                         if (it == viewModel.inputUserPassword.value) {
                             setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
                         } else {
