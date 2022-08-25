@@ -13,7 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
-import com.orhanobut.logger.Logger
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -56,7 +56,7 @@ class ProductDetailFragment : Fragment() {
                     if (it.isSuccessful) {
                         viewModel.initProductDetail(it.body())
                     } else {
-                        Logger.e(it.errorBody().toString())
+                        ApiErrorHandler.print(it.errorBody())
                     }
                 }
             }

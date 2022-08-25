@@ -26,7 +26,7 @@
             android:id="@+id/textview_seller_nickname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Jaden.bin"
+            android:text="Jayden.bin"
             android:layout_marginVertical="4dp"
             android:textStyle="bold" />
 

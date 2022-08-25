@@ -11,7 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:paddingHorizontal="16dp"
         android:paddingVertical="24dp">
 
@@ -91,14 +91,57 @@
             tools:text="500원" />
 
         <TextView
+            android:id="@+id/textview_bidder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="입찰자"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textview_tick" />
+
+        <TextView
+            android:id="@+id/textview_bidder_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{vm.bidderCount}"
+            app:layout_constraintStart_toEndOf="@+id/textview_minimum_bid"
+            app:layout_constraintTop_toBottomOf="@+id/textview_tick"
+            tools:text="5명" />
+
+        <TextView
             android:id="@+id/textview_expire"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@{vm.remainTime}"
+            android:text="마감까지"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textview_tick"
-            tools:text="1시간 30분 후 마감" />
+            app:layout_constraintTop_toBottomOf="@+id/textview_bidder" />
+
+        <TextView
+            android:id="@+id/textview_expire_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@{vm.remainTime}"
+            app:layout_constraintStart_toEndOf="@+id/textview_minimum_bid"
+            app:layout_constraintTop_toBottomOf="@+id/textview_bidder"
+            tools:text="1시간 30분" />
+
+        <ImageButton
+            android:id="@+id/imageButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:padding="4dp"
+            android:onClick="@{() -> vm.setBidInfoVisibility(true)}"
+            app:layout_constraintBottom_toTopOf="@+id/textview_expire_value"
+            app:layout_constraintStart_toEndOf="@+id/textview_bidder_count"
+            app:layout_constraintTop_toBottomOf="@+id/textview_tick_value"
+            app:srcCompat="@drawable/vector_info"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
