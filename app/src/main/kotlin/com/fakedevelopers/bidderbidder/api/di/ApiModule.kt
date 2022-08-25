@@ -1,10 +1,12 @@
 package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
@@ -22,6 +24,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.create
 import java.util.Locale
 import javax.inject.Singleton
 
@@ -109,4 +112,15 @@ object ApiModule {
     @Provides
     fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
         SigninGoogleRepository(service)
+
+    // 상품 상세 정보
+    @Singleton
+    @Provides
+    fun provideProductDetailService(retrofit: Retrofit): ProductDetailService =
+        retrofit.create(ProductDetailService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
+        ProductDetailRepository(service)
 }

@@ -55,6 +55,9 @@
             app:destination="@id/productListFragment"
             app:popUpTo="@id/productListFragment"
             app:popUpToInclusive="true"/>
+        <action
+            android:id="@+id/action_productListFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/productRegistrationFragment"
@@ -112,5 +115,17 @@
             app:destination="@id/productListFragment"
             app:popUpTo="@id/nav_graph"
             app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/productDetailFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.product_detail.ProductDetailFragment"
+        android:label="ProductDetailFragment" >
+        <action
+            android:id="@+id/action_productDetailFragment_to_productListFragment"
+            app:destination="@id/productListFragment" />
+        <argument
+            android:name="productId"
+            android:defaultValue="-1L"
+            app:argType="long" />
     </fragment>
 </navigation>
