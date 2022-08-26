@@ -3,13 +3,14 @@ package com.fakedevelopers.bidderbidder
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragmentDirections
 import com.jakewharton.threetenabp.AndroidThreeTen
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -39,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.menu_product_registration -> navController.navigate(R.id.productRegistrationFragment)
+                R.id.menu_product_registration -> navController.safeNavigate(R.id.productRegistrationFragment)
             }
             true
         }
@@ -48,9 +49,7 @@ class MainActivity : AppCompatActivity() {
                 view.performClick()
                 navController.apply {
                     getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                    safeCall {
-                        navigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
-                    }
+                    safeNavigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
                 }
             }
             true
@@ -62,11 +61,11 @@ class MainActivity : AppCompatActivity() {
         _binding = null
     }
 
-    private inline fun <R> safeCall(call: () -> R) {
-        runCatching {
-            call()
-        }.onFailure {
-            Logger.e(it.toString())
-        }
+    private fun NavController.safeNavigate(direction: NavDirections) {
+        currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
+    }
+
+    private fun NavController.safeNavigate(@IdRes resId: Int, args: Bundle? = null) {
+        currentDestination?.getAction(resId)?.destinationId.run { navigate(resId, args) }
     }
 }
