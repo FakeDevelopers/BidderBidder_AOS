@@ -1,7 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.product_list
 
 import android.content.Context
-import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,40 +14,33 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dec
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel.Companion.LIST_COUNT
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
+import com.fakedevelopers.bidderbidder.ui.util.ExpirationTimerTask
 
 class ProductListAdapter(
-    private val onClick: () -> Unit,
-    private val isReadMoreVisible: () -> Boolean,
-    private val getPriceInfo: (String) -> String
+    private val clickLoadMore: () -> Unit,
+    private val clickProductDetail: (Long) -> Unit,
+    private val isReadMoreVisible: () -> Boolean
 ) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm").apply {
-        timeZone = TimeZone.getTimeZone("Asia/Seoul")
-    }
 
     inner class ItemViewHolder(
         private val binding: RecyclerProductListBinding,
         private val context: Context
     ) : RecyclerView.ViewHolder(binding.root) {
-        private lateinit var timerTask: CountDownTimer
+        private lateinit var timerTask: ExpirationTimerTask
         fun bind(item: ProductListDto) {
             with(binding) {
                 if (::timerTask.isInitialized) {
                     timerTask.cancel()
                 }
-                timerTask = object : CountDownTimer(getRemainTimeMillisecond(item.expirationDate), 1000) {
-                    override fun onTick(millisUntilFinished: Long) {
-                        textviewProductListExpire.text = getRemainTimeString(millisUntilFinished)
-                    }
-
-                    override fun onFinish() {
-                        textviewProductListExpire.text = "마감"
-                    }
-                }.start()
+                timerTask = ExpirationTimerTask(
+                    item.expirationDate,
+                    1000,
+                    tick = { remainTimeString -> textviewProductListExpire.text = "마감까지 $remainTimeString" },
+                    finish = { textviewProductListExpire.text = "마감" }
+                )
+                timerTask.start()
                 Glide.with(context)
                     .load(BASE_URL + item.thumbnail)
                     .placeholder(R.drawable.the_cat)
@@ -61,40 +53,16 @@ class ProductListAdapter(
                 } else {
                     hopePrice.visibility = View.VISIBLE
                     textviewProductListHopePrice.visibility = View.VISIBLE
-                    textviewProductListHopePrice.text = getPriceInfo(dec.format(item.hopePrice))
+                    textviewProductListHopePrice.text = "${dec.format(item.hopePrice)}원"
                 }
-                textviewProductListOpeningBid.text = getPriceInfo(dec.format(item.openingBid))
+
+                textviewProductListOpeningBid.text = "${dec.format(item.openingBid)}원"
                 textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
-            }
-        }
-
-        private fun getRemainTimeMillisecond(expirationDate: String) =
-            dateFormat.parse(expirationDate)!!.time - dateFormat.parse(dateFormat.format(Date()))!!.time
-
-        private fun getRemainTimeString(millisUntilFinished: Long): String {
-            val totalMinute = millisUntilFinished / 60000
-            val day = totalMinute / 1440
-            val hour = totalMinute % 1440 / 60
-            val remainTimeString = StringBuilder("마감까지 ")
-            // 일
-            if (day > 0) {
-                remainTimeString.append("${day}일 ")
-            }
-            // 시간
-            if (hour != 0L) {
-                remainTimeString.append("${hour}시간 ")
-            }
-            // 분, 초
-            if (day == 0L && hour < 3) {
-                val minute = totalMinute % 60
-                if (minute != 0L) {
-                    remainTimeString.append("${minute}분 ")
-                }
-                if (hour == 0L && minute < 5) {
-                    remainTimeString.append("${millisUntilFinished % 60000 / 1000}초")
+                // 상품 상세 정보로 넘어가기
+                layoutProductList.setOnClickListener {
+                    clickProductDetail(item.productId)
                 }
             }
-            return remainTimeString.toString()
         }
     }
 
@@ -106,7 +74,7 @@ class ProductListAdapter(
                 visibility = if (isReadMoreVisible()) View.VISIBLE else View.GONE
                 setOnClickListener {
                     binding.buttonLoadMore.visibility = View.GONE
-                    onClick()
+                    clickLoadMore()
                 }
             }
         }

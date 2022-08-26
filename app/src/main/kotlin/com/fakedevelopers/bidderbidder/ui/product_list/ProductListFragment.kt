@@ -74,6 +74,15 @@ class ProductListFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.toProductDetail.collectLatest { productId ->
+                    findNavController().navigate(
+                        ProductListFragmentDirections.actionProductListFragmentToProductDetailFragment(productId)
+                    )
+                }
+            }
+        }
     }
 
     private fun initListener() {
