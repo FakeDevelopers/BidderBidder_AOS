@@ -33,6 +33,9 @@
             app:layout_constraintEnd_toStartOf="@+id/button_read_more"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:textColor="#828282"
+            android:textStyle="bold"
+            android:textSize="12sp"
             tools:text="(필수) 비더비더 이용약관"
             tools:ignore="RtlSymmetry" />
 

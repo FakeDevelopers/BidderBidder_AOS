@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -43,9 +44,30 @@ class UserRegistrationPasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListener()
         initCollector()
         if (viewModel.userPasswordConditionLengthState.value && viewModel.userPasswordConditionCharacterState.value) {
             binding.textviewPasswordConfirmInfo.visibility = View.VISIBLE
+        }
+    }
+
+    private fun initListener() {
+        // 만료 시간 필터 등록
+        binding.apply {
+            edittextPassword.addTextChangedListener() {
+                if (it.contentEquals(edittextPasswordConfirm.text)) {
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                } else {
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                }
+            }
+            edittextPasswordConfirm.addTextChangedListener() {
+                if (it.contentEquals(edittextPassword.text)) {
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                } else {
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                }
+            }
         }
     }
 
@@ -79,34 +101,6 @@ class UserRegistrationPasswordFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userPasswordConfirmState.collectLatest {
                     setPasswordConfirmInfo(it)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.inputUserPassword.collectLatest {
-                    if (viewModel.inputConfirmUserPassword.value.isNotEmpty()) {
-                        if (it == viewModel.inputConfirmUserPassword.value) {
-                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
-                        } else {
-                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
-                        }
-                    }
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.inputConfirmUserPassword.collectLatest {
-                    if (it.isNotEmpty()) {
-                        if (it == viewModel.inputUserPassword.value) {
-                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
-                        } else {
-                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
-                        }
-                    } else {
-                        setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
-                    }
                 }
             }
         }
