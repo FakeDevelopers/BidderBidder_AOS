@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -29,16 +30,19 @@
             android:id="@+id/checkbox_accept_terms_accept_all"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="13dp"
+            android:button="@drawable/term_checkbox"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setAcceptAllState(isChecked)}"
+            android:paddingStart="10dp"
             android:text="@string/accept_terms_accept_all"
             android:textStyle="bold"
-            android:button="@drawable/term_checkbox"
-            android:paddingStart="10dp"
-            app:useMaterialThemeColors="false"
+            android:textSize="17sp"
             app:layout_constraintBottom_toTopOf="@+id/divider_accept_terms"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:useMaterialThemeColors="false"
+            tools:ignore="RtlSymmetry" />
 
         <View
             android:id="@+id/divider_accept_terms"
@@ -54,7 +58,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="13dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
