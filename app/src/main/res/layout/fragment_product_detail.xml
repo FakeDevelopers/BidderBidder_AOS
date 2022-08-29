@@ -16,6 +16,7 @@
         android:orientation="vertical">
 
         <ScrollView
+            android:id="@+id/scrollView3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -64,16 +65,25 @@
         </ScrollView>
 
         <include
+            android:id="@+id/include_product_detail_bidding"
+            layout="@layout/include_product_detail_bidding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <include
             android:id="@+id/include_product_detail_bid_info"
             layout="@layout/include_product_detail_bid_info"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="@{vm.bidInfoVisibility ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bid"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:vm="@{vm}"/>
+            app:vm="@{vm}" />
 
         <Button
             android:id="@+id/button_product_detail_bid"

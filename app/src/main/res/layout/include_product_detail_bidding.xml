@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/textview_minimum_bid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="최소 입찰가"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textview_minimum_bid_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textview_minimum_bid"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="5,000원" />
+
+    <TextView
+        android:id="@+id/textview_tick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:text="입찰단위"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_minimum_bid" />
+
+    <TextView
+        android:id="@+id/textview_tick_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textview_minimum_bid"
+        app:layout_constraintTop_toBottomOf="@+id/textview_minimum_bid_value"
+        tools:text="500원" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_tick_value" />
+
+    <TextView
+        android:id="@+id/textview_test_bidder_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ID(테스트)"
+        app:layout_constraintBottom_toBottomOf="@+id/edittext_test_bidder_id"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/edittext_test_bidder_id" />
+
+    <EditText
+        android:id="@+id/edittext_test_bidder_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="테스트를 위한 입찰자 ID"
+        android:inputType="numberDecimal"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/textview_test_bidder_id"
+        app:layout_constraintTop_toBottomOf="@+id/divider"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <TextView
+        android:id="@+id/textview_bid_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="입찰가"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview_test_bidder_id"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/edittext_bid_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:ems="10"
+        android:hint="입찰가"
+        android:inputType="numberDecimal"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textview_bid_price"
+        app:layout_constraintStart_toEndOf="@+id/textview_test_bidder_id"
+        app:layout_constraintTop_toTopOf="@+id/textview_bid_price"
+        tools:ignore="TouchTargetSizeCheck" />
+
+    <ImageButton
+        android:id="@+id/button_tick_minus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@android:color/transparent"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/edittext_bid_price"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/edittext_bid_price"
+        app:layout_constraintTop_toTopOf="@+id/edittext_bid_price"
+        app:srcCompat="@drawable/vector_button_minus"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    <ImageButton
+        android:id="@+id/button_tick_plus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:background="@android:color/transparent"
+        android:padding="4dp"
+        app:layout_constraintBottom_toBottomOf="@+id/edittext_bid_price"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/button_tick_minus"
+        app:layout_constraintTop_toTopOf="@+id/edittext_bid_price"
+        app:srcCompat="@drawable/vector_button_plus"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+    <ImageView
+        android:id="@+id/button_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
