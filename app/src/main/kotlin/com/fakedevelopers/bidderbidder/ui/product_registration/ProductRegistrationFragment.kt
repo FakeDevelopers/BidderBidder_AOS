@@ -207,11 +207,7 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initEditTextFilter(editText: EditText, length: Int) {
-        val priceFilter = InputFilter { source, _, _, _, _, _ ->
-            source.replace("[^(0-9|,)]".toRegex(), "")
-        }
-        editText.filters = arrayOf(priceFilter, InputFilter.LengthFilter(length))
-        editText.addTextChangedListener(PriceTextWatcher(editText) { viewModel.checkRegistrationCondition() })
+        PriceTextWatcher.addEditTextFilter(editText, length) { viewModel.checkRegistrationCondition() }
     }
 
     private fun initResultLauncher() {
