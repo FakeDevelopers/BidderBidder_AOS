@@ -31,12 +31,8 @@ class PriceTextWatcher(
         checkCondition?.invoke()
     }
 
-    private fun makeComma(price: String): String {
-        price.replace(",", "").toLongOrNull()?.let {
-            return dec.format(it)
-        }
-        return ""
-    }
+    private fun makeComma(price: String) =
+        price.replace(",", "").toLongOrNull()?.let { dec.format(it) } ?: ""
 
     companion object {
         fun addEditTextFilter(editText: EditText, length: Int, checkCondition: (() -> Unit)? = null) {
