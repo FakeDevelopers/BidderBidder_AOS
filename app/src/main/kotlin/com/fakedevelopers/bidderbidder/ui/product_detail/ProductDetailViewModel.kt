@@ -29,6 +29,7 @@ class ProductDetailViewModel @Inject constructor(
     private val _remainTime = MutableStateFlow("")
     private val _bidderCount = MutableStateFlow("")
     private val _bidInfoVisibility = MutableStateFlow(false)
+    private val _biddingVisibility = MutableStateFlow(false)
     private lateinit var timerTask: ExpirationTimerTask
 
     val productDetailResponse = _productDetailResponse.asEventFlow()
@@ -43,6 +44,7 @@ class ProductDetailViewModel @Inject constructor(
     val remainTime: StateFlow<String> get() = _remainTime
     val bidderCount: StateFlow<String> get() = _bidderCount
     val bidInfoVisibility: StateFlow<Boolean> get() = _bidInfoVisibility
+    val biddingVisibility: StateFlow<Boolean> get() = _biddingVisibility
 
     fun productDetailRequest(productId: Long) {
         viewModelScope.launch {
@@ -66,6 +68,30 @@ class ProductDetailViewModel @Inject constructor(
                 bidInfoAdapter.submitList(bids)
                 startTimerTask(expirationDate)
             }
+        }
+    }
+
+    // 입찰 버튼 처리
+    fun clickBidding() {
+        // 입찰하기 뷰가 내려가 있다면 올려만 주고 끝낸다.
+        if (!biddingVisibility.value) {
+            viewModelScope.launch {
+                _biddingVisibility.emit(true)
+            }
+            return
+        }
+    }
+
+    fun setBiddingVisibility(state: Boolean) {
+        // 아직 입찰 정보를 받아오지 않았다면 입찰 화면을 띄우지 않는다
+        if (state && bidInfoAdapter.currentList.isEmpty()) {
+            return
+        }
+        viewModelScope.launch {
+            if (state) {
+                _bidInfoVisibility.emit(false)
+            }
+            _biddingVisibility.emit(state)
         }
     }
 

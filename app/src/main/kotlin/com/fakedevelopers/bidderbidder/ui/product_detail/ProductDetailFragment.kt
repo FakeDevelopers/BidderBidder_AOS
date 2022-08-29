@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -61,7 +62,27 @@ class ProductDetailFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.biddingVisibility.collectLatest { state ->
+                    // 등장하는 애니메이션이면 VISIBLE 한 다음 애니메이션 동작
+                    // 사라지는 애니메이션이면 INVISIBLE 하기 전에 애니메이션 동작
+                    binding.includeProductDetailBidding.root.apply {
+                        if (!state && visibility == View.VISIBLE) {
+                            startAnimation(getAnimation(R.anim.animation_translate_down))
+                        }
+                        visibility = if (state) View.VISIBLE else View.INVISIBLE
+                        if (state) {
+                            startAnimation(getAnimation(R.anim.animation_translate_up))
+                        }
+                    }
+                }
+            }
+        }
     }
+
+    private fun getAnimation(id: Int) =
+        AnimationUtils.loadAnimation(requireContext(), id)
 
     override fun onDestroy() {
         super.onDestroy()

@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bid"
+            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bidding"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -69,9 +69,11 @@
             layout="@layout/include_product_detail_bidding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:vm="@{vm}" />
 
         <include
             android:id="@+id/include_product_detail_bid_info"
@@ -86,13 +88,14 @@
             app:vm="@{vm}" />
 
         <Button
-            android:id="@+id/button_product_detail_bid"
+            android:id="@+id/button_product_detail_bidding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="입찰"
+            android:onClick="@{() -> vm.clickBidding()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
