@@ -14,10 +14,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import okhttp3.internal.toLongOrDefault
 
 @AndroidEntryPoint
 class ProductDetailFragment : Fragment() {
@@ -48,6 +51,8 @@ class ProductDetailFragment : Fragment() {
             viewModel.productDetailRequest(args.productId)
         }
         initCollector()
+        // 입찰가 입력 필터 등록
+        PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH)
     }
 
     private fun initCollector() {
@@ -79,10 +84,29 @@ class ProductDetailFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.moveOneTickEvent.collectLatest { tick ->
+                    val updatedBid = setValidBid(getCurrentBid() + tick)
+                    binding.includeProductDetailBidding.edittextBidPrice.setText(updatedBid.toString())
+                }
+            }
+        }
     }
 
     private fun getAnimation(id: Int) =
         AnimationUtils.loadAnimation(requireContext(), id)
+
+    private fun getCurrentBid() =
+        binding.includeProductDetailBidding.edittextBidPrice.text.toString()
+            .replace(",", "").toLongOrDefault(0)
+
+    private fun setValidBid(bid: Long) =
+        when {
+            viewModel.hopePriceValue != -1L && viewModel.hopePriceValue < bid -> viewModel.hopePriceValue
+            viewModel.minimumBidValue > bid -> viewModel.minimumBidValue
+            else -> bid
+        }
 
     override fun onDestroy() {
         super.onDestroy()

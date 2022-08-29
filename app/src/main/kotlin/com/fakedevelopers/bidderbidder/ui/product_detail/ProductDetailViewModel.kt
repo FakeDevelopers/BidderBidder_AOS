@@ -30,7 +30,10 @@ class ProductDetailViewModel @Inject constructor(
     private val _bidderCount = MutableStateFlow("")
     private val _bidInfoVisibility = MutableStateFlow(false)
     private val _biddingVisibility = MutableStateFlow(false)
+    private val _moveOneTickEvent = MutableEventFlow<Long>()
     private lateinit var timerTask: ExpirationTimerTask
+    // 입찰가 입력에 사용할 호가값
+    private var tickValue = 0
 
     val productDetailResponse = _productDetailResponse.asEventFlow()
     val productDetailAdapter = ProductDetailAdapter()
@@ -45,6 +48,12 @@ class ProductDetailViewModel @Inject constructor(
     val bidderCount: StateFlow<String> get() = _bidderCount
     val bidInfoVisibility: StateFlow<Boolean> get() = _bidInfoVisibility
     val biddingVisibility: StateFlow<Boolean> get() = _biddingVisibility
+    val moveOneTickEvent = _moveOneTickEvent.asEventFlow()
+    // 입찰가 검증에 사용할 희망가, 입찰가
+    var hopePriceValue = -1L
+        private set
+    var minimumBidValue = -1L
+        private set
 
     fun productDetailRequest(productId: Long) {
         viewModelScope.launch {
@@ -61,9 +70,13 @@ class ProductDetailViewModel @Inject constructor(
                 _title.emit(productTitle)
                 _contents.emit(productContent)
                 _hopePrice.emit(makeWon(hopePrice))
+                hopePriceValue = hopePrice
                 _minimumBid.emit(makeWon(openingBid))
+                minimumBidValue = openingBid
                 _tick.emit(makeWon(tick))
+                tickValue = tick.toInt()
                 _bidderCount.emit("${bidderCount}명")
+                _moveOneTickEvent.emit(openingBid)
                 productDetailAdapter.submitList(images)
                 bidInfoAdapter.submitList(bids)
                 startTimerTask(expirationDate)
@@ -79,6 +92,15 @@ class ProductDetailViewModel @Inject constructor(
                 _biddingVisibility.emit(true)
             }
             return
+        }
+    }
+
+    // 1틱 증감
+    // true : 증가, false : 감소
+    fun moveOneTick(state: Boolean) {
+        val plusOrMinus = if (state) 1 else -1
+        viewModelScope.launch {
+            _moveOneTickEvent.emit((tickValue * plusOrMinus).toLong())
         }
     }
 
