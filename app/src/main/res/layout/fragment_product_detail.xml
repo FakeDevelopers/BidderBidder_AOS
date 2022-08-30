@@ -85,6 +85,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:vm="@{vm}"
+            tools:visibility="invisible" />
+
+        <include
+            android:id="@+id/include_product_detail_bidding_confirm"
+            layout="@layout/include_product_detail_bidding_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{vm.confirmDialogVisibility ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:vm="@{vm}" />
 
         <Button

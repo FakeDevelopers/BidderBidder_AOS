@@ -33,19 +33,24 @@ class ProductDetailViewModel @Inject constructor(
     private val _remainTime = MutableStateFlow("")
     private val _bidderCount = MutableStateFlow("")
     private val _confirmedBid = MutableStateFlow("")
+    private val _confirmDialogText = MutableStateFlow("")
     private val _bidInfoVisibility = MutableStateFlow(false)
     private val _biddingVisibility = MutableStateFlow(false)
+    private val _biddingEnabled = MutableStateFlow(true)
     private val _biddingButtonVisibility = MutableStateFlow(true)
     private val _confirmedBidVisibility = MutableStateFlow(true)
+    private val _confirmDialogVisibility = MutableStateFlow(false)
     private val _moveOneTickEvent = MutableEventFlow<Long>()
-    private val _sendMessage = MutableEventFlow<String>()
+    private val _sendMessageEvent = MutableEventFlow<String>()
     private lateinit var timerTask: ExpirationTimerTask
     // 입찰가 입력에 사용할 호가값
     private var tickValue = 0
     // 현재 입찰가 입력
     private var currentBid = ""
-    // 상품 id
-    private var productId = -1L
+    // 요청 유저 ID
+    private var requestUserId = 0L
+    // 요청 입찰가
+    private var requestBid = 0L
 
     val productDetailResponse = _productDetailResponse.asEventFlow()
     val productBidResponse = _productBidResponse.asEventFlow()
@@ -61,16 +66,22 @@ class ProductDetailViewModel @Inject constructor(
     val remainTime: StateFlow<String> get() = _remainTime
     val bidderCount: StateFlow<String> get() = _bidderCount
     val confirmedBid: StateFlow<String> get() = _confirmedBid
+    val confirmDialogText: StateFlow<String> get() = _confirmDialogText
     val bidInfoVisibility: StateFlow<Boolean> get() = _bidInfoVisibility
     val biddingVisibility: StateFlow<Boolean> get() = _biddingVisibility
+    val biddingEnabled: StateFlow<Boolean> get() = _biddingEnabled
     val biddingButtonVisibility: StateFlow<Boolean> get() = _biddingButtonVisibility
     val confirmedBidVisibility: StateFlow<Boolean> get() = _confirmedBidVisibility
+    val confirmDialogVisibility: StateFlow<Boolean> get() = _confirmDialogVisibility
     val moveOneTickEvent = _moveOneTickEvent.asEventFlow()
-    val sendMessage = _sendMessage.asEventFlow()
+    val sendMessageEvent = _sendMessageEvent.asEventFlow()
     // 입찰가 검증에 사용할 희망가, 입찰가
     var hopePriceValue = -1L
         private set
     var minimumBidValue = -1L
+        private set
+    // 상품 id
+    var productId = -1L
         private set
 
     fun productDetailRequest(productId: Long) {
@@ -90,8 +101,8 @@ class ProductDetailViewModel @Inject constructor(
                 _contents.emit(productContent)
                 _hopePrice.emit(makeWon(hopePrice))
                 hopePriceValue = hopePrice
-                _minimumBid.emit(makeWon(openingBid))
-                minimumBidValue = openingBid
+                minimumBidValue = getMinimumBid(openingBid, tick.toInt(), bids)
+                _minimumBid.emit(makeWon(minimumBidValue))
                 _tick.emit(makeWon(tick))
                 tickValue = tick.toInt()
                 _bidderCount.emit("${bidderCount}명")
@@ -109,10 +120,46 @@ class ProductDetailViewModel @Inject constructor(
         if (!biddingVisibility.value) {
             viewModelScope.launch {
                 _biddingVisibility.emit(true)
+                // 입찰 정보 화면은 끈다
+                _bidInfoVisibility.emit(false)
             }
             return
         }
-        // 입찰 api 요청
+        // 최종 확인 다이얼로그가 올라와 있으면 무시
+        if (confirmDialogVisibility.value) {
+            return
+        }
+        // 입찰 조건이 안맞으면 무시
+        if (!checkBiddingCondition()) {
+            return
+        }
+        // 입찰 조건 검사
+        viewModelScope.launch {
+            // 최종 확인 다이얼로그 표시
+            _confirmDialogText.emit("${confirmedBid.value}에 입찰하시겠습니까?")
+            _confirmDialogVisibility.emit(true)
+            // 입찰가 조작은 비활성화
+            _biddingEnabled.emit(false)
+            // 입찰 정보 화면은 끈다
+            _bidInfoVisibility.emit(false)
+        }
+    }
+
+    // 입찰 다이얼로그 닫기
+    fun closeDialog() {
+        viewModelScope.launch {
+            _confirmDialogVisibility.emit(false)
+            _biddingVisibility.emit(false)
+            _bidInfoVisibility.emit(false)
+        }
+        setBiddingEnabled(true)
+    }
+
+    // 입찰 하기
+    fun startBidding() {
+        // 다이얼로그를 닫고
+        closeDialog()
+        // api 요청
         productBidRequest()
     }
 
@@ -141,6 +188,12 @@ class ProductDetailViewModel @Inject constructor(
                 _bidInfoVisibility.emit(false)
             }
             _biddingVisibility.emit(state)
+        }
+    }
+
+    fun setBiddingEnabled(state: Boolean) {
+        viewModelScope.launch {
+            _biddingEnabled.emit(state)
         }
     }
 
@@ -190,24 +243,41 @@ class ProductDetailViewModel @Inject constructor(
         timerTask.start()
     }
 
-    private fun productBidRequest() {
-        val id = userId.value.toLongOrNull()
-        val bid = currentBid.replace(",", "").toLongOrNull()
-        if (id == null) {
-            sendToastMessage("유저 ID가 올바르지 않아!")
-            return
-        } else if (bid == null) {
-            sendToastMessage("입찰가가 올바르지 않아!")
-            return
+    private fun getMinimumBid(openingBid: Long, tick: Int, bids: List<BidInfo>) =
+        when {
+            bids.isEmpty() -> openingBid
+            bids.size in 1..3 -> openingBid + tick
+            else -> bids[3].bid + tick
         }
+
+    private fun productBidRequest() {
+        // 입찰가 조작을 막고 api 요청
+        setBiddingEnabled(false)
         viewModelScope.launch {
-            _productBidResponse.emit(productBidRepository.postProductBid(productId, id, bid))
+            _productBidResponse.emit(productBidRepository.postProductBid(productId, requestUserId, requestBid))
         }
     }
 
-    private fun sendToastMessage(msg: String) {
+    // 입찰 조건 검사
+    private fun checkBiddingCondition(): Boolean {
+        val id = userId.value.toLongOrNull()
+        val bid = confirmedBid.value.replace("[^\\d]".toRegex(), "").toLongOrNull()
+        if (id == null) {
+            sendMessage("유저 ID가 올바르지 않아!")
+            return false
+        } else if (bid == null || bid < minimumBidValue) {
+            sendMessage("입찰가가 올바르지 않아!")
+            return false
+        }
+        // 올바른 값이라면 요청 변수에 담는다
+        requestUserId = id
+        requestBid = bid
+        return true
+    }
+
+    private fun sendMessage(msg: String) {
         viewModelScope.launch {
-            _sendMessage.emit(msg)
+            _sendMessageEvent.emit(msg)
         }
     }
 

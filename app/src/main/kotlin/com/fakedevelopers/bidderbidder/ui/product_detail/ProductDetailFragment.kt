@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
@@ -62,6 +63,7 @@ class ProductDetailFragment : Fragment() {
     }
 
     private fun initCollector() {
+        // 상품 상세정보 api
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productDetailResponse.collectLatest {
@@ -73,12 +75,19 @@ class ProductDetailFragment : Fragment() {
                 }
             }
         }
+        // 입찰 api
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.productBidResponse.collectLatest {
                     if (it.isSuccessful) {
-                        Logger.i(it.body().toString())
+                        Toast.makeText(requireContext(), "입찰 성공", Toast.LENGTH_SHORT).show()
+                        // 새로고침
+                        findNavController().navigate(
+                            ProductDetailFragmentDirections.actionProductDetailFragmentSelf(viewModel.productId)
+                        )
                     } else {
+                        // 실패했으면 입찰가 조작을 다시 활성화
+                        viewModel.setBiddingEnabled(true)
                         ApiErrorHandler.print(it.errorBody())
                     }
                 }
@@ -112,7 +121,7 @@ class ProductDetailFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.sendMessage.collectLatest { msg ->
+                viewModel.sendMessageEvent.collectLatest { msg ->
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
             }
