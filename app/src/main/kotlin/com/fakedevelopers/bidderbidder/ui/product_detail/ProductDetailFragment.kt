@@ -19,7 +19,6 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher
 import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
