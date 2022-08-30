@@ -94,6 +94,7 @@
             android:layout_marginHorizontal="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:visibility="@{vm.biddingButtonVisibility ? View.VISIBLE : View.INVISIBLE}"
             android:text="입찰"
             android:onClick="@{() -> vm.clickBidding()}"
             app:layout_constraintBottom_toBottomOf="parent"

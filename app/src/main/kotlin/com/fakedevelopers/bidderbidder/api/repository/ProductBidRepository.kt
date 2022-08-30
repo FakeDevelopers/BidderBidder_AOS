@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder.api.repository
 
 import com.fakedevelopers.bidderbidder.api.service.ProductBidService
+import retrofit2.Response
 import javax.inject.Inject
 
 class ProductBidRepository @Inject constructor(
@@ -10,7 +11,7 @@ class ProductBidRepository @Inject constructor(
         productId: Long,
         userId: Long,
         bid: Long
-    ) {
-        service.postProductBid(productId, userId, bid)
+    ): Response<String> {
+        return service.postProductBid(productId, userId, bid)
     }
 }

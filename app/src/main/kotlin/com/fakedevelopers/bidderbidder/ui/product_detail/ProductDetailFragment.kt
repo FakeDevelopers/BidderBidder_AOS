@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher
 import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,7 +54,9 @@ class ProductDetailFragment : Fragment() {
         }
         initCollector()
         // 입찰가 입력 필터 등록
-        PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH)
+        PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH) {
+            viewModel.setCurrentBid(binding.includeProductDetailBidding.edittextBidPrice.text.toString())
+        }
     }
 
     private fun initCollector() {
@@ -61,6 +65,17 @@ class ProductDetailFragment : Fragment() {
                 viewModel.productDetailResponse.collectLatest {
                     if (it.isSuccessful) {
                         viewModel.initProductDetail(it.body())
+                    } else {
+                        ApiErrorHandler.print(it.errorBody())
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.productBidResponse.collectLatest {
+                    if (it.isSuccessful) {
+                        Logger.i(it.body().toString())
                     } else {
                         ApiErrorHandler.print(it.errorBody())
                     }
@@ -89,6 +104,13 @@ class ProductDetailFragment : Fragment() {
                 viewModel.moveOneTickEvent.collectLatest { tick ->
                     val updatedBid = setValidBid(getCurrentBid() + tick)
                     binding.includeProductDetailBidding.edittextBidPrice.setText(updatedBid.toString())
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.sendMessage.collectLatest { msg ->
+                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
