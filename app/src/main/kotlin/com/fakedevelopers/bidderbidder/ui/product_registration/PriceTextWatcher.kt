@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.product_registration
 
 import android.text.Editable
+import android.text.InputFilter
 import android.text.Selection
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -9,7 +10,7 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dec
 
 class PriceTextWatcher(
     private val editText: EditText,
-    private val checkCondition: () -> Unit
+    private val checkCondition: (() -> Unit)? = null
 ) : TextWatcher {
 
     private var strAmount = ""
@@ -27,13 +28,25 @@ class PriceTextWatcher(
     }
 
     override fun afterTextChanged(s: Editable?) {
-        checkCondition()
+        checkCondition?.invoke()
     }
 
-    private fun makeComma(price: String): String {
-        price.replace(",", "").toLongOrNull()?.let {
-            return dec.format(it)
+    companion object {
+        const val MAX_PRICE_LENGTH = 17
+        const val MAX_TICK_LENGTH = 12
+        const val MAX_CONTENT_LENGTH = 1000
+        const val MAX_EXPIRATION_TIME = 72
+        const val MAX_EXPIRATION_LENGTH = 3
+        const val IS_NOT_NUMBER = "[^0-9]"
+
+        fun addEditTextFilter(editText: EditText, length: Int, checkCondition: (() -> Unit)? = null) {
+            val priceFilter = InputFilter { source, _, _, _, _, _ ->
+                source.replace("[^(0-9|,)]".toRegex(), "")
+            }
+            editText.filters = arrayOf(priceFilter, InputFilter.LengthFilter(length))
+            editText.addTextChangedListener(PriceTextWatcher(editText) { checkCondition?.invoke() })
         }
-        return ""
+        fun makeComma(price: String) =
+            price.replace(",", "").toLongOrNull()?.let { dec.format(it) } ?: ""
     }
 }

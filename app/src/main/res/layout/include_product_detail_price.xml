@@ -75,7 +75,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="입찰 단위"
+            android:text="입찰단위"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textview_minimum_bid" />
 
@@ -132,7 +132,7 @@
             tools:text="1시간 30분" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/button_bid_info"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
