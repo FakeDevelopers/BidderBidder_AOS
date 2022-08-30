@@ -95,17 +95,7 @@ class ProductDetailFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.biddingVisibility.collectLatest { state ->
-                    // 등장하는 애니메이션이면 VISIBLE 한 다음 애니메이션 동작
-                    // 사라지는 애니메이션이면 INVISIBLE 하기 전에 애니메이션 동작
-                    binding.includeProductDetailBidding.root.apply {
-                        if (!state && visibility == View.VISIBLE) {
-                            startAnimation(getAnimation(R.anim.animation_translate_down))
-                        }
-                        visibility = if (state) View.VISIBLE else View.INVISIBLE
-                        if (state) {
-                            startAnimation(getAnimation(R.anim.animation_translate_up))
-                        }
-                    }
+                    setBiddingVisibility(state)
                 }
             }
         }
@@ -123,6 +113,20 @@ class ProductDetailFragment : Fragment() {
                 viewModel.sendMessageEvent.collectLatest { msg ->
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
                 }
+            }
+        }
+    }
+
+    private fun setBiddingVisibility(state: Boolean) {
+        // 등장하는 애니메이션이면 VISIBLE 한 다음 애니메이션 동작
+        // 사라지는 애니메이션이면 INVISIBLE 하기 전에 애니메이션 동작
+        binding.includeProductDetailBidding.root.apply {
+            if (!state && visibility == View.VISIBLE) {
+                startAnimation(getAnimation(R.anim.animation_translate_down))
+            }
+            visibility = if (state) View.VISIBLE else View.INVISIBLE
+            if (state) {
+                startAnimation(getAnimation(R.anim.animation_translate_up))
             }
         }
     }
