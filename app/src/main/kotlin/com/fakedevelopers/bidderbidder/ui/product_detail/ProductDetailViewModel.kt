@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.internal.toLongOrDefault
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -31,9 +32,11 @@ class ProductDetailViewModel @Inject constructor(
     private val _remainTimeState = MutableStateFlow("마감까지")
     private val _remainTime = MutableStateFlow("")
     private val _bidderCount = MutableStateFlow("")
+    private val _confirmedBid = MutableStateFlow("")
     private val _bidInfoVisibility = MutableStateFlow(false)
     private val _biddingVisibility = MutableStateFlow(false)
     private val _biddingButtonVisibility = MutableStateFlow(true)
+    private val _confirmedBidVisibility = MutableStateFlow(true)
     private val _moveOneTickEvent = MutableEventFlow<Long>()
     private val _sendMessage = MutableEventFlow<String>()
     private lateinit var timerTask: ExpirationTimerTask
@@ -57,9 +60,11 @@ class ProductDetailViewModel @Inject constructor(
     val remainTimeState: StateFlow<String> get() = _remainTimeState
     val remainTime: StateFlow<String> get() = _remainTime
     val bidderCount: StateFlow<String> get() = _bidderCount
+    val confirmedBid: StateFlow<String> get() = _confirmedBid
     val bidInfoVisibility: StateFlow<Boolean> get() = _bidInfoVisibility
     val biddingVisibility: StateFlow<Boolean> get() = _biddingVisibility
     val biddingButtonVisibility: StateFlow<Boolean> get() = _biddingButtonVisibility
+    val confirmedBidVisibility: StateFlow<Boolean> get() = _confirmedBidVisibility
     val moveOneTickEvent = _moveOneTickEvent.asEventFlow()
     val sendMessage = _sendMessage.asEventFlow()
     // 입찰가 검증에 사용할 희망가, 입찰가
@@ -122,6 +127,8 @@ class ProductDetailViewModel @Inject constructor(
 
     fun setCurrentBid(bid: String) {
         currentBid = bid
+        // 최종 입찰가 갱신
+        setConfirmedBid(bid)
     }
 
     fun setBiddingVisibility(state: Boolean) {
@@ -144,6 +151,20 @@ class ProductDetailViewModel @Inject constructor(
         }
         viewModelScope.launch {
             _bidInfoVisibility.emit(state)
+        }
+    }
+
+    private fun setConfirmedBid(bid: String) {
+        val bidValue = bid.replace(",", "").toLongOrDefault(0)
+        var floorBid = bidValue - (bidValue % tickValue)
+        if (hopePriceValue != -1L && floorBid > hopePriceValue) {
+            floorBid = hopePriceValue
+        }
+        viewModelScope.launch {
+            // 최종 입찰가
+            _confirmedBid.emit(makeWon(floorBid))
+            // 최종 입찰가 < 최소 입찰가 라면 invisible
+            _confirmedBidVisibility.emit(floorBid >= minimumBidValue)
         }
     }
 

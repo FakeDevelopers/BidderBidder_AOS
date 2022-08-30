@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="android.view.View" />
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.product_detail.ProductDetailViewModel" />
@@ -143,8 +144,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:background="@android:color/transparent"
-                    android:padding="4dp"
                     android:onClick="@{() -> vm.moveOneTick(false)}"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="@+id/edittext_bid_price"
                     app:layout_constraintStart_toEndOf="@+id/edittext_bid_price"
                     app:layout_constraintTop_toTopOf="@+id/edittext_bid_price"
@@ -157,8 +158,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:background="@android:color/transparent"
-                    android:padding="4dp"
                     android:onClick="@{() -> vm.moveOneTick(true)}"
+                    android:padding="4dp"
                     app:layout_constraintBottom_toBottomOf="@+id/edittext_bid_price"
                     app:layout_constraintStart_toEndOf="@+id/button_tick_minus"
                     app:layout_constraintTop_toTopOf="@+id/edittext_bid_price"
@@ -174,6 +175,35 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
                     tools:ignore="ContentDescription" />
+
+                <LinearLayout
+                    android:id="@+id/layout_confirmed_bid"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="@{vm.confirmedBidVisibility ? View.VISIBLE : View.INVISIBLE}"
+                    app:layout_constraintStart_toStartOf="@+id/edittext_bid_price"
+                    app:layout_constraintTop_toBottomOf="@+id/edittext_bid_price">
+
+                    <TextView
+                        android:id="@+id/textview_confirmed_bid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="최종 입찰가"
+                        android:textSize="8sp"
+                        tools:ignore="SmallSp" />
+
+                    <TextView
+                        android:id="@+id/textview_confirmed_bid_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="@{vm.confirmedBid}"
+                        android:textSize="8sp"
+                        tools:text="5,000원"
+                        tools:ignore="SmallSp" />
+                </LinearLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 

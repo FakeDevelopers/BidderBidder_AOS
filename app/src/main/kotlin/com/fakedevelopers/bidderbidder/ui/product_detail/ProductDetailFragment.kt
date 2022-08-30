@@ -55,7 +55,9 @@ class ProductDetailFragment : Fragment() {
         initCollector()
         // 입찰가 입력 필터 등록
         PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH) {
-            viewModel.setCurrentBid(binding.includeProductDetailBidding.edittextBidPrice.text.toString())
+            binding.includeProductDetailBidding.edittextBidPrice.text.toString().let {
+                viewModel.setCurrentBid(it)
+            }
         }
     }
 
@@ -102,7 +104,8 @@ class ProductDetailFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.moveOneTickEvent.collectLatest { tick ->
-                    val updatedBid = setValidBid(getCurrentBid() + tick)
+                    val currentBid = getCurrentBid()
+                    val updatedBid = setValidBid(currentBid + tick - (currentBid % tick))
                     binding.includeProductDetailBidding.edittextBidPrice.setText(updatedBid.toString())
                 }
             }
