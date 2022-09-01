@@ -69,6 +69,7 @@
             layout="@layout/include_product_detail_bidding"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
             app:layout_constraintEnd_toEndOf="parent"
