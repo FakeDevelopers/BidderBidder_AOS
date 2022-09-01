@@ -159,7 +159,7 @@ class UserRegistrationFragment : Fragment() {
         viewModel.setNextStepEnabled(false)
         setProgressBar(state)
         when (state) {
-            ACCEPT_TERMS -> navigate(R.id.userRegistrationIdFragment)
+            ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
             PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
             INPUT_BIRTH -> navigate(R.id.userRegistrationBirthFragment)
             INPUT_ID -> navigate(R.id.userRegistrationIdFragment)

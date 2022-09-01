@@ -32,6 +32,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/registration_title_margin_bottom"
+            android:drawableEnd="@drawable/text_clear_button"
+            app:endIconMode="clear_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include_id_title">
@@ -66,9 +68,9 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textinputlayout_id"
+            tools:ignore="SpUsage"
             tools:text="@string/registration_id_is_ok"
-            tools:visibility="visible"
-            tools:ignore="SpUsage" />
+            tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_id_duplication_check"

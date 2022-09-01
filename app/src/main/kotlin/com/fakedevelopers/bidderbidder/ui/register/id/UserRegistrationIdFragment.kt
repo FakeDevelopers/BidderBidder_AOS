@@ -49,10 +49,13 @@ class UserRegistrationIdFragment : Fragment() {
             setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
         }
     }
+
     private fun initListener() {
-        binding.edittextId.addTextChangedListener() {
-            binding.textviewIdDuplicationInfo.visibility = View.INVISIBLE
-            setTextInputBackground(R.drawable.text_input_white_background_normal)
+        binding.apply {
+            edittextId.addTextChangedListener() {
+                textviewIdDuplicationInfo.visibility = View.INVISIBLE
+                setTextInputBackground(R.drawable.text_input_white_background_normal)
+            }
         }
     }
     private fun initCollector() {
