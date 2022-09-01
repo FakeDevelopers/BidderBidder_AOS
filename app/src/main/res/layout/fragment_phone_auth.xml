@@ -39,22 +39,19 @@
             app:layout_constraintTop_toBottomOf="@+id/include_phoneauth_title">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/textinputlayout_register_birth"
+                android:id="@+id/textinputlayout_register_phone"
                 style="@style/TextInputLayout"
                 android:layout_width="0dp"
-                android:layout_height="@dimen/registration_view_height"
-                android:layout_weight="2"
-                android:paddingBottom="5dp"
-                app:boxStrokeColor="@color/bidderbidder_primary"
-                app:hintEnabled="false"
-                app:hintTextColor="@color/bidderbidder_primary">
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edittext_register_birth"
+                    android:id="@+id/edittext_register_phone"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/registration_view_height"
                     android:background="@drawable/text_input_white_background_normal"
                     android:ems="10"
+                    android:fontFamily="@font/app_font"
                     android:hint="@string/phoneauth_hint_phonenumber"
                     android:inputType="numberDecimal"
                     android:paddingVertical="@dimen/registration_TextInputEditText_padding"
@@ -71,16 +68,34 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
-                android:layout_marginBottom="5dp"
                 android:layout_weight="1"
                 android:background="@drawable/auth_send_button"
+                android:stateListAnimator="@null"
                 android:text="@string/phoneauth_getauthcode"
                 android:textColor="@color/black"
                 android:textSize="@dimen/registration_text_size"
                 tools:ignore="SpUsage" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/textview_phone_valid_info"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/registration_view_height_two_third"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/registration_text_size_down"
+            android:visibility="invisible"
+            app:drawableLeftCompat="@drawable/bang_mark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+            tools:ignore="SpUsage"
+            tools:text="@string/registration_id_is_ok"
+            tools:visibility="visible" />
+
         <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/registration_view_height_two_third"

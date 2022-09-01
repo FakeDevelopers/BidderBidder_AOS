@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -28,6 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
+import java.util.regex.Pattern
 
 @AndroidEntryPoint
 class PhoneAuthFragment : Fragment() {
@@ -94,9 +96,20 @@ class PhoneAuthFragment : Fragment() {
 
     private fun initListener() {
         // 인증 번호 발송 버튼
+        binding.edittextRegisterPhone.addTextChangedListener {
+            setDuplicationInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+            setTextInputBackground(R.drawable.text_input_white_background_normal)
+        }
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
-                sendPhoneAuthCode()
+                if (isPhoneNumberCheck(phoneAuthViewModel.phoneNumber.value)) {
+                    sendPhoneAuthCode()
+                    setDuplicationInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                    setTextInputBackground(R.drawable.text_input_white_background_normal)
+                } else {
+                    setDuplicationInfo(R.string.phoneauth_number_is_invalid, R.color.alert_red, false)
+                    setTextInputBackground(R.drawable.text_input_white_background_error)
+                }
             }
         }
         // 인증 번호 6자리 되면 다음 버튼 활성화
@@ -130,6 +143,35 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
         }
+    }
+
+    // 중복 체크 표시
+    private fun setDuplicationInfo(stringId: Int, colorId: Int, state: Boolean) {
+        binding.textviewPhoneValidInfo.apply {
+            visibility = if (state) View.INVISIBLE else View.VISIBLE
+            setText(stringId)
+            setTextColor(ContextCompat.getColor(requireContext(), colorId))
+            this.isSelected = state
+        }
+    }
+
+    private fun isPhoneNumberCheck(cellphoneNumber: String): Boolean {
+        var returnValue = false
+        val regex = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$"
+        val p = Pattern.compile(regex)
+
+        val m = p.matcher(cellphoneNumber)
+
+        if (m.matches()) {
+            returnValue = true
+        }
+
+        return returnValue
+    }
+
+    private fun setTextInputBackground(drawableId: Int) {
+        binding.edittextRegisterPhone.background =
+            ContextCompat.getDrawable(requireContext(), drawableId)
     }
 
     private fun handlePhoneAuthEvent(state: PhoneAuthState) {

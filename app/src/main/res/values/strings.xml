@@ -30,6 +30,8 @@
     <string name="phoneauth_getauthcode">인증번호 전송</string>
     <string name="phoneauth_resend">재전송</string>
     <string name="phoneauth_nextstep">다음</string>
+    <string name="phoneauth_number_is_valid">휴대폰 번호가 올바르네요</string>
+    <string name="phoneauth_number_is_invalid">휴대폰 번호가 올바르지 않아요</string>
     <string name="phoneauth_invalid_verification_code_type">ERROR_INVALID_VERIFICATION_CODE</string>
     <string name="phoneauth_invalid_verification_code_message">인증 번호가 다릅니다!</string>
     <string name="phoneauth_session_expired_type">ERROR_SESSION_EXPIRED</string>
