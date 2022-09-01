@@ -13,4 +13,12 @@ class ProductDetailRepository @Inject constructor(
     ): Response<ProductDetailDto> {
         return service.getProductDetail(productId)
     }
+
+    suspend fun postProductBid(
+        productId: Long,
+        userId: Long,
+        bid: Long
+    ): Response<String> {
+        return service.postProductBid(productId, userId, bid)
+    }
 }
