@@ -160,7 +160,7 @@ class UserRegistrationFragment : Fragment() {
         setProgressBar(state)
         when (state) {
             ACCEPT_TERMS -> navigate(R.id.userRegistrationIdFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.userRegistrationBirthFragment)
+            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
             INPUT_BIRTH -> navigate(R.id.userRegistrationBirthFragment)
             INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
             INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)

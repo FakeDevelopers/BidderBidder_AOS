@@ -46,4 +46,6 @@
     <dimen name="button_user_registration_next_height">40dp</dimen>
     <dimen name="registration_TextInputEditText_padding">12dp</dimen>
     <dimen name="registration_title_margin_top">30dp</dimen>
+    <dimen name="registration_view_term_button_height">20dp</dimen>
+    <dimen name="registration_view_term_button_width">12dp</dimen>
 </resources>

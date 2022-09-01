@@ -28,10 +28,9 @@
 
         <CheckBox
             android:id="@+id/checkbox_accept_terms_accept_all"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="5dp"
-            android:layout_marginBottom="40dp"
+            android:layout_marginBottom="@dimen/registration_term_checkbox_margin_vertical"
             android:button="@drawable/term_checkbox"
             android:fontFamily="@font/app_font"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setAcceptAllState(isChecked)}"
