@@ -1,9 +1,12 @@
 package com.fakedevelopers.bidderbidder.ui.register.phone_auth
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -97,17 +100,29 @@ class PhoneAuthFragment : Fragment() {
     private fun initListener() {
         // 인증 번호 발송 버튼
         binding.edittextRegisterPhone.addTextChangedListener {
-            setDuplicationInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+            setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
             setTextInputBackground(R.drawable.text_input_white_background_normal)
+            if (isPhoneNumberCheck(it.toString())) {
+                binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
+                setButtonTextColor(R.color.white)
+                setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
+            } else {
+                setButtonTextColor(R.color.black)
+                setButtonBackground(R.drawable.button_phone_auth_before_send)
+            }
         }
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
                 if (isPhoneNumberCheck(phoneAuthViewModel.phoneNumber.value)) {
+                    runFadeInAlertBox()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        runFadeOutAlertBox()
+                    }, 1000)
                     sendPhoneAuthCode()
-                    setDuplicationInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                    setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
                     setTextInputBackground(R.drawable.text_input_white_background_normal)
                 } else {
-                    setDuplicationInfo(R.string.phoneauth_number_is_invalid, R.color.alert_red, false)
+                    setPhoneValidInfo(R.string.phoneauth_number_is_invalid, R.color.alert_red, false)
                     setTextInputBackground(R.drawable.text_input_white_background_error)
                 }
             }
@@ -145,8 +160,25 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
+    private fun runFadeInAlertBox() {
+        binding.includeRegistrationAlert.root.let {
+            it.visibility = View.VISIBLE
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
+            // starting the animation
+            it.startAnimation(animation)
+        }
+    }
+
+    private fun runFadeOutAlertBox() {
+        binding.includeRegistrationAlert.root.let {
+            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
+            it.startAnimation(animation)
+            it.visibility = View.INVISIBLE
+        }
+    }
+
     // 중복 체크 표시
-    private fun setDuplicationInfo(stringId: Int, colorId: Int, state: Boolean) {
+    private fun setPhoneValidInfo(stringId: Int, colorId: Int, state: Boolean) {
         binding.textviewPhoneValidInfo.apply {
             visibility = if (state) View.INVISIBLE else View.VISIBLE
             setText(stringId)
@@ -174,6 +206,15 @@ class PhoneAuthFragment : Fragment() {
             ContextCompat.getDrawable(requireContext(), drawableId)
     }
 
+    private fun setButtonBackground(drawableId: Int) {
+        binding.buttonPhoneauthSendCode.background =
+            ContextCompat.getDrawable(requireContext(), drawableId)
+    }
+
+    private fun setButtonTextColor(color: Int) {
+        binding.buttonPhoneauthSendCode.setTextColor(resources.getColor(color, null))
+    }
+
     private fun handlePhoneAuthEvent(state: PhoneAuthState) {
         binding.buttonPhoneauthSendCode.apply {
             when (state) {
@@ -183,6 +224,7 @@ class PhoneAuthFragment : Fragment() {
             }
             isEnabled = state != PhoneAuthState.SENDING
         }
+        binding.edittextPhoneauthAuthcode.visibility = View.VISIBLE
         binding.edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
     }
 

@@ -29,6 +29,7 @@
     <dimen name="product_registration_margin_vertical">12dp</dimen>
     <dimen name="product_registration_margin_horizontal">8dp</dimen>
     <!-- relate to registration -->
+    <dimen name="registration_view_radious">6dp</dimen>
     <dimen name="registration_view_height">64dp</dimen>
     <dimen name="registration_view_height_two_third">26dp</dimen>
     <dimen name="registration_term_checkbox_size">22dp</dimen>
@@ -47,4 +48,6 @@
     <dimen name="registration_TextInputEditText_padding">12dp</dimen>
     <dimen name="registration_title_margin_top">90dp</dimen>
     <dimen name="registration_title_margin_bottom">70dp</dimen>
+    <dimen name="registration_alert_message_margin_top">140dp</dimen>
+
 </resources>
