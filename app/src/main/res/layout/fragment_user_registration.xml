@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel" />
@@ -24,7 +25,7 @@
 
         <include
             android:id="@+id/include_user_registration_navigation"
-            layout="@layout/include_user_registration_tabbar"
+            layout="@layout/include_user_registration_progressbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:visibility="invisible"
@@ -42,26 +43,30 @@
             app:layout_constraintBottom_toTopOf="@+id/button_user_registration_next"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_user_registration_navigation"
+            app:layout_constraintTop_toBottomOf="@+id/include_user_registration_toolbar"
             app:navGraph="@navigation/user_registration_graph"
             tools:layout="@layout/fragment_accept_terms" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_user_registration_next"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/button_user_registration_next_height"
             android:background="#D6D6D6"
             android:enabled="@{vm.nextStepEnabled}"
+            android:fontFamily="@font/app_font"
             android:onClick="@{() -> vm.checkNextStep(true)}"
             android:shadowColor="#111111"
             android:text="@string/registration_button_to_next"
             android:textColor="@color/white"
+            android:textSize="13dp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0" />
+            app:layout_constraintVertical_bias="1.0"
+            tools:ignore="SpUsage" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

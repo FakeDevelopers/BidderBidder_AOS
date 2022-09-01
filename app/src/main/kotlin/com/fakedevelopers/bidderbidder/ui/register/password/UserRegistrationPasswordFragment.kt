@@ -56,14 +56,14 @@ class UserRegistrationPasswordFragment : Fragment() {
         binding.apply {
             edittextPassword.addTextChangedListener() {
                 if (it.contentEquals(edittextPasswordConfirm.text)) {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
                 } else {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_normal)
                 }
             }
             edittextPasswordConfirm.addTextChangedListener() {
                 if (it.contentEquals(edittextPassword.text)) {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background)
+                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
                 } else {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
                 }
@@ -108,15 +108,15 @@ class UserRegistrationPasswordFragment : Fragment() {
 
     private fun setPasswordConfirmInfo(state: Boolean) {
         binding.textviewPasswordConfirmInfo.let {
+            it.isSelected = state
             if (state) {
                 it.setText(R.string.registration_password_is_same)
                 it.onCheckIsTextEditor()
-                it.isSelected = true
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.bidderbidder_primary))
             } else {
                 it.setText(R.string.registration_password_is_not_same)
-                it.isSelected = false
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.alert_red))
             }
-            it.setTextColor(ContextCompat.getColor(requireContext(), getColorId(state)))
         }
     }
 
@@ -133,8 +133,7 @@ class UserRegistrationPasswordFragment : Fragment() {
             tv.isSelected = colorId == R.color.bidderbidder_primary
         }
     }
-
-    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.alert_red
+    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 
     override fun onDestroy() {
         _binding = null

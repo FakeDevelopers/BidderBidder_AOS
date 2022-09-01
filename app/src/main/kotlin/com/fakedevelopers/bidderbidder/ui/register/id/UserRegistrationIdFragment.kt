@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -42,12 +43,18 @@ class UserRegistrationIdFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListener()
         initCollector()
         if (!viewModel.getIdDuplicationState()) {
             setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
         }
     }
-
+    private fun initListener() {
+        binding.edittextId.addTextChangedListener() {
+            binding.textviewIdDuplicationInfo.visibility = View.INVISIBLE
+            setTextInputBackground(R.drawable.text_input_white_background_normal)
+        }
+    }
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -57,7 +64,7 @@ class UserRegistrationIdFragment : Fragment() {
                         setTextInputBackground(R.drawable.text_input_white_background_error)
                     } else {
                         setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
-                        setTextInputBackground(R.drawable.text_input_white_background)
+                        setTextInputBackground(R.drawable.text_input_white_background_accepted)
                     }
                 }
             }

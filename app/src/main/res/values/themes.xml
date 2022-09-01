@@ -29,17 +29,14 @@
     <style name="productRegistrationButtonEnable" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="actionMenuTextColor">@color/black</item>
     </style>
+
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="materialThemeOverlay">@style/CustomTextInputLayoutThemeOverlay</item>
         <item name="shapeAppearanceOverlay">@style/CustomTextInputLayoutShapeAppearanceOverlay</item>
-        <item name="textInputLayoutErrorDrawable">@drawable/text_input_white_background_error</item>
-        <item name="textInputLayoutNormalSelectorDrawable">@drawable/text_input_white_background</item>
-        <item name="boxCollapsedPaddingTop">4dp</item>
         <item name="boxStrokeWidth">0dp</item>
         <item name="boxStrokeWidthFocused">0dp</item>
-        <item name="boxStrokeColor">@color/bidderbidder_primary</item>
-        <item name="hintTextColor">@color/text_input_hint_color_normal</item>
-        <item name="hintEnabled">true</item>
+        <item name="hintTextColor">@color/edit_text_hint</item>
+        <item name="hintEnabled">false</item>
     </style>
 
     <style name="CustomTextInputLayoutThemeOverlay" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">

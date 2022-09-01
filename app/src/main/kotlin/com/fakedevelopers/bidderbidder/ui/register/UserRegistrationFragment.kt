@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.updateLayoutParams
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -68,7 +67,7 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setTabBar(viewModel.getCurrentStep())
+        setProgressBar(viewModel.getCurrentStep())
 
         initListener()
         initCollector()
@@ -133,32 +132,23 @@ class UserRegistrationFragment : Fragment() {
         }
     }
 
-    private fun setTabBar(state: RegistrationProgressState) {
+    private fun setProgressBar(state: RegistrationProgressState) {
         binding.includeUserRegistrationNavigation.let {
             if (state == ACCEPT_TERMS) {
                 binding.includeUserRegistrationNavigation.root.visibility = View.GONE
             } else {
                 binding.includeUserRegistrationNavigation.root.visibility = View.VISIBLE
             }
-            listOf(it.phoneAuth, it.tabInputBirth, it.tabInputId, it.tabInputPassword, it.tabInputNickname).forEach() {
-                it.updateLayoutParams {
-                    this.width = (11 * resources.displayMetrics.density).toInt()
-                }
-                it.isSelected = false
-            }
             when (state) {
-                PHONE_AUTH_BEFORE_SENDING -> it.phoneAuth
-                PHONE_AUTH_CHECK_AUTH_CODE -> it.phoneAuth
-                INPUT_BIRTH -> it.tabInputBirth
-                INPUT_ID -> it.tabInputId
-                INPUT_PASSWORD -> it.tabInputPassword
-                CONGRATULATIONS -> it.tabInputNickname
+                PHONE_AUTH_BEFORE_SENDING -> 1
+                PHONE_AUTH_CHECK_AUTH_CODE -> 2
+                INPUT_BIRTH -> 3
+                INPUT_ID -> 4
+                INPUT_PASSWORD -> 5
+                CONGRATULATIONS -> 6
                 else -> null
-            }?.let { view ->
-                view.updateLayoutParams {
-                    this.width = (22 * resources.displayMetrics.density).toInt()
-                    view.isSelected = true
-                }
+            }?.let { step ->
+                it.registrationProgressbar.progress = (step * 100.0 / 6).toInt()
             }
         }
     }
@@ -167,10 +157,10 @@ class UserRegistrationFragment : Fragment() {
     private fun toNextStep(state: RegistrationProgressState) {
         NavOptions.Builder().setLaunchSingleTop(true)
         viewModel.setNextStepEnabled(false)
-        setTabBar(state)
+        setProgressBar(state)
         when (state) {
-            ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
+            ACCEPT_TERMS -> navigate(R.id.userRegistrationIdFragment)
+            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.userRegistrationBirthFragment)
             INPUT_BIRTH -> navigate(R.id.userRegistrationBirthFragment)
             INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
             INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)

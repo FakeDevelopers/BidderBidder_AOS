@@ -28,4 +28,22 @@
     <!-- related to productRegistration -->
     <dimen name="product_registration_margin_vertical">12dp</dimen>
     <dimen name="product_registration_margin_horizontal">8dp</dimen>
+    <!-- relate to registration -->
+    <dimen name="registration_view_height">39dp</dimen>
+    <dimen name="registration_view_height_two_third">26dp</dimen>
+    <dimen name="registration_term_checkbox_size">12dp</dimen>
+    <dimen name="registration_checkbox_size">10dp</dimen>
+    <dimen name="registration_confirm_condition_height">7dp</dimen>
+    <dimen name="registration_confirm_condition_width">9dp</dimen>
+    <dimen name="registration_term_checkbox_margin_vertical">10dp</dimen>
+    <dimen name="registration_term_checkbox_padding_Start">7dp</dimen>
+    <dimen name="registration_text_size_down">7dp</dimen>
+    <dimen name="registration_text_size">9dp</dimen>
+    <dimen name="registration_text_size_up">14dp</dimen>
+    <dimen name="registration_title_size">19dp</dimen>
+    <dimen name="registration_check_id_size">8dp</dimen>
+    <dimen name="registration_clear_textview_size">9dp</dimen>
+    <dimen name="button_user_registration_next_height">40dp</dimen>
+    <dimen name="registration_TextInputEditText_padding">12dp</dimen>
+    <dimen name="registration_title_margin_top">30dp</dimen>
 </resources>

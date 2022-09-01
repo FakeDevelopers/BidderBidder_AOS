@@ -24,4 +24,5 @@
     <color name="button_warn_border">#F93D5D</color>
     <color name="button_warn_background">#12F93D5D</color>
     <color name="text_input_hint_color_normal">#979797</color>
+    <color name="progressbar_disabled">#DBDBDB</color>
 </resources>

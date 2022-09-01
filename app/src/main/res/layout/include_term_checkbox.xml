@@ -2,20 +2,26 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="termTitle"
             type="String" />
+
         <variable
             name="termType"
             type="int" />
+
         <variable
             name="termIdx"
             type="int" />
+
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel" />
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -23,32 +29,32 @@
         <CheckBox
             android:id="@+id/checkbox_accept"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@{termTitle}"
+            android:layout_height="@dimen/registration_term_checkbox_size"
+            android:layout_marginVertical="@dimen/registration_term_checkbox_margin_vertical"
             android:button="@drawable/term_checkbox"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setTermState(termType, termIdx, isChecked)}"
-            android:paddingStart="10dp"
-            app:useMaterialThemeColors="false"
+            android:paddingStart="@dimen/registration_term_checkbox_padding_Start"
+            android:text="@{termTitle}"
+            android:textColor="#828282"
+            android:textSize="@dimen/registration_text_size"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/button_read_more"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textColor="#828282"
-            android:textStyle="bold"
-            android:textSize="12sp"
-            tools:text="(필수) 비더비더 이용약관"
-            tools:ignore="RtlSymmetry" />
+            app:useMaterialThemeColors="false"
+            tools:ignore="RtlSymmetry,SpUsage"
+            tools:text="(필수) 비더비더 이용약관" />
 
         <ImageButton
             android:id="@+id/button_read_more"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_width="@dimen/registration_checkbox_size"
+            android:layout_height="@dimen/registration_checkbox_size"
             android:backgroundTint="@android:color/transparent"
-            android:scaleX="-1"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="?attr/actionModeCloseDrawable"
+            app:srcCompat="@drawable/view_term_button"
             tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
