@@ -55,8 +55,8 @@ class ProductDetailFragment : Fragment() {
         initCollector()
         // 입찰가 입력 필터 등록
         PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH) {
-            binding.includeProductDetailBidding.edittextBidPrice.text.toString().let {
-                viewModel.setCurrentBid(it)
+            binding.includeProductDetailBidding.edittextBidPrice.apply {
+                viewModel.setCurrentBid(text.toString())
             }
         }
     }
@@ -112,6 +112,14 @@ class ProductDetailFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.sendMessageEvent.collectLatest { msg ->
                     Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        // 입찰가 고정
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.ceilPriceEvent.collectLatest { price ->
+                    binding.includeProductDetailBidding.edittextBidPrice.setText(price)
                 }
             }
         }

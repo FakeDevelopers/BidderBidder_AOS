@@ -38,6 +38,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _biddingButtonVisibility = MutableStateFlow(true)
     private val _confirmedBidVisibility = MutableStateFlow(true)
     private val _confirmDialogVisibility = MutableStateFlow(false)
+    // 즉시 구매가 고정 이벤트
+    private val _ceilPriceEvent = MutableEventFlow<String>()
     private val _moveOneTickEvent = MutableEventFlow<Long>()
     private val _sendMessageEvent = MutableEventFlow<String>()
     private lateinit var timerTask: ExpirationTimerTask
@@ -71,6 +73,7 @@ class ProductDetailViewModel @Inject constructor(
     val biddingButtonVisibility: StateFlow<Boolean> get() = _biddingButtonVisibility
     val confirmedBidVisibility: StateFlow<Boolean> get() = _confirmedBidVisibility
     val confirmDialogVisibility: StateFlow<Boolean> get() = _confirmDialogVisibility
+    val ceilPriceEvent = _ceilPriceEvent.asEventFlow()
     val moveOneTickEvent = _moveOneTickEvent.asEventFlow()
     val sendMessageEvent = _sendMessageEvent.asEventFlow()
     // 입찰가 검증에 사용할 희망가, 입찰가
@@ -208,8 +211,12 @@ class ProductDetailViewModel @Inject constructor(
     private fun setConfirmedBid(bid: String) {
         val bidValue = bid.replace(",", "").toLongOrDefault(0)
         var floorBid = bidValue - (bidValue % tickValue)
-        if (hopePriceValue != -1L && floorBid > hopePriceValue) {
+        if (hopePriceValue != -1L && bidValue > hopePriceValue) {
             floorBid = hopePriceValue
+            // 즉시 구매가 이상이라면 즉시 구매가로 고정시킨다.
+            viewModelScope.launch {
+                _ceilPriceEvent.emit(hopePriceValue.toString())
+            }
         }
         viewModelScope.launch {
             // 최종 입찰가
