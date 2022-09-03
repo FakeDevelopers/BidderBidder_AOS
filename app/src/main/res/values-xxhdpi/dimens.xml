@@ -42,12 +42,13 @@
     <dimen name="registration_text_size">14dp</dimen>
     <dimen name="registration_text_size_up">21dp</dimen>
     <dimen name="registration_title_size">33dp</dimen>
+    <dimen name="registration_sub_title_size">20dp</dimen>
     <dimen name="registration_check_id_size">8dp</dimen>
     <dimen name="registration_clear_textview_size">9dp</dimen>
     <dimen name="button_user_registration_next_height">55dp</dimen>
     <dimen name="registration_TextInputEditText_padding">12dp</dimen>
     <dimen name="registration_title_margin_top">90dp</dimen>
-    <dimen name="registration_title_margin_bottom">70dp</dimen>
+    <dimen name="registration_title_margin_bottom">130dp</dimen>
     <dimen name="registration_alert_message_margin_top">140dp</dimen>
 
 </resources>

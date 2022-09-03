@@ -4,8 +4,8 @@
         android:width="1dp"
         android:color="#FFDBDBDB"/>
     <corners
-        android:topLeftRadius="7dp"
-        android:topRightRadius="7dp"
-        android:bottomLeftRadius="7dp"
-        android:bottomRightRadius="7dp"/>
+        android:topLeftRadius="@dimen/registration_view_radious"
+        android:topRightRadius="@dimen/registration_view_radious"
+        android:bottomLeftRadius="@dimen/registration_view_radious"
+        android:bottomRightRadius="@dimen/registration_view_radious"/>
 </shape>

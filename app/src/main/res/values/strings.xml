@@ -46,8 +46,8 @@
     <string name="registration_id_input">아이디</string>
     <string name="registration_id_hint">아이디를 입력해주세요</string>
     <string name="registration_id_duplication_check">중복확인</string>
-    <string name="registration_id_is_duplicated">이미 존재하는 아이디에요!</string>
-    <string name="registration_id_is_ok">사용 가능한 아이디에요!</string>
+    <string name="registration_id_is_duplicated">이미 존재하는 아이디예요!</string>
+    <string name="registration_id_is_ok">사용 가능한 아이디예요!</string>
     <!-- Strings related to Password-->
     <string name="registration_password_title">거의 다 왔어요!\n비밀번호를 입력해주세요</string>
     <string name="registration_password_input">비밀번호</string>

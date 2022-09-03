@@ -31,7 +31,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:fontFamily="@font/app_font"
             android:text="@string/registration_birth_subtitle"
+            android:textSize="@dimen/registration_sub_title_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,7 +49,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_birth_title">
+            app:layout_constraintTop_toTopOf="@+id/include_birth_title">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edittext_birth"

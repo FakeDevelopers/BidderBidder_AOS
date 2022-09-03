@@ -27,7 +27,6 @@
                 android:text="@{alertMessage}"
                 android:textColor="@color/white"
                 android:fontFamily="@font/app_font"
-                android:textStyle="bold"
                 android:gravity="center"
                 android:textSize="@dimen/registration_text_size"
                 tools:ignore="MissingConstraints,SpUsage" />
