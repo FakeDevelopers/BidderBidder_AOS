@@ -112,7 +112,7 @@ object ApiModule {
     fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
         SigninGoogleRepository(service)
 
-    // 상품 상세 정보
+    // 상품 상세 정보, 입찰
     @Singleton
     @Provides
     fun provideProductDetailService(retrofit: Retrofit): ProductDetailService =

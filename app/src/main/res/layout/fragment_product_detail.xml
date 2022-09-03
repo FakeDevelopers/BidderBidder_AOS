@@ -16,10 +16,11 @@
         android:orientation="vertical">
 
         <ScrollView
+            android:id="@+id/scrollView3"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bid"
+            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bidding"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -64,25 +65,54 @@
         </ScrollView>
 
         <include
+            android:id="@+id/include_product_detail_bidding"
+            layout="@layout/include_product_detail_bidding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:vm="@{vm}" />
+
+        <include
             android:id="@+id/include_product_detail_bid_info"
             layout="@layout/include_product_detail_bid_info"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:visibility="@{vm.bidInfoVisibility ? View.VISIBLE : View.INVISIBLE}"
-            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bid"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:vm="@{vm}"/>
+            app:vm="@{vm}"
+            tools:visibility="invisible" />
+
+        <include
+            android:id="@+id/include_product_detail_bidding_confirm"
+            layout="@layout/include_product_detail_bidding_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{vm.confirmDialogVisibility ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:vm="@{vm}" />
 
         <Button
-            android:id="@+id/button_product_detail_bid"
+            android:id="@+id/button_product_detail_bidding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:visibility="@{vm.biddingButtonVisibility ? View.VISIBLE : View.INVISIBLE}"
             android:text="입찰"
+            android:onClick="@{() -> vm.clickBidding()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

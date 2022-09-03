@@ -31,6 +31,12 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.IS_NOT_NUMBER
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
+import com.fakedevelopers.bidderbidder.ui.product_registration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumImageUtils
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
@@ -207,11 +213,7 @@ class ProductRegistrationFragment : Fragment() {
     }
 
     private fun initEditTextFilter(editText: EditText, length: Int) {
-        val priceFilter = InputFilter { source, _, _, _, _, _ ->
-            source.replace("[^(0-9|,)]".toRegex(), "")
-        }
-        editText.filters = arrayOf(priceFilter, InputFilter.LengthFilter(length))
-        editText.addTextChangedListener(PriceTextWatcher(editText) { viewModel.checkRegistrationCondition() })
+        PriceTextWatcher.addEditTextFilter(editText, length) { viewModel.checkRegistrationCondition() }
     }
 
     private fun initResultLauncher() {
@@ -342,14 +344,5 @@ class ProductRegistrationFragment : Fragment() {
         _binding = null
         backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
-    }
-
-    companion object {
-        const val MAX_PRICE_LENGTH = 17
-        const val MAX_TICK_LENGTH = 12
-        const val MAX_CONTENT_LENGTH = 1000
-        const val MAX_EXPIRATION_TIME = 72
-        const val MAX_EXPIRATION_LENGTH = 3
-        const val IS_NOT_NUMBER = "[^0-9]"
     }
 }
