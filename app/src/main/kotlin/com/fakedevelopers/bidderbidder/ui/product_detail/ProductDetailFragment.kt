@@ -132,10 +132,10 @@ class ProductDetailFragment : Fragment() {
             if (!state && visibility == View.VISIBLE) {
                 startAnimation(getAnimation(R.anim.animation_translate_down))
             }
-            visibility = if (state) View.VISIBLE else View.INVISIBLE
-            if (state) {
+            visibility = if (state) {
                 startAnimation(getAnimation(R.anim.animation_translate_up))
-            }
+                View.VISIBLE
+            } else View.INVISIBLE
         }
     }
 

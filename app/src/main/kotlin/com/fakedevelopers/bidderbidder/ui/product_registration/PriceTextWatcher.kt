@@ -37,11 +37,11 @@ class PriceTextWatcher(
         const val MAX_CONTENT_LENGTH = 1000
         const val MAX_EXPIRATION_TIME = 72
         const val MAX_EXPIRATION_LENGTH = 3
-        const val IS_NOT_NUMBER = "[^0-9]"
+        const val IS_NOT_NUMBER = "[^\\d]"
 
         fun addEditTextFilter(editText: EditText, length: Int, checkCondition: (() -> Unit)? = null) {
             val priceFilter = InputFilter { source, _, _, _, _, _ ->
-                source.replace("[^(0-9|,)]".toRegex(), "")
+                source.replace("[^\\d,]".toRegex(), "")
             }
             editText.filters = arrayOf(priceFilter, InputFilter.LengthFilter(length))
             editText.addTextChangedListener(PriceTextWatcher(editText) { checkCondition?.invoke() })
