@@ -75,12 +75,11 @@
                     app:layout_constraintTop_toBottomOf="@+id/textview_minimum_bid_value"
                     tools:text="500원" />
 
-                <View
+                <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider"
                     android:layout_width="0dp"
-                    android:layout_height="1dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:background="?android:attr/listDivider"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/textview_tick" />
