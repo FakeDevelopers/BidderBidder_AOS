@@ -34,10 +34,8 @@
             tools:text="1,000,000,000,000" />
     </LinearLayout>
 
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="0dp"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

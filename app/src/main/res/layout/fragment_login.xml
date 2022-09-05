@@ -110,11 +110,10 @@
                 android:textSize="@dimen/small_text_button_size"
                 tools:ignore="TextContrastCheck" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="4dp"
-                android:background="?android:attr/listDivider" />
+                android:layout_marginHorizontal="4dp" />
 
             <TextView
                 android:id="@+id/textview_login_find_password"
@@ -125,11 +124,10 @@
                 android:textSize="@dimen/small_text_button_size"
                 tools:ignore="TextContrastCheck" />
 
-            <View
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:layout_marginHorizontal="4dp"
-                android:background="?android:attr/listDivider" />
+                android:layout_marginHorizontal="4dp" />
 
             <TextView
                 android:id="@+id/textview_login_registration"

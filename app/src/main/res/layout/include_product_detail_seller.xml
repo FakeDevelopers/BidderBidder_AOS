@@ -4,11 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/upper_divider"
         android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,11 +61,10 @@
 
     </androidx.cardview.widget.CardView>
 
-    <View
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/bottom_divider"
         android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
