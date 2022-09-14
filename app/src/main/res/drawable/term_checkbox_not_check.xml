@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="@dimen/registration_term_checkbox_size"
-    android:height="@dimen/registration_term_checkbox_size"
+    android:width="@dimen/registration_checkbox_size"
+    android:height="@dimen/registration_checkbox_size"
     android:viewportWidth="19"
     android:viewportHeight="19">
     <path
