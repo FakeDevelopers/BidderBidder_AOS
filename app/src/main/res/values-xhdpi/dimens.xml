@@ -57,4 +57,5 @@
     <dimen name="registration_accept_detail_drawable_height">12dp</dimen>
     <dimen name="registration_accept_detail_drawable_width">7dp</dimen>
     <dimen name="registration_toolbar_height">39dp</dimen>
+    <dimen name="registration_bang_mark_size">11dp</dimen>
 </resources>

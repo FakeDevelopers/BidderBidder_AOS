@@ -35,6 +35,7 @@
             android:drawableEnd="@drawable/text_clear_button"
             android:drawableStart="@drawable/text_clear_button"
             app:endIconMode="clear_text"
+            app:endIconContentDescription=""
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/include_id_title">
