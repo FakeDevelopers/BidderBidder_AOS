@@ -3,30 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/registration_toolbar_height">
 
     <ImageButton
         android:id="@+id/button_back"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="0dp"
         android:backgroundTint="@android:color/transparent"
         android:src="@drawable/back"
+        android:paddingStart="@dimen/fragment_horizontal_margin"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+        tools:ignore="ContentDescription,RtlSymmetry,SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/textview_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:fontFamily="@font/app_font"
         android:text="@string/registration_toolbar_user_registration"
+        android:textSize="@dimen/registration_text_size_up"
         android:textColor="@color/black"
         android:textStyle="bold"
+        android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpUsage" />
 </androidx.constraintlayout.widget.ConstraintLayout>
