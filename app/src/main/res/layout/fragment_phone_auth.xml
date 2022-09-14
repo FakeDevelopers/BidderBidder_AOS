@@ -31,11 +31,11 @@
             android:id="@+id/linearLayout2"
             android:layout_width="0dp"
             android:layout_height="@dimen/registration_view_height"
-            android:layout_marginTop="@dimen/registration_title_margin_bottom"
             android:orientation="horizontal"
+            android:layout_marginTop="@dimen/registration_title_margin_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_phoneauth_title">
+            app:layout_constraintTop_toTopOf="@+id/include_phoneauth_title">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textinputlayout_register_phone"
@@ -69,9 +69,9 @@
                 android:layout_marginStart="4dp"
                 android:layout_weight="1"
                 android:background="@drawable/button_phone_auth_before_send"
+                android:fontFamily="@font/app_font"
                 android:stateListAnimator="@null"
                 android:text="@string/phoneauth_getauthcode"
-                android:fontFamily="@font/app_font"
                 android:textColor="@color/black"
                 android:textSize="@dimen/registration_text_size"
                 tools:ignore="SpUsage" />

@@ -33,7 +33,7 @@
             android:layout_marginTop="8dp"
             android:fontFamily="@font/app_font"
             android:text="@string/registration_birth_subtitle"
-            android:textSize="@dimen/registration_text_size_down_down"
+            android:textSize="@dimen/registration_text_size"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
