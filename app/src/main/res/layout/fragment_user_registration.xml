@@ -58,7 +58,7 @@
             android:shadowColor="#111111"
             android:text="@string/registration_button_to_next"
             android:textColor="@color/white"
-            android:textSize="13dp"
+            android:textSize="@dimen/button_user_registration_next_text_size"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -24,13 +24,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/registration_checkbox_height">
 
         <CheckBox
             android:id="@+id/checkbox_accept"
             android:layout_width="0dp"
-            android:layout_height="@dimen/registration_term_checkbox_size"
-            android:layout_marginVertical="@dimen/registration_term_checkbox_margin_vertical"
+            android:layout_height="@dimen/registration_checkbox_height"
             android:button="@drawable/term_checkbox"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setTermState(termType, termIdx, isChecked)}"
             android:paddingStart="@dimen/registration_term_checkbox_padding_Start"
@@ -48,8 +47,8 @@
 
         <ImageButton
             android:id="@+id/button_read_more"
-            android:layout_width="@dimen/registration_checkbox_size"
-            android:layout_height="@dimen/registration_checkbox_size"
+            android:layout_width="@dimen/registration_accept_detail_drawable_width"
+            android:layout_height="@dimen/registration_accept_detail_drawable_height"
             android:backgroundTint="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
