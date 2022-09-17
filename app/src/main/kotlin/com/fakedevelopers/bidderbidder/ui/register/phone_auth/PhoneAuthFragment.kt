@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.register.phone_auth
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -266,8 +268,21 @@ class PhoneAuthFragment : Fragment() {
             }.addOnFailureListener {
                 val e = it as FirebaseAuthException
                 Toast.makeText(requireContext(), getAuthErrorMessage(e), Toast.LENGTH_SHORT).show()
+                alertDialogWithButton()
             }
         }
+    }
+
+    private fun alertDialogWithButton() {
+        val builder = AlertDialog.Builder(requireContext())
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_button, null)
+
+        val textViewMessage = dialogLayout.findViewById<TextView>(R.id.alert_message)
+        textViewMessage.text = getString(R.string.phoneauth_invalid_verification_code_message)
+        builder.setView(dialogLayout)
+
+        builder.show()
     }
 
     // 에러 메세지 추출

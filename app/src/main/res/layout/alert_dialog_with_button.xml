@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/alert_dialog_box_width"
+    android:layout_height="@dimen/alert_dialog_box_height"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/alert_message"
+        android:layout_width="@dimen/alert_dialog_textview_width"
+        android:layout_height="@dimen/alert_dialog_textview_height"
+        android:layout_marginHorizontal="@dimen/alert_dialog_textview_horizental_margin"
+        android:layout_marginVertical="@dimen/alert_dialog_textview_vertical_margin"
+        android:fontFamily="@font/app_font"
+        android:gravity="center"
+        android:text="@string/phoneauth_invalid_verification_code_alert"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/registration_text_size"
+        tools:ignore="SpUsage" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/alert_button_ok"
+        android:layout_width="@dimen/alert_dialog_button_width"
+        android:layout_height="@dimen/alert_dialog_button_height"
+        android:background="@drawable/alert_button"
+        android:fontFamily="@font/app_font"
+        android:text="@string/alert_dialog_with_check"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>

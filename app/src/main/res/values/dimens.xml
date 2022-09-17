@@ -56,4 +56,13 @@
     <dimen name="registration_accept_detail_drawable_height">15dp</dimen>
     <dimen name="registration_accept_detail_drawable_width">9dp</dimen>
     <dimen name="registration_toolbar_height">48dp</dimen>
+    <!-- relate to registration -->
+    <dimen name="alert_dialog_box_height">161dp</dimen>
+    <dimen name="alert_dialog_box_width">281dp</dimen>
+    <dimen name="alert_dialog_button_height">50dp</dimen>
+    <dimen name="alert_dialog_button_width">244dp</dimen>
+    <dimen name="alert_dialog_textview_height">54dp</dimen>
+    <dimen name="alert_dialog_textview_width">180dp</dimen>
+    <dimen name="alert_dialog_textview_horizental_margin">30dp</dimen>
+    <dimen name="alert_dialog_textview_vertical_margin">10dp</dimen>
 </resources>

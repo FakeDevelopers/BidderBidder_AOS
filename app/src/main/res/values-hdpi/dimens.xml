@@ -53,9 +53,18 @@
     <dimen name="registration_title_margin_top">36dp</dimen>
     <dimen name="registration_title_margin_bottom">64dp</dimen>
     <dimen name="registration_title_margin_accept_bottom">103dp</dimen>
-    <dimen name="registration_alert_message_margin_top">62dp</dimen>
+    <dimen name="registration_alert_message_margin_top">65dp</dimen>
     <dimen name="registration_accept_detail_drawable_height">9dp</dimen>
     <dimen name="registration_accept_detail_drawable_width">6dp</dimen>
     <dimen name="registration_toolbar_height">30dp</dimen>
     <dimen name="registration_bang_mark_size">8dp</dimen>
+    <!-- relate to registration -->
+    <dimen name="alert_dialog_box_height">161dp</dimen>
+    <dimen name="alert_dialog_box_width">281dp</dimen>
+    <dimen name="alert_dialog_button_height">50dp</dimen>
+    <dimen name="alert_dialog_button_width">244dp</dimen>
+    <dimen name="alert_dialog_textview_height">54dp</dimen>
+    <dimen name="alert_dialog_textview_width">180dp</dimen>
+    <dimen name="alert_dialog_textview_horizental_margin">30dp</dimen>
+    <dimen name="alert_dialog_textview_vertical_margin">10dp</dimen>
 </resources>
