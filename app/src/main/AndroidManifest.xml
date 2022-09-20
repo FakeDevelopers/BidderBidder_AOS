@@ -14,6 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BidderBidder">
+        <meta-data android:name="io.sentry.dsn" android:value="https://7e5cf93481eb4f4b953807a680415d84@o1417813.ingest.sentry.io/6762811" />
+        <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
+        <meta-data android:name="io.sentry.traces.user-interaction.enable" android:value="true" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
