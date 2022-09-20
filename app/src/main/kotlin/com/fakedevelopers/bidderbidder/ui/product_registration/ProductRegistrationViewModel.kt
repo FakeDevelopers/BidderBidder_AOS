@@ -117,7 +117,7 @@ class ProductRegistrationViewModel @Inject constructor(
             val map = hashMapOf<String, RequestBody>()
             map["productContent"] = content.value.toPlainRequestBody()
             map["productTitle"] = title.value.toPlainRequestBody()
-            map["category"] = "0".toPlainRequestBody()
+            map["category"] = "5".toPlainRequestBody()
             map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
             map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
             map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
