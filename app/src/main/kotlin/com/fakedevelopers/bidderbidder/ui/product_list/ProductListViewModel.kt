@@ -68,7 +68,7 @@ class ProductListViewModel @Inject constructor(
         viewModelScope.launch {
             // 추가하기 전에 로딩 띄우기
             setLoadingState(true)
-            repository.postProductList(searchWord.value, 0, LIST_COUNT, startNumber.value).let {
+            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber.value).let {
                 if (it.isSuccessful) {
                     val currentList = if (isInitialize) mutableListOf() else productList.value.toMutableList()
                     currentList.addAll(it.body()!!)
