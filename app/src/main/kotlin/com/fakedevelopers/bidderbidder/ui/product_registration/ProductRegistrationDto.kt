@@ -12,5 +12,13 @@ data class ProductRegistrationDto(
     val openingBid: String,
     val tick: String,
     val expiration: String,
-    val content: String
+    val content: String,
+    val categoryId: Long
 ) : Parcelable
+
+data class ProductCategoryDto(
+    val categoryId: Long,
+    val categoryName: String,
+    val parentCategoryId: Long,
+    val subCategories: List<ProductCategoryDto>
+)
