@@ -101,7 +101,7 @@ class ProductRegistrationFragment : Fragment() {
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
-        viewModel.productCategoryRequest()
+        viewModel.requestProductCategory()
         initListener()
         initCollector()
     }
@@ -175,7 +175,7 @@ class ProductRegistrationFragment : Fragment() {
                 Toast.makeText(requireContext(), "게시글 등록 요청", Toast.LENGTH_SHORT).show()
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
-                    viewModel.productRegistrationRequest(getMultipartList())
+                    viewModel.requestProductRegistration(getMultipartList())
                 }
             }
         }

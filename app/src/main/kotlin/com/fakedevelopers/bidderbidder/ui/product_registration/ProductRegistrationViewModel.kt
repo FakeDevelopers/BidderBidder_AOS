@@ -109,7 +109,7 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun productRegistrationRequest(imageList: List<MultipartBody.Part>) {
+    fun requestProductRegistration(imageList: List<MultipartBody.Part>) {
         viewModelScope.launch {
             val date = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
@@ -128,7 +128,7 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun productCategoryRequest() {
+    fun requestProductCategory() {
         viewModelScope.launch {
             categoryRepository.getProdectCategory().let {
                 if (it.isSuccessful) {
