@@ -3,19 +3,19 @@ package com.fakedevelopers.bidderbidder.ui.product_detail
 data class ProductDetailDto(
     val bidderCount: Int,
     val bids: List<BidInfo>,
-    val createdTime: String,
+    val createdDate: String,
     val expirationDate: String,
     val hopePrice: Long,
     val images: List<String>,
     val openingBid: Long,
     val productContent: String,
     val productTitle: String,
-    val tick: Long
+    val tick: Int
 ) {
     override fun toString(): String {
         val sb = StringBuilder()
         sb.appendLine("bidderCount = $bidderCount")
-        sb.appendLine("createTime = $createdTime")
+        sb.appendLine("createDate = $createdDate")
         sb.appendLine("expirationDate = $expirationDate")
         sb.appendLine("hopePrice = $hopePrice")
         sb.appendLine("images = ${images.joinToString(" ")}")

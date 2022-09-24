@@ -102,10 +102,10 @@ class ProductDetailViewModel @Inject constructor(
                 _contents.emit(productContent)
                 _hopePrice.emit(makeWon(hopePrice))
                 hopePriceValue = hopePrice
-                minimumBidValue = getMinimumBid(openingBid, tick.toInt(), bids)
+                minimumBidValue = getMinimumBid(openingBid, tick, bids)
                 _minimumBid.emit(makeWon(minimumBidValue))
-                _tick.emit(makeWon(tick))
-                tickValue = tick.toInt()
+                _tick.emit(makeWon(tick.toLong()))
+                tickValue = tick
                 _bidderCount.emit("${bidderCount}명")
                 _moveOneTickEvent.emit(openingBid)
                 productDetailAdapter.submitList(images)
