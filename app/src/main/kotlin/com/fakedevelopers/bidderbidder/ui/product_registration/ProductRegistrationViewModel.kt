@@ -53,7 +53,7 @@ class ProductRegistrationViewModel @Inject constructor(
     val tick = MutableStateFlow("")
     val expiration = MutableStateFlow("")
     val category: MutableList<String> = mutableListOf()
-    val categoryID: MutableStateFlow<Long> = MutableStateFlow(0)
+    private var categoryID: Long = 0
 
     // 등록 조건 완료
     val condition: StateFlow<Boolean> get() = _condition
@@ -123,7 +123,7 @@ class ProductRegistrationViewModel @Inject constructor(
             map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
             map["representPicture"] = "0".toPlainRequestBody()
             map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
-            map["category"] = categoryID.value.toString().toPlainRequestBody()
+            map["category"] = categoryID.toString().toPlainRequestBody()
             _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
@@ -162,7 +162,7 @@ class ProductRegistrationViewModel @Inject constructor(
         tick.value,
         expiration.value,
         content.value,
-        categoryID.value
+        categoryID
     )
 
     fun setUrlList(list: List<String>) {
@@ -187,9 +187,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setCategoryID(index: Long) {
-        viewModelScope.launch {
-            categoryID.emit(productCategory.value[index.toInt()].categoryId)
-        }
+        categoryID = productCategory.value[index.toInt()].categoryId
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
