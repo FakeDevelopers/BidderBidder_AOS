@@ -132,7 +132,7 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             categoryRepository.getProdectCategory().let {
                 if (it.isSuccessful) {
-                    _productCategory.emit(it.body()!!)
+                    it.body()?.let { it1 -> _productCategory.emit(it1) }
                 } else {
                     Logger.e(it.errorBody().toString())
                 }
