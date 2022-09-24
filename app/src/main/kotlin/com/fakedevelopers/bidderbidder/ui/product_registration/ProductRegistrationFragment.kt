@@ -274,7 +274,7 @@ class ProductRegistrationFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            viewModel.productCategory.collectLatest {
+            viewModel.productCategory.collect {
                 if (it.isNotEmpty()) {
                     viewModel.setCategoryList(it)
                     setCategory(viewModel.category)
