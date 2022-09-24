@@ -203,6 +203,7 @@ class ProductRegistrationFragment : Fragment() {
         binding.spinnerProductRegistrationCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Do nothing
                 }
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     viewModel.setCategoryID(selectedItemId)
@@ -351,7 +352,9 @@ class ProductRegistrationFragment : Fragment() {
             requireContext(),
             R.layout.spinner_product_registration,
             category
-        ) {}
+        ) {
+            // Do nothing
+        }
         binding.spinnerProductRegistrationCategory.apply {
             adapter = arrayAdapter
             setSelection(arrayAdapter.count - 1)
