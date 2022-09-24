@@ -180,7 +180,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setCategoryList(list: List<ProductCategoryDto>) {
-        category = list.joinToString { it.categoryName }.split(", ")
+        category = list.map { it.categoryName }
     }
 
     fun setCategoryID(index: Long) {
