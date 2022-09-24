@@ -6,9 +6,9 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatte
 import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.SelectedImageInfo
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -134,7 +134,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     it.body()?.let { it1 -> _productCategory.emit(it1) }
                 } else {
-                    Logger.e(it.errorBody().toString())
+                    ApiErrorHandler.print(it.errorBody())
                 }
             }
         }
