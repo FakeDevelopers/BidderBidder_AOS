@@ -52,7 +52,7 @@ class ProductRegistrationViewModel @Inject constructor(
     val openingBid = MutableStateFlow("")
     val tick = MutableStateFlow("")
     val expiration = MutableStateFlow("")
-    val category: MutableList<String> = mutableListOf()
+    var category: List<String> = listOf()
     private var categoryID: Long = 0
 
     // 등록 조건 완료
@@ -180,10 +180,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setCategoryList(list: List<ProductCategoryDto>) {
-        category.clear()
-        list.forEach() {
-            category.add(it.categoryName)
-        }
+        category = list.joinToString { it.categoryName }.split(", ")
     }
 
     fun setCategoryID(index: Long) {
