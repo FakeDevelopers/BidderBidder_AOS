@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="vm"
+            type="com.fakedevelopers.bidderbidder.ui.product_detail.ProductDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ScrollView
+            android:id="@+id/scrollView3"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_constraintBottom_toTopOf="@+id/button_product_detail_bidding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewpager_product_detail_pictures"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adapter="@{vm.productDetailAdapter}"
+                    android:nestedScrollingEnabled="true">
+
+                </androidx.viewpager2.widget.ViewPager2>
+
+                <include
+                    android:id="@+id/include_product_detail_price"
+                    layout="@layout/include_product_detail_price"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:vm="@{vm}" />
+
+                <include
+                    android:id="@+id/include_product_detail_seller"
+                    layout="@layout/include_product_detail_seller"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/textview_product_detail_contents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginVertical="24dp"
+                    android:text="@{vm.contents}"
+                    tools:text="본문" />
+
+            </LinearLayout>
+        </ScrollView>
+
+        <include
+            android:id="@+id/include_product_detail_bidding"
+            layout="@layout/include_product_detail_bidding"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:vm="@{vm}" />
+
+        <include
+            android:id="@+id/include_product_detail_bid_info"
+            layout="@layout/include_product_detail_bid_info"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="@{vm.bidInfoVisibility ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="@+id/scrollView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:vm="@{vm}"
+            tools:visibility="invisible" />
+
+        <include
+            android:id="@+id/include_product_detail_bidding_confirm"
+            layout="@layout/include_product_detail_bidding_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{vm.confirmDialogVisibility ? View.VISIBLE : View.INVISIBLE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:vm="@{vm}" />
+
+        <Button
+            android:id="@+id/button_product_detail_bidding"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="@{vm.biddingButtonVisibility ? View.VISIBLE : View.INVISIBLE}"
+            android:text="입찰"
+            android:onClick="@{() -> vm.clickBidding()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -6,7 +6,7 @@ data class ProductListDto(
     val productTitle: String,
     val hopePrice: Long,
     val openingBid: Long,
-    val tick: Long,
+    val tick: Int,
     val expirationDate: String,
     val bidderCount: Int
 )

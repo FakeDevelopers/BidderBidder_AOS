@@ -33,10 +33,12 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.product_registration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumImageUtils.Companion.ROTATE_DEGREE
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.collections.set
+import kotlin.math.roundToInt
 
 class AlbumListFragment : Fragment() {
 
@@ -61,14 +63,11 @@ class AlbumListFragment : Fragment() {
         object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
-                // 사진 선택 표시 설정
-                setPictureSelectCount(
-                    viewModel.findSelectedImageIndex(viewModel.albumPagerAdapter.currentList[position].first)
-                )
+                setPagerUI(position)
             }
         }
     }
+
     private val contentResolverUtil by lazy {
         ContentResolverUtil(requireContext())
     }
@@ -100,13 +99,13 @@ class AlbumListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (args.productRegistrationDto.selectedImageInfo.uris.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.productRegistrationDto.selectedImageInfo)
+            binding.buttonAlbumListComplete.visibility = View.VISIBLE
+        }
         initCollector()
         initListener()
         getPictures()
-        if (args.productRegistrationDto.urlList.isNotEmpty()) {
-            viewModel.initSelectedImageList(args.productRegistrationDto.urlList)
-            binding.buttonAlbumListComplete.visibility = View.VISIBLE
-        }
         // 요소가 많아 난잡해지므로 이동 애니메이션은 없앰
         binding.recyclerAlbumList.itemAnimator = null
     }
@@ -118,7 +117,12 @@ class AlbumListFragment : Fragment() {
     }
 
     private fun toProductRegistration(dto: ProductRegistrationDto) {
-        dto.urlList = viewModel.selectedImageList.value.toList()
+        dto.selectedImageInfo.apply {
+            uris.clear()
+            uris.addAll(viewModel.selectedImageInfo.uris)
+            changeBitmaps.clear()
+            changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
+        }
         // 선택한 이미지 uri를 들고 돌아갑니다
         findNavController().navigate(
             AlbumListFragmentDirections.actionPictureSelectFragmentToProductRegistrationFragment(dto)
@@ -206,6 +210,16 @@ class AlbumListFragment : Fragment() {
         binding.buttonAlbumListComplete.setOnClickListener {
             toProductRegistration(args.productRegistrationDto)
         }
+        binding.buttonAlbumListRotate.setOnClickListener {
+            val uri = viewModel.getCurrentUri()
+            // 로테이트된 비트맵이 있으면 그걸 돌림
+            // 없다면 새로 추가
+            viewModel.getEditedBitmapInfo(uri)?.let { bitmapInfo ->
+                updateBitmapInfo(uri, bitmapInfo)
+            } ?: addBitmapInfo(uri)
+            // 이미지 새로고침
+            viewModel.albumPagerAdapter.notifyItemChanged(viewModel.currentViewPagerIdx)
+        }
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
@@ -216,7 +230,7 @@ class AlbumListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.onListChange.collectLatest {
                     binding.buttonAlbumListComplete.visibility =
-                        if (viewModel.selectedImageList.value.isEmpty())
+                        if (viewModel.selectedImageInfo.uris.isEmpty())
                             View.INVISIBLE
                         else
                             View.VISIBLE
@@ -236,8 +250,12 @@ class AlbumListFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.startViewPagerIndex.collectLatest {
-                    binding.viewpagerPictureSelect.setCurrentItem(it, false)
+                viewModel.startViewPagerIndex.collectLatest { position ->
+                    // 같은 요소를
+                    if (viewModel.currentViewPagerIdx == position) {
+                        setPagerUI(position)
+                    }
+                    binding.viewpagerPictureSelect.setCurrentItem(position, false)
                 }
             }
         }
@@ -246,13 +264,23 @@ class AlbumListFragment : Fragment() {
                 viewModel.pagerSelectedState.collectLatest {
                     // 추가 됐다면 반드시 가장 마지막 자리에 추가됐을것임
                     if (it) {
-                        setPictureSelectCount(viewModel.selectedImageList.value.lastIndex)
+                        setPictureSelectCount(viewModel.selectedImageInfo.uris.lastIndex)
                     } else {
                         setPictureSelectCount(-1)
                     }
                 }
             }
         }
+    }
+
+    private fun setPagerUI(position: Int) {
+        // 사진 편집 대상을 알기 위해 현재 보고 있는 이미지의 인덱스 저장
+        viewModel.setCurrentViewPagerIdx(position)
+        binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
+        // 사진 선택 표시 설정
+        setPictureSelectCount(
+            viewModel.findSelectedImageIndex(viewModel.getCurrentUri())
+        )
     }
 
     private fun setPictureSelectCount(index: Int) {
@@ -267,11 +295,29 @@ class AlbumListFragment : Fragment() {
         }
     }
 
+    // 수정된 이미지 비트맵 추가
+    private fun addBitmapInfo(uri: String) {
+        // 이미지가 선택이 안되어 있다면 이미지 선택
+        if (viewModel.findSelectedImageIndex(uri) == -1) {
+            viewModel.setSelectedState(uri, true)
+        }
+        viewModel.addBitmapInfo(uri, BitmapInfo(ROTATE_DEGREE))
+    }
+
+    // BitmapInfo 갱신
+    private fun updateBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
+        bitmapInfo.degree += ROTATE_DEGREE
+        // 360도 돌아갔다면 변경 사항이 없는거다. bitmapInfo를 삭제한다.
+        if (bitmapInfo.degree.roundToInt() == 360) {
+            viewModel.removeBitmapInfo(uri)
+        }
+    }
+
     private fun updateAlbumList(albumName: String? = null) {
         // 선택 이미지 리스트가 존재한다면 유효한지 검사
-        if (viewModel.selectedImageList.value.isNotEmpty()) {
+        if (viewModel.selectedImageInfo.uris.isNotEmpty()) {
             // 유효한 선택 이미지 리스트로 갱신
-            viewModel.setSelectedImage(contentResolverUtil.getValidList(viewModel.selectedImageList.value))
+            viewModel.setSelectedImage(contentResolverUtil.getValidList(viewModel.selectedImageInfo.uris))
             if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                 setPictureSelectCount(
                     viewModel.findSelectedImageIndex(
@@ -302,6 +348,7 @@ class AlbumListFragment : Fragment() {
     companion object {
         const val ALL_PICTURES = "전체보기"
 
+        // 이미지 변경 플래그
         private const val BASE_FLAG = 32768
         const val ADD_IMAGE = BASE_FLAG + NOTIFY_INSERT
         const val REMOVE_IMAGE = BASE_FLAG + NOTIFY_DELETE

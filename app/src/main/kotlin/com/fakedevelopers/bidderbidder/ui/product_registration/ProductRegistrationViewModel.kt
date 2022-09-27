@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.SelectedImageInfo
+import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
+import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -32,14 +33,13 @@ class ProductRegistrationViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-    private val _urlList = MutableStateFlow<List<String>>(mutableListOf())
-    private val _productRegistrationResponse = MutableSharedFlow<Response<String>>()
+    private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
     private val _condition = MutableStateFlow(false)
     private val _contentLengthVisible = MutableStateFlow(false)
 
-    val urlList: StateFlow<List<String>> get() = _urlList
+    val selectedImageInfo = SelectedImageInfo()
     val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
-    val productRegistrationResponse: SharedFlow<Response<String>> get() = _productRegistrationResponse
+    val productRegistrationResponse = _productRegistrationResponse.asEventFlow()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
     val hopePrice = MutableStateFlow("")
@@ -58,19 +58,17 @@ class ProductRegistrationViewModel @Inject constructor(
     val condition: StateFlow<Boolean> get() = _condition
 
     private fun deleteSelectedImage(uri: String) {
-        val list = _urlList.value.filter { it != uri }
+        val list = selectedImageInfo.uris.filter { it != uri }
         adapter.submitList(list)
         // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-        if (_urlList.value.isNotEmpty() && !list.contains(_urlList.value[0])) {
+        if (selectedImageInfo.uris.isNotEmpty() && !list.contains(selectedImageInfo.uris[0])) {
             adapter.notifyItemChanged(1)
         }
-        viewModelScope.launch {
-            _urlList.emit(list)
-        }
+        selectedImageInfo.uris = list.toMutableList()
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
-        val list = _urlList.value.toMutableList()
+        val list = selectedImageInfo.uris.toMutableList()
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
                 Collections.swap(list, i, i + 1)
@@ -81,12 +79,10 @@ class ProductRegistrationViewModel @Inject constructor(
             }
         }
         adapter.submitList(list)
-        viewModelScope.launch {
-            _urlList.emit(list)
-        }
+        selectedImageInfo.uris = list.toMutableList()
     }
 
-    private fun findSelectedImageIndex(uri: String) = _urlList.value.indexOf(uri)
+    private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     // 게시글 등록 조건 검사
     fun checkRegistrationCondition() {
@@ -121,7 +117,7 @@ class ProductRegistrationViewModel @Inject constructor(
             val map = hashMapOf<String, RequestBody>()
             map["productContent"] = content.value.toPlainRequestBody()
             map["productTitle"] = title.value.toPlainRequestBody()
-            map["category"] = "0".toPlainRequestBody()
+            map["category"] = "5".toPlainRequestBody()
             map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
             map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
             map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
@@ -132,9 +128,10 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun initState(state: ProductRegistrationDto) {
+        selectedImageInfo.uris = state.selectedImageInfo.uris
+        selectedImageInfo.changeBitmaps.putAll(state.selectedImageInfo.changeBitmaps)
         viewModelScope.launch {
-            _urlList.emit(state.urlList.toMutableList())
-            adapter.submitList(_urlList.value.toMutableList())
+            adapter.submitList(selectedImageInfo.uris.toMutableList())
             title.emit(state.title)
             hopePrice.emit(state.hopePrice)
             openingBid.emit(state.openingBid)
@@ -145,7 +142,7 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun getProductRegistrationDto() = ProductRegistrationDto(
-        urlList.value,
+        selectedImageInfo,
         title.value,
         hopePrice.value,
         openingBid.value,
@@ -158,8 +155,8 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             adapter.submitList(list)
             adapter.notifyDataSetChanged()
-            _urlList.emit(list)
         }
+        selectedImageInfo.uris = list.toMutableList()
     }
 
     fun setContentLengthVisibility(state: Boolean) {
