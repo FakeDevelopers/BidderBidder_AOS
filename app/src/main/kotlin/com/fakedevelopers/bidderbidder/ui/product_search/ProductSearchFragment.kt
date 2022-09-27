@@ -134,7 +134,7 @@ class ProductSearchFragment : Fragment() {
                     true
                 }
             }
-            buttonToolbarBack.setOnClickListener { requireActivity().onBackPressed() }
+            buttonToolbarBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
         }
         binding.textviewProductSearchEraseAll.setOnClickListener {
             viewModel.clearHistory()
