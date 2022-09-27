@@ -8,7 +8,6 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.SENTRY_DSN
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.HiltAndroidApp
-import io.sentry.SentryOptions
 import io.sentry.android.core.SentryAndroid
 
 @HiltAndroidApp
@@ -23,7 +22,6 @@ class HiltApplication : Application() {
     private fun initSentry() {
         SentryAndroid.init(this) { options ->
             options.dsn = SENTRY_DSN
-            options.beforeSend = SentryOptions.BeforeSendCallback { event, _ -> event }
         }
     }
 
