@@ -12,6 +12,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
@@ -100,19 +101,7 @@ class ProductRegistrationFragment : Fragment() {
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
-        val arrayAdapter = object : ArrayAdapter<String>(
-            requireContext(),
-            R.layout.spinner_product_registration,
-            viewModel.category
-        ) {
-            override fun getCount(): Int {
-                return super.getCount() - 1
-            }
-        }
-        binding.spinnerProductRegistrationCategory.apply {
-            adapter = arrayAdapter
-            setSelection(arrayAdapter.count)
-        }
+        viewModel.requestProductCategory()
         initListener()
         initCollector()
     }
@@ -186,7 +175,7 @@ class ProductRegistrationFragment : Fragment() {
                 Toast.makeText(requireContext(), "게시글 등록 요청", Toast.LENGTH_SHORT).show()
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
-                    viewModel.productRegistrationRequest(getMultipartList())
+                    viewModel.requestProductRegistration(getMultipartList())
                 }
             }
         }
@@ -209,6 +198,17 @@ class ProductRegistrationFragment : Fragment() {
         // 툴바 뒤로가기 버튼
         binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        binding.spinnerProductRegistrationCategory.apply {
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Do nothing
+                }
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    viewModel.setCategoryID(selectedItemId)
+                }
+            }
         }
     }
 
@@ -270,6 +270,14 @@ class ProductRegistrationFragment : Fragment() {
                 viewModel.condition.collectLatest {
                     val color = if (it) Color.BLACK else Color.GRAY
                     binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(color)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewModel.productCategory.collect {
+                if (it.isNotEmpty()) {
+                    viewModel.setCategoryList(it)
+                    setCategory(viewModel.category)
                 }
             }
         }
@@ -336,6 +344,20 @@ class ProductRegistrationFragment : Fragment() {
                 it.close()
                 null
             }
+        }
+    }
+
+    private fun setCategory(category: List<String>) {
+        val arrayAdapter = object : ArrayAdapter<String>(
+            requireContext(),
+            R.layout.spinner_product_registration,
+            category
+        ) {
+            // Do nothing
+        }
+        binding.spinnerProductRegistrationCategory.apply {
+            adapter = arrayAdapter
+            setSelection(arrayAdapter.count - 1)
         }
     }
 
