@@ -53,6 +53,7 @@ class ProductRegistrationViewModel @Inject constructor(
     val tick = MutableStateFlow("")
     val expiration = MutableStateFlow("")
     var category: List<String> = listOf()
+        private set
     private var categoryID: Long = 0
 
     // 등록 조건 완료
@@ -132,7 +133,7 @@ class ProductRegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             categoryRepository.getProdectCategory().let {
                 if (it.isSuccessful) {
-                    it.body()?.let { it1 -> _productCategory.emit(it1) }
+                    it.body()?.let { responseBody -> _productCategory.emit(responseBody) }
                 } else {
                     ApiErrorHandler.print(it.errorBody())
                 }
