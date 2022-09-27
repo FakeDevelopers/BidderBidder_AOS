@@ -208,7 +208,7 @@ class ProductRegistrationFragment : Fragment() {
         }
         // 툴바 뒤로가기 버튼
         binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
-            requireActivity().onBackPressed()
+            backPressedCallback.handleOnBackPressed()
         }
     }
 
