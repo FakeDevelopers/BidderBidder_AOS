@@ -3,8 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_BIRTH
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
@@ -86,7 +84,7 @@ class UserRegistrationViewModel : ViewModel() {
     private fun checkAcceptTerms(moveNextStep: Boolean = true) {
         if (essentialTerms.all { it }) {
             if (moveNextStep) {
-                setCurrentStep(PHONE_AUTH_BEFORE_SENDING)
+                setCurrentStep(INPUT_ID)
             } else {
                 setNextStepEnabled(true)
             }
@@ -233,7 +231,7 @@ class UserRegistrationViewModel : ViewModel() {
             // 가입 완료 판정을 받기 전에 지금까지 모은 정보를 서버에 보내는 작업이 필요합니다.
             // 서버가 ok와 함께 토큰을 던져주고 그걸 저장까지 했을 때 다음 화면으로 넘어갑니다.
             if (moveNextStep) {
-                setCurrentStep(CONGRATULATIONS)
+                setCurrentStep(PHONE_AUTH_BEFORE_SENDING)
             } else {
                 setNextStepEnabled(true)
             }
@@ -257,11 +255,10 @@ class UserRegistrationViewModel : ViewModel() {
     fun checkNextStep(moveNextStep: Boolean = true) {
         when (currentStep) {
             ACCEPT_TERMS -> checkAcceptTerms(moveNextStep)
-            PHONE_AUTH_BEFORE_SENDING -> sendFailureMessage(NOT_RECEIVED_AUTH_CODE)
-            PHONE_AUTH_CHECK_AUTH_CODE -> checkNextAuthCode(moveNextStep)
-            INPUT_BIRTH -> checkBirth(moveNextStep)
             INPUT_ID -> checkUserId(moveNextStep)
             INPUT_PASSWORD -> checkUserPassword(moveNextStep)
+            PHONE_AUTH_BEFORE_SENDING -> sendFailureMessage(NOT_RECEIVED_AUTH_CODE)
+            PHONE_AUTH_CHECK_AUTH_CODE -> checkNextAuthCode(moveNextStep)
             else -> {
                 // 여긴 갈 일 없어!
             }
@@ -281,11 +278,9 @@ class UserRegistrationViewModel : ViewModel() {
     // 이전 단계로 돌아가자
     fun toPreviousStep() {
         when (currentStep) {
-            PHONE_AUTH_BEFORE_SENDING -> setCurrentStep(ACCEPT_TERMS)
-            PHONE_AUTH_CHECK_AUTH_CODE -> setCurrentStep(ACCEPT_TERMS)
-            INPUT_BIRTH -> setCurrentStep(PHONE_AUTH_BEFORE_SENDING)
-            INPUT_ID -> setCurrentStep(INPUT_BIRTH)
             INPUT_PASSWORD -> setCurrentStep(INPUT_ID)
+            PHONE_AUTH_BEFORE_SENDING -> setCurrentStep(INPUT_PASSWORD)
+            PHONE_AUTH_CHECK_AUTH_CODE -> setCurrentStep(INPUT_PASSWORD)
             else -> sendFailureMessage(NOT_GO_BACKWARDS)
         }
     }
