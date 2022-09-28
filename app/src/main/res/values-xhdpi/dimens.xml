@@ -58,6 +58,8 @@
     <dimen name="registration_accept_detail_drawable_width">7dp</dimen>
     <dimen name="registration_toolbar_height">39dp</dimen>
     <dimen name="registration_bang_mark_size">11dp</dimen>
+    <dimen name="registration_clear_button_size">10dp</dimen>
+    <dimen name="registration_password_toggle_size">13dp</dimen>
     <!-- relate to registration -->
     <dimen name="alert_dialog_box_height">161dp</dimen>
     <dimen name="alert_dialog_box_width">281dp</dimen>

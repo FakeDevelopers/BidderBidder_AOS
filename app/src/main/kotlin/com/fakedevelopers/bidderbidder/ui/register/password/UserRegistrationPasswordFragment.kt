@@ -62,7 +62,6 @@ class UserRegistrationPasswordFragment : Fragment() {
         // 만료 시간 필터 등록
         binding.apply {
             edittextPassword.addTextChangedListener() {
-                Logger.i(edittextPassword.text.toString())
                 if (it.contentEquals(edittextPasswordConfirm.text)) {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
                 } else {

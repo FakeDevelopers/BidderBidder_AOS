@@ -48,7 +48,7 @@
                     android:background="@drawable/text_input_white_background"
                     android:ems="10"
                     android:hint="@string/registration_id_hint"
-                    android:paddingTop="10dp"
+                    android:padding="0dp"
                     android:text="@={vm.inputUserId}"
                     android:textColorHint="@color/edit_text_hint"
                     android:textSize="@dimen/registration_text_size"
