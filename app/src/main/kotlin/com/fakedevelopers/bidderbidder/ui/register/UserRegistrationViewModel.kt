@@ -42,11 +42,13 @@ class UserRegistrationViewModel : ViewModel() {
     /* UserRegistrationPasswordFragment */
     private var userPassword = ""
     private val _userPasswordConditionLengthState = MutableStateFlow(false)
-    private val _userPasswordConditionCharacterState = MutableStateFlow(false)
+    private val _userPasswordConditionCharacterAlphabetState = MutableStateFlow(false)
+    private val _userPasswordConditionCharacterNumberState = MutableStateFlow(false)
     private val _userPasswordConfirmState = MutableStateFlow(false)
     private val _userPasswordConfirmVisible = MutableEventFlow<Boolean>()
     val userPasswordConditionLengthState: StateFlow<Boolean> get() = _userPasswordConditionLengthState
-    val userPasswordConditionCharacterState: StateFlow<Boolean> get() = _userPasswordConditionCharacterState
+    val userPasswordConditionAlphabetState: StateFlow<Boolean> get() = _userPasswordConditionCharacterAlphabetState
+    val userPasswordConditionNumberState: StateFlow<Boolean> get() = _userPasswordConditionCharacterNumberState
     val userPasswordConfirmState: StateFlow<Boolean> get() = _userPasswordConfirmState
     val userPasswordConfirmVisible = _userPasswordConfirmVisible.asEventFlow()
     val inputUserPassword = MutableStateFlow("")
@@ -201,13 +203,15 @@ class UserRegistrationViewModel : ViewModel() {
     // 비밀번호 조건 검사
     fun checkPasswordCondition() {
         val lengthCondition = inputUserPassword.value.length in PASSWORD_LENGTH_MINIMUM..PASSWORD_LENGTH_MAXIMUM
-        val characterCondition = PASSWORD_CHARACTER_CONDITION.matchEntire(inputUserPassword.value) != null
+        val alphabetCondition = PASSWORD_ALPHABET_CONDITION.matchEntire(inputUserPassword.value) != null
+        val numberCondition = PASSWORD_NUMBER_CONDITION.matchEntire(inputUserPassword.value) != null
         viewModelScope.launch {
             _userPasswordConditionLengthState.emit(lengthCondition)
-            _userPasswordConditionCharacterState.emit(characterCondition)
-            _userPasswordConfirmVisible.emit(lengthCondition && characterCondition)
+            _userPasswordConditionCharacterAlphabetState.emit(alphabetCondition)
+            _userPasswordConditionCharacterNumberState.emit(numberCondition)
+            _userPasswordConfirmVisible.emit(lengthCondition && alphabetCondition && numberCondition)
         }
-        if (lengthCondition && characterCondition) {
+        if (lengthCondition && alphabetCondition && numberCondition) {
             checkPasswordConfirm()
         }
     }
@@ -223,7 +227,8 @@ class UserRegistrationViewModel : ViewModel() {
     // 비밀번호 검증 (마지막 단계)
     private fun checkUserPassword(moveNextStep: Boolean = true) {
         if (
-            userPasswordConditionCharacterState.value &&
+            userPasswordConditionAlphabetState.value &&
+            userPasswordConditionNumberState.value &&
             userPasswordConditionLengthState.value &&
             userPasswordConfirmState.value
         ) {
@@ -306,7 +311,8 @@ class UserRegistrationViewModel : ViewModel() {
 
         // 허용되는 특수문자 : !@#$%^+-=
         // 나중에 명확히 정해지면 그걸루 가도 되겠죠
-        val PASSWORD_CHARACTER_CONDITION = Regex("^(?=.*[A-Za-z])(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
+        val PASSWORD_ALPHABET_CONDITION = Regex("^(?=.*[A-Za-z])[a-zA-Z0-9!@#\$%^+\\-=]*$")
+        val PASSWORD_NUMBER_CONDITION = Regex("^(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
 
         // 실패 메세지
         const val NOT_GO_BACKWARDS = "가지마!!"

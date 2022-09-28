@@ -63,6 +63,7 @@
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:textSize="@dimen/registration_text_size_down"
+            android:textStyle="bold"
             android:visibility="invisible"
             app:drawableLeftCompat="@drawable/bang_mark"
             app:layout_constraintEnd_toEndOf="parent"

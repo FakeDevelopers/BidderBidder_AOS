@@ -46,7 +46,10 @@ class UserRegistrationPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initCollector()
-        if (viewModel.userPasswordConditionLengthState.value && viewModel.userPasswordConditionCharacterState.value) {
+        if (viewModel.userPasswordConditionLengthState.value &&
+            viewModel.userPasswordConditionAlphabetState.value &&
+            viewModel.userPasswordConditionAlphabetState.value
+        ) {
             binding.textviewPasswordConfirmInfo.visibility = View.VISIBLE
         }
     }
@@ -83,8 +86,16 @@ class UserRegistrationPasswordFragment : Fragment() {
         // 비밀번호 문자 조건
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConditionCharacterState.collectLatest {
-                    setTextViewColor(binding.textviewPasswordConditionCharacter, getColorId(it))
+                viewModel.userPasswordConditionAlphabetState.collectLatest {
+                    setTextViewColor(binding.textviewPasswordConditionAlphabet, getColorId(it))
+                }
+            }
+        }
+        // 비밀번호 숫자 조건
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userPasswordConditionNumberState.collectLatest {
+                    setTextViewColor(binding.textviewPasswordConditionNumber, getColorId(it))
                 }
             }
         }
@@ -125,13 +136,9 @@ class UserRegistrationPasswordFragment : Fragment() {
     }
 
     private fun setTextViewColor(tv: TextView, colorId: Int) {
-        if (viewModel.inputUserPassword.value.isEmpty()) {
-            tv.isEnabled = false
-        } else {
-            tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
-            tv.isEnabled = true
-            tv.isSelected = colorId == R.color.bidderbidder_primary
-        }
+        tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
+        tv.isSelected = colorId == R.color.bidderbidder_primary
+        tv.isEnabled = viewModel.inputUserPassword.value.isNotEmpty()
     }
     private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 
