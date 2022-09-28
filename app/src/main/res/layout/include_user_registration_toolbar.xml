@@ -22,7 +22,6 @@
         android:id="@+id/textview_title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:fontFamily="@font/app_font"
         android:text="@string/registration_toolbar_user_registration"
         android:textSize="@dimen/registration_text_size_up"
         android:textColor="@color/black"
