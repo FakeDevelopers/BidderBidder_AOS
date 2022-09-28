@@ -32,8 +32,8 @@
     <dimen name="registration_view_radious">5dp</dimen>
     <dimen name="registration_view_height">45dp</dimen>
     <dimen name="registration_view_height_two_third">30dp</dimen>
-    <dimen name="registration_checkbox_size">21dp</dimen>
-    <dimen name="registration_checkbox_height">45dp</dimen>
+    <dimen name="registration_checkbox_size">19dp</dimen>
+    <dimen name="registration_checkbox_height">44dp</dimen>
     <dimen name="registration_back_button_height">21dp</dimen>
     <dimen name="registration_back_button_width">11dp</dimen>
     <dimen name="registration_confirm_condition_height">9dp</dimen>
@@ -52,12 +52,13 @@
     <dimen name="registration_TextInputEditText_padding">14dp</dimen>
     <dimen name="registration_title_margin_top">60dp</dimen>
     <dimen name="registration_title_margin_bottom">105dp</dimen>
-    <dimen name="registration_title_margin_accept_bottom">158dp</dimen>
+    <dimen name="registration_title_margin_accept_bottom">172dp</dimen>
     <dimen name="registration_alert_message_margin_top">108dp</dimen>
     <dimen name="registration_accept_detail_drawable_height">18dp</dimen>
     <dimen name="registration_accept_detail_drawable_width">11dp</dimen>
     <dimen name="registration_toolbar_height">58dp</dimen>
     <dimen name="registration_bang_mark_size">15dp</dimen>
+    <dimen name="registration_toolbar_left_padding">33dp</dimen>
     <!-- relate to registration -->
     <dimen name="alert_dialog_box_height">161dp</dimen>
     <dimen name="alert_dialog_box_width">260dp</dimen>

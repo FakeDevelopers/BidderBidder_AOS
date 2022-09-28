@@ -46,16 +46,16 @@
     <string name="registration_birth_age_validation_title">만 14세 미만이신가요?</string>
     <string name="registration_birth_age_validation_message">만 14세 미만의 이용자께서는 법정대리인(보호자)의 동의 절차를 최초 1회 거쳐야 이용이 가능합니다.</string>
     <!-- Strings related to Id-->
-    <string name="registration_id_title">영차영차!\n아이디를 입력해주세요</string>
+    <string name="registration_id_title">반가워요!\n이메일을 입력해주세요</string>
     <string name="registration_id_input">아이디</string>
-    <string name="registration_id_hint">아이디를 입력해주세요</string>
+    <string name="registration_id_hint">이메일을 입력해주세요</string>
     <string name="registration_id_duplication_check">중복확인</string>
     <string name="registration_id_is_duplicated">이미 존재하는 아이디예요!</string>
     <string name="registration_id_is_ok">사용 가능한 아이디예요!</string>
     <!-- Strings related to Password-->
-    <string name="registration_password_title">거의 다 왔어요!\n비밀번호를 입력해주세요</string>
-    <string name="registration_password_input">비밀번호</string>
-    <string name="registration_confirm_password_input">비밀번호 확인</string>\
+    <string name="registration_password_title">영차영차!\n비밀번호를 입력해주세요</string>
+    <string name="registration_password_input">비밀번호를 입력해주세요</string>
+    <string name="registration_confirm_password_input">다시 한 번 더 비밀번호를 입력해주세요</string>
     <string name="registration_password_condition_length">12자 이상 24자 이하</string>
     <string name="registration_password_condition_character">영문자 및 숫자 포함</string>
     <string name="registration_password_is_not_same">비밀번호가 일치하지 않아요!</string>
