@@ -30,7 +30,7 @@
             android:id="@+id/checkbox_accept"
             android:layout_width="0dp"
             android:layout_height="@dimen/registration_checkbox_height"
-            android:button="@drawable/term_checkbox"
+            android:button="@drawable/ic_term_checkbox"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setTermState(termType, termIdx, isChecked)}"
             android:paddingStart="@dimen/registration_term_checkbox_padding_Start"
             android:text="@{termTitle}"

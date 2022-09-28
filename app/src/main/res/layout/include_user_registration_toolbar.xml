@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_marginStart="0dp"
         android:backgroundTint="@android:color/transparent"
-        android:src="@drawable/back"
+        android:src="@drawable/ic_back_button"
         android:paddingStart="@dimen/registration_toolbar_left_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

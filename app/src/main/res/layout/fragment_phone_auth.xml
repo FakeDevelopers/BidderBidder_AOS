@@ -83,7 +83,7 @@
             android:gravity="center_vertical"
             android:textSize="@dimen/registration_text_size_down"
             android:visibility="invisible"
-            app:drawableLeftCompat="@drawable/bang_mark"
+            app:drawableLeftCompat="@drawable/ic_bang_mark"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
