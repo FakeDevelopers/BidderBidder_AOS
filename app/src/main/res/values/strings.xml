@@ -23,7 +23,7 @@
     <string name="accept_terms_accept_all">약관 전체동의</string>
     <string name="accept_terms_title">비더비더가 처음이시군요\n약관내용에 동의해주세요!</string>
     <!-- Strings related to PhoneAuth-->
-    <string name="phoneauth_title">반가워요!\n전화번호를 알려주세요</string>
+    <string name="phoneauth_title">거의 다 왔어요!\n전화번호를 알려주세요</string>
     <string name="phoneauth_hint_phonenumber">휴대폰 번호 (-)없이 숫자만 입력</string>
     <string name="phoneauth_hint_authcode">인증번호</string>
     <string name="phoneauth_sending_authcode">전송중..</string>

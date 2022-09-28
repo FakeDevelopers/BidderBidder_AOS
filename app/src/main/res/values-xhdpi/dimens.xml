@@ -30,8 +30,8 @@
     <dimen name="product_registration_margin_horizontal">8dp</dimen>
     <!-- relate to registration -->
     <dimen name="registration_view_radious">4dp</dimen>
-    <dimen name="registration_view_height">36dp</dimen>
-    <dimen name="registration_view_height_two_third">24dp</dimen>
+    <dimen name="registration_view_height">34dp</dimen>
+    <dimen name="registration_view_height_two_third">23dp</dimen>
     <dimen name="registration_checkbox_size">15dp</dimen>
     <dimen name="registration_checkbox_height">35dp</dimen>
     <dimen name="registration_back_button_height">14dp</dimen>
@@ -43,15 +43,15 @@
     <dimen name="registration_text_size_down">7dp</dimen>
     <dimen name="registration_text_size">9dp</dimen>
     <dimen name="registration_text_size_up">13dp</dimen>
-    <dimen name="registration_title_size">19dp</dimen>
+    <dimen name="registration_title_size">18dp</dimen>
     <dimen name="registration_title_line_space">5dp</dimen>
     <dimen name="registration_check_id_size">6dp</dimen>
     <dimen name="registration_clear_textview_size">7dp</dimen>
-    <dimen name="button_user_registration_next_text_size">12dp</dimen>
-    <dimen name="button_user_registration_next_height">46dp</dimen>
+    <dimen name="button_user_registration_next_text_size">11dp</dimen>
+    <dimen name="button_user_registration_next_height">44dp</dimen>
     <dimen name="registration_TextInputEditText_padding">9dp</dimen>
     <dimen name="registration_title_margin_top">48dp</dimen>
-    <dimen name="registration_title_margin_bottom">85dp</dimen>
+    <dimen name="registration_title_margin_bottom">79dp</dimen>
     <dimen name="registration_title_margin_accept_bottom">138dp</dimen>
     <dimen name="registration_alert_message_margin_top">82dp</dimen>
     <dimen name="registration_accept_detail_drawable_height">12dp</dimen>
