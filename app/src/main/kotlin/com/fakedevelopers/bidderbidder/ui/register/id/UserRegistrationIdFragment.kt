@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.register.id
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -50,11 +51,29 @@ class UserRegistrationIdFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initListener() {
         binding.apply {
             edittextId.addTextChangedListener() {
                 textviewIdDuplicationInfo.visibility = View.INVISIBLE
                 setTextInputBackground(R.drawable.text_input_white_background_normal)
+                if (it.isNullOrBlank()) {
+                    clearButton.visibility = View.GONE
+                } else {
+                    clearButton.visibility = View.VISIBLE
+                }
+            }
+            edittextId.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    clearButton.visibility = View.VISIBLE
+                    // DO NOTHING
+                } else {
+                    clearButton.visibility = View.GONE
+                }
+            }
+            clearButton.setOnTouchListener { _, _ ->
+                edittextId.text?.clear()
+                true
             }
         }
     }

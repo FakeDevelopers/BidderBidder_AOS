@@ -1,6 +1,9 @@
 package com.fakedevelopers.bidderbidder.ui.register.password
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,14 +57,45 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun initListener() {
         // 만료 시간 필터 등록
         binding.apply {
             edittextPassword.addTextChangedListener() {
+                Logger.i(edittextPassword.text.toString())
                 if (it.contentEquals(edittextPasswordConfirm.text)) {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
                 } else {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_normal)
+                }
+                if (it.isNullOrBlank()) {
+                    passwordPasswordToggle.visibility = View.GONE
+                } else {
+                    passwordClearButton.visibility = View.VISIBLE
+                    passwordPasswordToggle.visibility = View.VISIBLE
+                }
+            }
+            edittextPassword.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    if (edittextPassword.text.isNullOrBlank()) {
+                        passwordClearButton.visibility = View.GONE
+                    } else {
+                        passwordClearButton.visibility = View.VISIBLE
+                    }
+                } else {
+                    passwordClearButton.visibility = View.GONE
+                }
+            }
+            passwordClearButton.setOnTouchListener { _, _ ->
+                edittextPassword.text?.clear()
+                passwordClearButton.visibility = View.GONE
+                true
+            }
+            passwordPasswordToggle.setOnClickListener {
+                if (passwordPasswordToggle.isChecked) {
+                    edittextPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                } else {
+                    edittextPassword.transformationMethod = PasswordTransformationMethod.getInstance()
                 }
             }
             edittextPasswordConfirm.addTextChangedListener() {
@@ -69,6 +103,36 @@ class UserRegistrationPasswordFragment : Fragment() {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
                 } else {
                     setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                }
+                if (it.isNullOrBlank()) {
+                    passwordConfirmPasswordToggle.visibility = View.GONE
+                } else {
+                    passwordConfirmClearButton.visibility = View.VISIBLE
+                    passwordConfirmPasswordToggle.visibility = View.VISIBLE
+                }
+            }
+
+            edittextPasswordConfirm.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    if (edittextPasswordConfirm.text.isNullOrBlank()) {
+                        passwordConfirmClearButton.visibility = View.GONE
+                    } else {
+                        passwordConfirmClearButton.visibility = View.VISIBLE
+                    }
+                } else {
+                    passwordConfirmClearButton.visibility = View.GONE
+                }
+            }
+            passwordConfirmClearButton.setOnTouchListener { _, _ ->
+                edittextPasswordConfirm.text?.clear()
+                passwordConfirmClearButton.visibility = View.GONE
+                true
+            }
+            passwordConfirmPasswordToggle.setOnClickListener {
+                if (passwordConfirmPasswordToggle.isChecked) {
+                    edittextPasswordConfirm.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                } else {
+                    edittextPasswordConfirm.transformationMethod = PasswordTransformationMethod.getInstance()
                 }
             }
         }

@@ -26,35 +26,53 @@
             app:layout_constraintTop_toTopOf="parent"
             app:title="@{@string/registration_id_title}" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textinputlayout_id"
-            style="@style/TextInputLayout"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout_id"
             android:layout_width="0dp"
             android:layout_height="@dimen/registration_view_height"
             android:layout_marginTop="@dimen/registration_title_margin_bottom"
-            android:drawableEnd="@drawable/text_clear_button"
-            android:drawableStart="@drawable/text_clear_button"
-            app:endIconMode="clear_text"
-            app:endIconContentDescription=""
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/include_id_title">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edittext_id"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textinputlayout_id"
+                style="@style/TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edittext_id"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/text_input_white_background"
+                    android:ems="10"
+                    android:hint="@string/registration_id_hint"
+                    android:paddingTop="10dp"
+                    android:text="@={vm.inputUserId}"
+                    android:textColorHint="@color/edit_text_hint"
+                    android:textSize="@dimen/registration_text_size"
+                    android:textStyle="bold"
+                    tools:ignore="SpUsage,TextContrastCheck" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/text_input_white_background"
-                android:ems="10"
-                android:hint="@string/registration_id_hint"
-                android:paddingTop="10dp"
-                android:text="@={vm.inputUserId}"
-                android:textColorHint="@color/edit_text_hint"
-                android:textSize="@dimen/registration_text_size"
-                android:textStyle="bold"
-                tools:ignore="SpUsage,TextContrastCheck" />
+                android:gravity="center|right"
+                tools:ignore="RtlHardcoded">
 
-        </com.google.android.material.textfield.TextInputLayout>
+                <ImageButton
+                    android:id="@+id/clear_button"
+                    android:layout_width="@dimen/registration_checkbox_size"
+                    android:layout_height="@dimen/registration_checkbox_size"
+                    android:src="@drawable/clear_button"
+                    android:visibility="gone"
+                    android:layout_marginEnd="@dimen/registration_clear_button_size"
+                    tools:ignore="ContentDescription" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
             android:id="@+id/textview_id_duplication_info"
@@ -69,7 +87,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textinputlayout_id"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout_id"
             tools:ignore="SpUsage"
             tools:text="@string/registration_id_is_ok"
             tools:visibility="visible" />
