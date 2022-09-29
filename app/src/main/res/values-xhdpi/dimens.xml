@@ -61,12 +61,16 @@
     <dimen name="registration_clear_button_size">10dp</dimen>
     <dimen name="registration_password_toggle_size">13dp</dimen>
     <!-- relate to registration -->
-    <dimen name="alert_dialog_box_height">161dp</dimen>
-    <dimen name="alert_dialog_box_width">281dp</dimen>
-    <dimen name="alert_dialog_button_height">50dp</dimen>
-    <dimen name="alert_dialog_button_width">244dp</dimen>
-    <dimen name="alert_dialog_textview_height">54dp</dimen>
-    <dimen name="alert_dialog_textview_width">180dp</dimen>
-    <dimen name="alert_dialog_textview_horizental_margin">30dp</dimen>
-    <dimen name="alert_dialog_textview_vertical_margin">10dp</dimen>
+    <dimen name="alert_dialog_button_height">30dp</dimen>
+    <dimen name="alert_dialog_button_width">181dp</dimen>
+    <dimen name="alert_dialog_button_bottom_margin">14dp</dimen>
+    <dimen name="alert_dialog_textview_height">30dp</dimen>
+    <dimen name="alert_dialog_textview_width">138dp</dimen>
+    <dimen name="alert_dialog_textview_horizental_margin">8dp</dimen>
+    <dimen name="alert_dialog_textview_vertical_margin">19dp</dimen>
+    <dimen name="alert_dialog_text_size">12dp</dimen>
+    <dimen name="alert_dialog_button_text_size">9dp</dimen>
+    <dimen name="alert_dialog_radius">4dp</dimen>
+    <dimen name="alert_dialog_height">148dp</dimen>
+    <dimen name="alert_dialog_width">212dp</dimen>
 </resources>

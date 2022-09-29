@@ -1,10 +1,14 @@
 package com.fakedevelopers.bidderbidder.ui.register.phone_auth
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
@@ -97,6 +101,8 @@ class PhoneAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initCollector()
+        alertDialogWithButton(getString(R.string.phoneauth_invalid_verification_code_alert))
+        alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
     }
 
     private fun initListener() {
@@ -268,21 +274,35 @@ class PhoneAuthFragment : Fragment() {
             }.addOnFailureListener {
                 val e = it as FirebaseAuthException
                 Toast.makeText(requireContext(), getAuthErrorMessage(e), Toast.LENGTH_SHORT).show()
-                alertDialogWithButton()
+                alertDialogWithButton(getString(R.string.phoneauth_invalid_verification_code_alert))
             }
         }
     }
 
-    private fun alertDialogWithButton() {
+    @SuppressLint("ClickableViewAccessibility")
+    private fun alertDialogWithButton(alert_text: String) {
         val builder = AlertDialog.Builder(requireContext())
+            .setCancelable(false)
+        val alertDialog: AlertDialog = builder.create()
         val inflater = layoutInflater
         val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_button, null)
 
         val textViewMessage = dialogLayout.findViewById<TextView>(R.id.alert_message)
-        textViewMessage.text = getString(R.string.phoneauth_invalid_verification_code_message)
-        builder.setView(dialogLayout)
+        val alertButton = dialogLayout.findViewById<TextView>(R.id.alert_button)
 
-        builder.show()
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        textViewMessage.text = alert_text
+        alertButton.setOnTouchListener { _, motionEvent ->
+            if (motionEvent.action == MotionEvent.ACTION_UP) {
+                alertDialog.dismiss()
+            }
+            true
+        }
+        alertDialog.setView(dialogLayout)
+        alertDialog.show()
+        val width = resources.getDimensionPixelSize(R.dimen.alert_dialog_width)
+        val height = resources.getDimensionPixelSize(R.dimen.alert_dialog_height)
+        alertDialog.window?.setLayout(width, height)
     }
 
     // 에러 메세지 추출
