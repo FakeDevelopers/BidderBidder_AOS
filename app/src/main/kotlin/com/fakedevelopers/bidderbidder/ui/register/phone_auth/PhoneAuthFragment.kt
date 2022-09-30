@@ -101,8 +101,6 @@ class PhoneAuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initCollector()
-        alertDialogWithButton(getString(R.string.phoneauth_invalid_verification_code_alert))
-        alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
     }
 
     private fun initListener() {
@@ -158,11 +156,16 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
         }
-        // 타이머 visibility
+        // 타이머 상태
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                phoneAuthViewModel.timerVisibility.collectLatest {
-                    binding.textviewPhoneauthTimer.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                phoneAuthViewModel.timerState.collectLatest {
+                    if (it) {
+                        binding.textviewPhoneauthTimer.visibility = View.VISIBLE
+                    } else {
+                        binding.textviewPhoneauthTimer.visibility = View.INVISIBLE
+                        alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
+                    }
                 }
             }
         }
@@ -272,8 +275,6 @@ class PhoneAuthFragment : Fragment() {
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {
-                val e = it as FirebaseAuthException
-                Toast.makeText(requireContext(), getAuthErrorMessage(e), Toast.LENGTH_SHORT).show()
                 alertDialogWithButton(getString(R.string.phoneauth_invalid_verification_code_alert))
             }
         }

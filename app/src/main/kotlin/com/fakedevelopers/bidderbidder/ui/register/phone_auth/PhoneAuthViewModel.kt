@@ -23,14 +23,14 @@ class PhoneAuthViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val timerFormat = DecimalFormat("00")
-    private val _timerVisibility = MutableEventFlow<Boolean>()
+    private val _timerState = MutableEventFlow<Boolean>()
     private val _codeSendingStates = MutableEventFlow<PhoneAuthState>()
     private var verificationId = ""
 
     val phoneNumber = MutableStateFlow("")
     val authCode = MutableStateFlow("")
     val remainTime = MutableStateFlow("")
-    val timerVisibility = _timerVisibility.asEventFlow()
+    val timerState = _timerState.asEventFlow()
     val codeSendingStates = _codeSendingStates.asEventFlow()
     var resendingToken: PhoneAuthProvider.ForceResendingToken? = null
         private set
@@ -44,7 +44,7 @@ class PhoneAuthViewModel @Inject constructor(
             override fun onFinish() {
                 // 타임오바 됐다면 초기 상태로 돌아간다.
                 viewModelScope.launch {
-                    _timerVisibility.emit(false)
+                    _timerState.emit(false)
                 }
                 setCodeSendingStates(PhoneAuthState.INIT)
             }
@@ -79,7 +79,7 @@ class PhoneAuthViewModel @Inject constructor(
     fun startTimer() {
         timerTask.cancel()
         viewModelScope.launch {
-            _timerVisibility.emit(true)
+            _timerState.emit(true)
         }
         timerTask.start()
     }
