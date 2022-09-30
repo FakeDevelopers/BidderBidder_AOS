@@ -65,7 +65,7 @@
     <dimen name="alert_dialog_button_width">181dp</dimen>
     <dimen name="alert_dialog_button_bottom_margin">14dp</dimen>
     <dimen name="alert_dialog_textview_height">30dp</dimen>
-    <dimen name="alert_dialog_textview_width">138dp</dimen>
+    <dimen name="alert_dialog_textview_width">160dp</dimen>
     <dimen name="alert_dialog_textview_horizental_margin">8dp</dimen>
     <dimen name="alert_dialog_textview_vertical_margin">19dp</dimen>
     <dimen name="alert_dialog_text_size">12dp</dimen>
