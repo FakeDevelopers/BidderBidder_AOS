@@ -25,7 +25,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_BIRTH
+import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
 import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
 import com.google.android.gms.tasks.Task
@@ -246,7 +246,7 @@ class PhoneAuthFragment : Fragment() {
                 user.getIdToken(true).addOnSuccessListener { result ->
                     userRegistrationViewModel.apply {
                         setPhoneAuthToken(result.token ?: "")
-                        setCurrentStep(INPUT_BIRTH)
+                        setCurrentStep(CONGRATULATIONS)
                     }
                 }
             }

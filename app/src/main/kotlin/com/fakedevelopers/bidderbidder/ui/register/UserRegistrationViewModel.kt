@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.EMPTY_STATE
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
@@ -114,7 +113,6 @@ class UserRegistrationViewModel : ViewModel() {
     private fun getNextStepOfAuthCheck(): RegistrationProgressState {
         if (checkNextAuthCode()) {
             viewModelScope.launch { _checkAuthCode.emit(true) }
-            return CONGRATULATIONS
         }
         return EMPTY_STATE
     }
@@ -287,9 +285,11 @@ class UserRegistrationViewModel : ViewModel() {
 
     // 단계 설정
     fun setCurrentStep(step: RegistrationProgressState) {
-        currentStep = step
-        viewModelScope.launch {
-            _changeRegistrationStep.emit(step)
+        if (step != EMPTY_STATE) {
+            currentStep = step
+            viewModelScope.launch {
+                _changeRegistrationStep.emit(step)
+            }
         }
     }
 
