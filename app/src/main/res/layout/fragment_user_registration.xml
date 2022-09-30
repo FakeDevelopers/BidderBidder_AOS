@@ -53,7 +53,7 @@
             android:layout_height="@dimen/button_user_registration_next_height"
             android:background="#D6D6D6"
             android:enabled="@{vm.nextStepEnabled}"
-            android:onClick="@{() -> vm.checkNextStep(true)}"
+            android:onClick="@{() -> vm.moveNextStep()}"
             android:shadowColor="#111111"
             android:text="@string/registration_button_to_next"
             android:textColor="@color/white"
