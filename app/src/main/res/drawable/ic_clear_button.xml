@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="@dimen/registration_clear_button_size"
-    android:height="@dimen/registration_clear_button_size"
+    android:width="@dimen/registration_icon_clear_button_size"
+    android:height="@dimen/registration_icon_clear_button_size"
     android:viewportWidth="13"
     android:viewportHeight="13">
     <path

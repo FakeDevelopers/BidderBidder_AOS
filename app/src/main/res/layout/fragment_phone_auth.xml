@@ -78,7 +78,7 @@
         <TextView
             android:id="@+id/textview_phone_valid_info"
             android:layout_width="0dp"
-            android:layout_height="@dimen/registration_view_height_two_third"
+            android:layout_height="@dimen/registration_sub_view_height"
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:textSize="@dimen/registration_text_size_down"
@@ -96,7 +96,7 @@
             android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/registration_view_height_two_third"
+            android:layout_marginTop="@dimen/registration_sub_view_height"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">

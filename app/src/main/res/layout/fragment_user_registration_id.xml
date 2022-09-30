@@ -64,11 +64,11 @@
 
                 <ImageButton
                     android:id="@+id/clear_button"
-                    android:layout_width="@dimen/registration_checkbox_size"
-                    android:layout_height="@dimen/registration_checkbox_size"
+                    android:layout_width="@dimen/registration_icon_checkbox_size"
+                    android:layout_height="@dimen/registration_icon_checkbox_size"
                     android:src="@drawable/ic_clear_button"
                     android:visibility="gone"
-                    android:layout_marginEnd="@dimen/registration_clear_button_size"
+                    android:layout_marginEnd="@dimen/registration_icon_clear_button_size"
                     tools:ignore="ContentDescription" />
             </LinearLayout>
 
@@ -77,7 +77,7 @@
         <TextView
             android:id="@+id/textview_id_duplication_info"
             android:layout_width="0dp"
-            android:layout_height="@dimen/registration_view_height_two_third"
+            android:layout_height="@dimen/registration_sub_view_height"
             android:drawablePadding="5dp"
             android:gravity="center_vertical"
             android:textSize="@dimen/registration_text_size_down"
