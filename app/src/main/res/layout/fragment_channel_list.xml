@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.chat.ChatViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.chat.channel.CLViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,24 +21,28 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toStartOf="@+id/button_chat_login"
+            app:layout_constraintEnd_toStartOf="@+id/button_channel_list_login"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_channel_list_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="1~10"
+                android:maxLength="2"
+                android:inputType="number"
                 android:text="@={vm.streamUserId}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/button_chat_login"
+            android:id="@+id/button_channel_list_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="로그인"
+            android:layout_marginEnd="16dp"
             android:onClick="@{() -> vm.requestStreamUserToken()}"
+            android:text="로그인"
             app:layout_constraintBottom_toBottomOf="@+id/textInputLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/textInputLayout" />
@@ -47,9 +51,11 @@
             android:id="@+id/channel_list_chat"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

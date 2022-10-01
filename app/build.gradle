@@ -83,6 +83,7 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     // Sentry
     implementation 'io.sentry:sentry-android:6.4.2'
+    implementation "io.getstream:stream-chat-android-ui-components:5.11.0"
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'

@@ -35,12 +35,23 @@ class MainActivity : AppCompatActivity() {
                         selectedItemId = R.id.menu_product_list
                     }
                 }
+                R.id.channelListFragment -> {
+                    binding.bottomNavigationMain.run {
+                        visibility = View.VISIBLE
+                        selectedItemId = R.id.menu_chat
+                    }
+                }
                 else -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_product_registration -> navController.safeNavigate(R.id.productRegistrationFragment)
+                R.id.menu_chat -> {
+                    navController.safeNavigate(
+                        ProductListFragmentDirections.actionProductListFragmentToChannelListFragment()
+                    )
+                }
             }
             true
         }
@@ -54,6 +65,7 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        navController.safeNavigate(R.id.productListFragment)
     }
 
     override fun onDestroy() {

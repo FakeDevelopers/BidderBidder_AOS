@@ -8,7 +8,7 @@ class ChatRepository @Inject constructor(
     private val service: ChatService
 ) {
     suspend fun getStreamUserId(
-        id: Int
+        id: Long
     ): Response<String> {
         return service.getStreamUserToken(id)
     }

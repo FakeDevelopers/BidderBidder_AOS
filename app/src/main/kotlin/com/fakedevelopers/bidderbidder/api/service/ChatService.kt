@@ -6,5 +6,5 @@ import retrofit2.http.Path
 
 interface ChatService {
     @GET("chat/token/{id}")
-    suspend fun getStreamUserToken(@Path("id") id: Int): Response<String>
+    suspend fun getStreamUserToken(@Path("id") id: Long): Response<String>
 }
