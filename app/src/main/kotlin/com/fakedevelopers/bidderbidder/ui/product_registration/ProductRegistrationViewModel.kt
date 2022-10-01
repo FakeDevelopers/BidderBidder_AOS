@@ -6,9 +6,9 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatte
 import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.ui.product_registration.album_list.SelectedImageInfo
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -52,8 +52,9 @@ class ProductRegistrationViewModel @Inject constructor(
     val openingBid = MutableStateFlow("")
     val tick = MutableStateFlow("")
     val expiration = MutableStateFlow("")
-    val category: MutableList<String> = mutableListOf()
-    val categoryID: MutableStateFlow<Long> = MutableStateFlow(0)
+    var category: List<String> = listOf()
+        private set
+    private var categoryID: Long = 0
 
     // 등록 조건 완료
     val condition: StateFlow<Boolean> get() = _condition
@@ -109,7 +110,7 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun productRegistrationRequest(imageList: List<MultipartBody.Part>) {
+    fun requestProductRegistration(imageList: List<MultipartBody.Part>) {
         viewModelScope.launch {
             val date = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
@@ -123,18 +124,18 @@ class ProductRegistrationViewModel @Inject constructor(
             map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
             map["representPicture"] = "0".toPlainRequestBody()
             map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
-            map["category"] = categoryID.value.toString().toPlainRequestBody()
+            map["category"] = categoryID.toString().toPlainRequestBody()
             _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
 
-    fun productCategoryRequest() {
+    fun requestProductCategory() {
         viewModelScope.launch {
             categoryRepository.getProdectCategory().let {
                 if (it.isSuccessful) {
-                    _productCategory.emit(it.body()!!)
+                    it.body()?.let { responseBody -> _productCategory.emit(responseBody) }
                 } else {
-                    Logger.e(it.errorBody().toString())
+                    ApiErrorHandler.print(it.errorBody())
                 }
             }
         }
@@ -162,7 +163,7 @@ class ProductRegistrationViewModel @Inject constructor(
         tick.value,
         expiration.value,
         content.value,
-        categoryID.value
+        categoryID
     )
 
     fun setUrlList(list: List<String>) {
@@ -180,16 +181,11 @@ class ProductRegistrationViewModel @Inject constructor(
     }
 
     fun setCategoryList(list: List<ProductCategoryDto>) {
-        category.clear()
-        list.forEach() {
-            category.add(it.categoryName)
-        }
+        category = list.map { it.categoryName }
     }
 
     fun setCategoryID(index: Long) {
-        viewModelScope.launch {
-            categoryID.emit(productCategory.value[index.toInt()].categoryId)
-        }
+        categoryID = productCategory.value[index.toInt()].categoryId
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

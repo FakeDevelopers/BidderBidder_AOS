@@ -101,7 +101,7 @@ class ProductRegistrationFragment : Fragment() {
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
-        viewModel.productCategoryRequest()
+        viewModel.requestProductCategory()
         initListener()
         initCollector()
     }
@@ -175,7 +175,7 @@ class ProductRegistrationFragment : Fragment() {
                 Toast.makeText(requireContext(), "게시글 등록 요청", Toast.LENGTH_SHORT).show()
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
-                    viewModel.productRegistrationRequest(getMultipartList())
+                    viewModel.requestProductRegistration(getMultipartList())
                 }
             }
         }
@@ -203,6 +203,7 @@ class ProductRegistrationFragment : Fragment() {
         binding.spinnerProductRegistrationCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Do nothing
                 }
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     viewModel.setCategoryID(selectedItemId)
@@ -273,7 +274,7 @@ class ProductRegistrationFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            viewModel.productCategory.collectLatest {
+            viewModel.productCategory.collect {
                 if (it.isNotEmpty()) {
                     viewModel.setCategoryList(it)
                     setCategory(viewModel.category)
@@ -351,7 +352,9 @@ class ProductRegistrationFragment : Fragment() {
             requireContext(),
             R.layout.spinner_product_registration,
             category
-        ) {}
+        ) {
+            // Do nothing
+        }
         binding.spinnerProductRegistrationCategory.apply {
             adapter = arrayAdapter
             setSelection(arrayAdapter.count - 1)

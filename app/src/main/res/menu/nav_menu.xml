@@ -16,8 +16,9 @@
         android:title="@string/bottom_writing"
         android:enabled="true"/>
     <item
-        android:icon="@drawable/ic_launcher_foreground"
-        android:title="Item"
+        android:id="@+id/menu_chat"
+        android:icon="@drawable/vector_menu_chat"
+        android:title="채팅"
         android:enabled="true"/>
     <item
         android:icon="@drawable/ic_launcher_foreground"
