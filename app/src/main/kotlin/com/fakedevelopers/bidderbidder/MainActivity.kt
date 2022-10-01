@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                 view.performClick()
                 navController.apply {
                     getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                    safeNavigate(ProductListFragmentDirections.actionProductListFragmentSelf(""))
+                    safeNavigate(R.id.productListFragment)
                 }
             }
             true
