@@ -16,7 +16,6 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.STREAM_KEY
 import com.fakedevelopers.bidderbidder.databinding.FragmentChannelListBinding
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.chat.android.client.ChatClient
 import io.getstream.chat.android.client.logger.ChatLogLevel
@@ -109,7 +108,7 @@ class ChannelListFragment : Fragment() {
             if (it.isSuccess) {
                 // createChannel(client, user.id)
             } else {
-                Logger.e("${it.error().message}")
+                ApiErrorHandler.printMessage(it.error().message)
             }
         }
         val channelListViewModel: ChannelListViewModel by viewModels { ChannelListViewModelFactory() }
@@ -130,7 +129,7 @@ class ChannelListFragment : Fragment() {
                 val channel = it.data()
                 collectChannelState(client, channel.cid)
             } else {
-                Logger.e("${it.error().message}")
+                ApiErrorHandler.printMessage(it.error().message)
             }
         }
     }
