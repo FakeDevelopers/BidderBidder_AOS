@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ChatRepository
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -25,8 +24,7 @@ class CLViewModel @Inject constructor(
 
     fun requestStreamUserToken() {
         viewModelScope.launch {
-            Logger.i(streamUserId.value)
-            _getStreamUserTokenEvent.emit(repository.getStreamUserId(streamUserId.value.toLong()))
+            _getStreamUserTokenEvent.emit(repository.getStreamUserToken(streamUserId.value.toLong()))
         }
     }
 

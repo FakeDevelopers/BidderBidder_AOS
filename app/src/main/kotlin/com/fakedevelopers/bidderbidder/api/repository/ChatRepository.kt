@@ -7,7 +7,7 @@ import javax.inject.Inject
 class ChatRepository @Inject constructor(
     private val service: ChatService
 ) {
-    suspend fun getStreamUserId(
+    suspend fun getStreamUserToken(
         id: Long
     ): Response<String> {
         return service.getStreamUserToken(id)
