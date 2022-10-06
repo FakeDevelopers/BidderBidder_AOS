@@ -67,7 +67,7 @@ class ChannelListFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.getStreamUserTokenEvent.collectLatest {
+                viewModel.streamUserTokenEvent.collectLatest {
                     if (it.isSuccessful) {
                         initUser(it.body().toString())
                         viewModel.setToken(it.body().toString())

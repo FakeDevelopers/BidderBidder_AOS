@@ -16,15 +16,16 @@ class CLViewModel @Inject constructor(
     private val repository: ChatRepository
 ) : ViewModel() {
 
-    private val _getStreamUserTokenEvent = MutableEventFlow<Response<String>>()
-    val getStreamUserTokenEvent = _getStreamUserTokenEvent.asEventFlow()
+    private val _streamUserTokenEvent = MutableEventFlow<Response<String>>()
+    val streamUserTokenEvent = _streamUserTokenEvent.asEventFlow()
     val streamUserId = MutableStateFlow("")
     var token = ""
         private set
 
     fun requestStreamUserToken() {
+        val id = streamUserId.value.toLongOrNull() ?: return
         viewModelScope.launch {
-            _getStreamUserTokenEvent.emit(repository.getStreamUserToken(streamUserId.value.toLong()))
+            _streamUserTokenEvent.emit(repository.getStreamUserToken(id))
         }
     }
 
