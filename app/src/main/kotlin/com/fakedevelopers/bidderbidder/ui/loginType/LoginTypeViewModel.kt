@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.loginType
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.HttpRequestExtensions.Companion.BEARER_TOKEN_PREFIX
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
@@ -26,7 +27,13 @@ class LoginTypeViewModel @Inject constructor(
 
     private fun signinGoogleRequest(token: String) {
         viewModelScope.launch {
-            _signinGoogleResponse.emit(repository.postSigninGoogle(token))
+            repository.postSigninGoogle(token).let {
+                if (it.isSuccessful) {
+                    _signinGoogleResponse.emit(it)
+                } else {
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                }
+            }
         }
     }
 

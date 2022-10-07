@@ -3,9 +3,9 @@ package com.fakedevelopers.bidderbidder.ui.productList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -83,7 +83,7 @@ class ProductListViewModel @Inject constructor(
                         isLastProduct.emit(true)
                     }
                 } else {
-                    Logger.e(it.errorBody().toString())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
             setLoadingState(false)
