@@ -100,7 +100,7 @@ class ProductDetailViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     _productDetailResponse.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }
@@ -277,7 +277,7 @@ class ProductDetailViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     _productBidResponse.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }

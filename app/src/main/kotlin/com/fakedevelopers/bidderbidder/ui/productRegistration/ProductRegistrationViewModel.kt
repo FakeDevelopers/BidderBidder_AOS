@@ -129,7 +129,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     _productRegistrationResponse.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }
@@ -141,7 +141,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> _productCategory.emit(responseBody) }
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }

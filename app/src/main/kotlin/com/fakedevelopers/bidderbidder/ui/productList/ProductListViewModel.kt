@@ -83,7 +83,7 @@ class ProductListViewModel @Inject constructor(
                         isLastProduct.emit(true)
                     }
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
             setLoadingState(false)

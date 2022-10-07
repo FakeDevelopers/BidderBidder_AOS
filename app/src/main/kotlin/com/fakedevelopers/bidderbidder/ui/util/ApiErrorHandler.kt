@@ -6,7 +6,7 @@ import io.sentry.Sentry
 import okhttp3.ResponseBody
 
 object ApiErrorHandler {
-    fun handleError(errorBody: ResponseBody?) {
+    fun printErrorMessage(errorBody: ResponseBody?) {
         if (errorBody == null) {
             return
         }

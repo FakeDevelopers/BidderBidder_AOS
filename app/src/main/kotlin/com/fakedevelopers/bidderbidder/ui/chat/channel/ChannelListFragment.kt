@@ -72,7 +72,7 @@ class ChannelListFragment : Fragment() {
                         initUser(it.body().toString())
                         viewModel.setToken(it.body().toString())
                     } else {
-                        ApiErrorHandler.handleError(it.errorBody())
+                        ApiErrorHandler.printErrorMessage(it.errorBody())
                     }
                 }
             }

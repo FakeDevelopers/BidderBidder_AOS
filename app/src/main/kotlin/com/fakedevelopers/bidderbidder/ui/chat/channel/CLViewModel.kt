@@ -30,7 +30,7 @@ class CLViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     _streamUserTokenEvent.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }

@@ -28,7 +28,7 @@ class LoginViewModel @Inject constructor(private val repository: UserLoginReposi
                 if (it.isSuccessful) {
                     _loginResponse.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }

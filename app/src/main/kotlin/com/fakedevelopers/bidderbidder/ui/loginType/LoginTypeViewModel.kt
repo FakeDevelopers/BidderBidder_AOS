@@ -31,7 +31,7 @@ class LoginTypeViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     _signinGoogleResponse.emit(it)
                 } else {
-                    ApiErrorHandler.handleError(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
         }
