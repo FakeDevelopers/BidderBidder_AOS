@@ -79,22 +79,27 @@ class ProductListViewModel @Inject constructor(
             repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).let {
                 if (it.isSuccessful) {
                     val resultItems = it.body() ?: return@let
-                    productItems.addAll(resultItems)
-                    if (productItems.isNotEmpty()) {
-                        startNumber = productItems.last().productId
-                    }
-                    adapter.submitList(productItems.toList())
-                    // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
-                    if (resultItems.size < LIST_COUNT) {
-                        isReadMoreVisible = false
-                        isLastProduct = true
-                    }
-                    _isEmptyResult.emit(resultItems.isEmpty())
+                    handleResultItems(resultItems)
                 } else {
                     Logger.e(it.errorBody().toString())
                 }
             }
             setLoadingState(false)
+        }
+    }
+
+    private fun handleResultItems(resultItems: List<ProductItem>) {
+        productItems.addAll(resultItems)
+        if (productItems.isNotEmpty()) {
+            startNumber = productItems.last().productId
+        }
+        adapter.submitList(productItems.toList())
+        if (resultItems.size < LIST_COUNT) {
+            isReadMoreVisible = false
+            isLastProduct = true
+        }
+        viewModelScope.launch {
+            _isEmptyResult.emit(resultItems.isEmpty())
         }
     }
 
