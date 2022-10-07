@@ -17,31 +17,38 @@ class ProductListViewModel @Inject constructor(
     private val repository: ProductListRepository
 ) : ViewModel() {
 
-    private val productList = MutableStateFlow(listOf<ProductListDto>())
-    private val _toProductDetail = MutableEventFlow<Long>()
-    private val _isLoading = MutableStateFlow(false)
-    private var _isInitialize = true
-    private val _searchWord = MutableStateFlow("")
-    private val isReadMoreVisible = MutableStateFlow(true)
-    private val isLastProduct = MutableStateFlow(false)
-    private val startNumber = MutableStateFlow(-1L)
+    private val productItems = mutableListOf<ProductItem>()
 
+    private val _toProductDetail = MutableEventFlow<Long>()
     val toProductDetail = _toProductDetail.asEventFlow()
-    val isInitialize get() = _isInitialize
+
+    private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
+
+    private val _searchWord = MutableStateFlow("")
     val searchWord: StateFlow<String> get() = _searchWord
+
+    private val _isEmptyResult = MutableStateFlow(false)
+    val isEmptyResult: StateFlow<Boolean> get() = _isEmptyResult
+
+    var isInitialize = true
+        private set
+
+    private var isReadMoreVisible = true
+    private var isLastProduct = false
+    private var startNumber = -1L
 
     val adapter = ProductListAdapter(
         clickLoadMore = { clickLoadMore() },
         clickProductDetail = { productId -> clickProductDetail(productId) },
-        isReadMoreVisible = { isReadMoreVisible.value }
+        isReadMoreVisible = { isReadMoreVisible }
     )
 
     fun getNextProductList() {
         // 이미 로딩 중일 때
         // 더보기가 활성화 중일 때
         // 마지막 상품까지 불러왔을 때
-        if (isLoading.value || isReadMoreVisible.value || isLastProduct.value) {
+        if (isLoading.value || isReadMoreVisible || isLastProduct) {
             return
         }
 
@@ -49,7 +56,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun setInitializeState(state: Boolean) {
-        _isInitialize = state
+        isInitialize = state
     }
 
     fun setSearchWord(word: String) {
@@ -61,27 +68,28 @@ class ProductListViewModel @Inject constructor(
     fun requestProductList(isInitialize: Boolean) {
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
-            isLastProduct.value = false
-            startNumber.value = -1
+            isLastProduct = false
+            startNumber = -1
+            productItems.clear()
         }
-        _isInitialize = isInitialize
+        this.isInitialize = isInitialize
         viewModelScope.launch {
             // 추가하기 전에 로딩 띄우기
             setLoadingState(true)
-            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber.value).let {
+            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).let {
                 if (it.isSuccessful) {
-                    val currentList = if (isInitialize) mutableListOf() else productList.value.toMutableList()
-                    currentList.addAll(it.body()!!)
-                    productList.emit(currentList)
-                    if (productList.value.isNotEmpty()) {
-                        startNumber.emit(productList.value[productList.value.size - 1].productId)
+                    val resultItems = it.body() ?: return@let
+                    productItems.addAll(resultItems)
+                    if (productItems.isNotEmpty()) {
+                        startNumber = productItems.last().productId
                     }
-                    adapter.submitList(productList.value.toList())
+                    adapter.submitList(productItems.toList())
                     // 요청한 것 보다 더 적게 받아오면 끝자락이라고 판단
-                    if (it.body()!!.size < LIST_COUNT) {
-                        isReadMoreVisible.value = false
-                        isLastProduct.emit(true)
+                    if (resultItems.size < LIST_COUNT) {
+                        isReadMoreVisible = false
+                        isLastProduct = true
                     }
+                    _isEmptyResult.emit(resultItems.isEmpty())
                 } else {
                     Logger.e(it.errorBody().toString())
                 }
@@ -91,7 +99,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     private fun clickLoadMore() {
-        isReadMoreVisible.value = false
+        isReadMoreVisible = false
         getNextProductList()
     }
 
