@@ -1,6 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.productList
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +24,7 @@ class ProductListAdapter(
     private var listSize = 0
 
     inner class ItemViewHolder(
-        private val binding: RecyclerProductListBinding,
-        private val context: Context
+        private val binding: RecyclerProductListBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         private lateinit var timerTask: ExpirationTimerTask
         fun bind(item: ProductListDto) {
@@ -37,11 +35,11 @@ class ProductListAdapter(
                 timerTask = ExpirationTimerTask(
                     item.expirationDate,
                     1000,
-                    tick = { remainTimeString -> textviewProductListExpire.text = "마감까지 $remainTimeString" },
+                    tick = { remainTimeString -> textviewProductListExpire.text = "남은 시간: $remainTimeString" },
                     finish = { textviewProductListExpire.text = "마감" }
                 )
                 timerTask.start()
-                Glide.with(context)
+                Glide.with(binding.root.context)
                     .load(BASE_URL + item.thumbnail)
                     .placeholder(R.drawable.the_cat)
                     .error(R.drawable.error_cat)
@@ -86,8 +84,7 @@ class ProductListAdapter(
                 ItemViewHolder(
                     RecyclerProductListBinding.bind(
                         it.inflate(R.layout.recycler_product_list, parent, false)
-                    ),
-                    parent.context
+                    )
                 )
             } else {
                 FooterViewHolder(
@@ -119,8 +116,8 @@ class ProductListAdapter(
     }
 
     companion object {
-        const val TYPE_ITEM = 1
-        const val TYPE_FOOTER = 2
+        private const val TYPE_ITEM = 1
+        private const val TYPE_FOOTER = 2
 
         val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
             override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
