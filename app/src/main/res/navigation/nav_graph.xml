@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/loginTypeFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.login_type.LoginTypeFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.loginType.LoginTypeFragment"
         android:label="fragment_login_type"
         tools:layout="@layout/fragment_login_type" >
         <action
@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.productList.ProductListFragment"
         android:label="fragment_product_list"
         tools:layout="@layout/fragment_product_list" >
         <action
@@ -64,7 +64,7 @@
     </fragment>
     <fragment
         android:id="@+id/productRegistrationFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationFragment"
         android:label="ProductRegistrationFragment" >
         <action
             android:id="@+id/action_productRegistrationFragment_to_pictureSelectFragment"
@@ -72,7 +72,7 @@
             app:launchSingleTop="true" />
         <argument
             android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto"
+            app:argType="com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationDto"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -84,7 +84,7 @@
     </fragment>
     <fragment
         android:id="@+id/pictureSelectFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_registration.album_list.AlbumListFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment"
         android:label="PictureSelectFragment" >
         <action
             android:id="@+id/action_pictureSelectFragment_to_productRegistrationFragment"
@@ -93,11 +93,11 @@
             app:popUpTo="@id/pictureSelectFragment" />
         <argument
             android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.bidderbidder.ui.product_registration.ProductRegistrationDto" />
+            app:argType="com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationDto" />
     </fragment>
     <fragment
         android:id="@+id/productSearchFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_search.ProductSearchFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.productSearch.ProductSearchFragment"
         android:label="ProductSearchFragment" >
         <action
             android:id="@+id/action_productSearchFragment_to_productListFragment"
@@ -121,7 +121,7 @@
     </fragment>
     <fragment
         android:id="@+id/productDetailFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.product_detail.ProductDetailFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.productDetail.ProductDetailFragment"
         android:label="ProductDetailFragment" >
         <action
             android:id="@+id/action_productDetailFragment_to_productListFragment"
