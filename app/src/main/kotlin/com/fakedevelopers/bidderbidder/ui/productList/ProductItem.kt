@@ -1,6 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.productList
 
-data class ProductListDto(
+data class ProductItem(
     val productId: Long,
     val thumbnail: String,
     val productTitle: String,
