@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dec
 import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.ExpirationTimerTask
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
@@ -95,7 +96,13 @@ class ProductDetailViewModel @Inject constructor(
     fun productDetailRequest(productId: Long) {
         this.productId = productId
         viewModelScope.launch {
-            _productDetailResponse.emit(repository.getProductDetail(productId))
+            repository.getProductDetail(productId).let {
+                if (it.isSuccessful) {
+                    _productDetailResponse.emit(it)
+                } else {
+                    ApiErrorHandler.handleError(it.errorBody())
+                }
+            }
         }
     }
 
@@ -266,7 +273,13 @@ class ProductDetailViewModel @Inject constructor(
         // 입찰가 조작을 막고 api 요청
         setBiddingEnabled(false)
         viewModelScope.launch {
-            _productBidResponse.emit(repository.postProductBid(productId, requestUserId, requestBid))
+            repository.postProductBid(productId, requestUserId, requestBid).let {
+                if (it.isSuccessful) {
+                    _productBidResponse.emit(it)
+                } else {
+                    ApiErrorHandler.handleError(it.errorBody())
+                }
+            }
         }
     }
 

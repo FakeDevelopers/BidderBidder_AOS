@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +24,13 @@ class LoginViewModel @Inject constructor(private val repository: UserLoginReposi
 
     fun loginRequest() {
         viewModelScope.launch {
-            _loginResponse.emit(repository.postLogin(email.value, passwd.value))
+            repository.postLogin(email.value, passwd.value).let {
+                if (it.isSuccessful) {
+                    _loginResponse.emit(it)
+                } else {
+                    ApiErrorHandler.handleError(it.errorBody())
+                }
+            }
         }
     }
 }

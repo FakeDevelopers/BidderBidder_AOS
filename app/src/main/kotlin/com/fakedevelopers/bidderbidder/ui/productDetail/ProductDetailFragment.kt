@@ -69,7 +69,7 @@ class ProductDetailFragment : Fragment() {
                     if (it.isSuccessful) {
                         viewModel.initProductDetail(it.body())
                     } else {
-                        ApiErrorHandler.print(it.errorBody())
+                        ApiErrorHandler.handleError(it.errorBody())
                     }
                 }
             }
@@ -87,7 +87,7 @@ class ProductDetailFragment : Fragment() {
                     } else {
                         // 실패했으면 입찰가 조작을 다시 활성화
                         viewModel.setBiddingEnabled(true)
-                        ApiErrorHandler.print(it.errorBody())
+                        ApiErrorHandler.handleError(it.errorBody())
                     }
                 }
             }

@@ -125,7 +125,13 @@ class ProductRegistrationViewModel @Inject constructor(
             map["representPicture"] = "0".toPlainRequestBody()
             map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
             map["category"] = categoryID.toString().toPlainRequestBody()
-            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+            repository.postProductRegistration(imageList, map).let {
+                if (it.isSuccessful) {
+                    _productRegistrationResponse.emit(it)
+                } else {
+                    ApiErrorHandler.handleError(it.errorBody())
+                }
+            }
         }
     }
 
@@ -135,7 +141,7 @@ class ProductRegistrationViewModel @Inject constructor(
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> _productCategory.emit(responseBody) }
                 } else {
-                    ApiErrorHandler.print(it.errorBody())
+                    ApiErrorHandler.handleError(it.errorBody())
                 }
             }
         }
