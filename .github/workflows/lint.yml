@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Super-Linter
-        uses: github/super-linter@v4.9.5
+        uses: github/super-linter@v4.9.7
         env:
           VALIDATE_KOTLIN_ANDROID: true
           DEFAULT_BRANCH: develop
