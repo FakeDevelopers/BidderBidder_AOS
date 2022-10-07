@@ -6,12 +6,12 @@
         <import type="android.view.View"/>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.product_list.ProductListViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.productList.ProductListViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.product_list.ProductListFragment">
+        tools:context=".ui.productList.ProductListFragment">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar_product_list"

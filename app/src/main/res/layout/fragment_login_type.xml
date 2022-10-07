@@ -8,7 +8,7 @@
         android:layout_height="match_parent"
         android:paddingStart="@dimen/fragment_horizontal_margin"
         android:paddingEnd="@dimen/fragment_horizontal_margin"
-        tools:context=".ui.login_type.LoginTypeFragment">
+        tools:context=".ui.loginType.LoginTypeFragment">
 
         <TextView
             android:id="@+id/textView2"

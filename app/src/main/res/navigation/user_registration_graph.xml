@@ -6,11 +6,11 @@
     app:startDestination="@id/acceptTermsFragment">
     <fragment
         android:id="@+id/acceptTermsFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.register.accept_terms.AcceptTermsFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.acceptTerms.AcceptTermsFragment"
         android:label="AcceptTermsFragment" />
     <fragment
         android:id="@+id/phoneAuthFragment"
-        android:name="com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.phoneAuth.PhoneAuthFragment"
         android:label="fragment_phone_auth"
         tools:layout="@layout/fragment_phone_auth" />
     <fragment

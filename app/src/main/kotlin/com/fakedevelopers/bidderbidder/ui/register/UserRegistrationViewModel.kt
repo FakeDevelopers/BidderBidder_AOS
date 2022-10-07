@@ -242,6 +242,7 @@ class UserRegistrationViewModel : ViewModel() {
         // 비밀번호 조건
         const val PASSWORD_LENGTH_MINIMUM = 12
         const val PASSWORD_LENGTH_MAXIMUM = 24
+
         // 허용되는 특수문자 : !@#$%^+-=
         // 나중에 명확히 정해지면 그걸루 가도 되겠죠
         val PASSWORD_CHARACTER_CONDITION = Regex("^(?=.*[A-Za-z])(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
@@ -252,6 +253,7 @@ class UserRegistrationViewModel : ViewModel() {
         const val NOT_RECEIVED_AUTH_CODE = "인증번호를 입력해!!"
         const val EMPTY_BIRTH = "생년월일이 없잖아!!"
         const val NOT_ID_DUPLICATION_CHECK = "이게 아이디야?!"
+
         // 소나가 뭐라캐서 이름을 고칩니다.
         const val INVALID_REGEX = "이게 비밀번호야?!"
 

@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.register.phone_auth.PhoneAuthFragment">
+    tools:context=".ui.register.phoneAuth.PhoneAuthFragment">
     <data>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.register.phoneAuth.PhoneAuthViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
