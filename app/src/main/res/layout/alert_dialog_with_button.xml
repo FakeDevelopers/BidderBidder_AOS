@@ -15,6 +15,7 @@
         android:layout_marginVertical="@dimen/alert_dialog_textview_vertical_margin"
         android:fontFamily="@font/app_font"
         android:gravity="center"
+        android:lineSpacingExtra="2dp"
         android:text="@string/phoneauth_invalid_verification_code_alert"
         android:textAlignment="center"
         android:textColor="@color/black"

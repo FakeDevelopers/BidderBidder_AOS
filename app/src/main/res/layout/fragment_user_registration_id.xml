@@ -78,7 +78,7 @@
             android:id="@+id/textview_id_duplication_info"
             android:layout_width="0dp"
             android:layout_height="@dimen/registration_sub_view_height"
-            android:drawablePadding="5dp"
+            android:drawablePadding="@dimen/registration_textview_drawable_padding"
             android:gravity="center_vertical"
             android:textSize="@dimen/registration_text_size_down"
             android:textStyle="bold"

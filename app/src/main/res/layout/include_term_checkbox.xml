@@ -47,13 +47,14 @@
 
         <ImageButton
             android:id="@+id/button_read_more"
-            android:layout_width="@dimen/registration_drawable_accept_detail_width"
-            android:layout_height="@dimen/registration_drawable_accept_detail_height"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/registration_view_checkbox_height"
             android:backgroundTint="@android:color/transparent"
+            android:paddingEnd="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/view_term_button"
-            tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+            app:srcCompat="@drawable/ic_term_detail_button"
+            tools:ignore="ContentDescription,RtlSymmetry,SpeakableTextPresentCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
