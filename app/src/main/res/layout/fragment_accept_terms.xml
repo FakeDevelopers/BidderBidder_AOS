@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel" />
@@ -18,40 +20,45 @@
             layout="@layout/include_user_registration_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="@dimen/registration_title_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.1"
             app:title="@{@string/accept_terms_title}" />
 
         <CheckBox
             android:id="@+id/checkbox_accept_terms_accept_all"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/registration_term_checkbox_border_margin_top"
+            android:button="@drawable/ic_term_checkbox"
             android:onCheckedChanged="@{(_, isChecked) -> vm.setAcceptAllState(isChecked)}"
+            android:paddingStart="8dp"
             android:text="@string/accept_terms_accept_all"
+            android:textSize="@dimen/registration_text_size_up"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/divider_accept_terms"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:useMaterialThemeColors="false"
+            tools:ignore="RtlSymmetry,SpUsage" />
 
-        <View
+        <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_accept_terms"
             android:layout_width="0dp"
             android:layout_height="1dp"
+            android:layout_marginTop="@dimen/registration_title_margin_accept_bottom"
             android:background="?android:attr/listDivider"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.35" />
+            app:layout_constraintTop_toTopOf="@+id/include_accept_terms_title" />
 
         <LinearLayout
+            android:id="@+id/linearLayout4"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/registration_term_checkbox_border_margin_bottom"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

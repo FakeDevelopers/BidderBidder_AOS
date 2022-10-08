@@ -18,43 +18,51 @@
     <string name="login_find_id">아이디 찾기</string>
     <string name="login_find_password">비밀번호 찾기</string>
     <!-- Strings related to AcceptTerms-->
-    <string name="accept_terms_essential">(필수) 약관약관</string>
-    <string name="accept_terms_optional">(선택) 약관약관</string>
+    <string name="accept_terms_essential">(필수)비더비더 이용약관</string>
+    <string name="accept_terms_optional">(선택)비더비더 이용약관</string>
     <string name="accept_terms_accept_all">약관 전체동의</string>
     <string name="accept_terms_title">비더비더가 처음이시군요\n약관내용에 동의해주세요!</string>
     <!-- Strings related to PhoneAuth-->
-    <string name="phoneauth_title">반가워요!\n전화번호를 알려주세요</string>
+    <string name="phoneauth_title">거의 다 왔어요!\n전화번호를 알려주세요</string>
     <string name="phoneauth_hint_phonenumber">휴대폰 번호 (-)없이 숫자만 입력</string>
     <string name="phoneauth_hint_authcode">인증번호</string>
     <string name="phoneauth_sending_authcode">전송중..</string>
     <string name="phoneauth_getauthcode">인증번호 전송</string>
     <string name="phoneauth_resend">재전송</string>
     <string name="phoneauth_nextstep">다음</string>
+    <string name="phoneauth_number_is_valid">휴대폰 번호가 올바르네요</string>
+    <string name="phoneauth_number_is_invalid">휴대폰 번호가 올바르지 않아요</string>
     <string name="phoneauth_invalid_verification_code_type">ERROR_INVALID_VERIFICATION_CODE</string>
     <string name="phoneauth_invalid_verification_code_message">인증 번호가 다릅니다!</string>
     <string name="phoneauth_session_expired_type">ERROR_SESSION_EXPIRED</string>
     <string name="phoneauth_session_expired_message">인증 번호가 만료됐습니다.\n인증 번호 재전송을 해주세요!</string>
+    <string name="phoneauth_alert_message">인증번호를 발송하였습니다.\n 인증번호가 오지 않을 경우 정보를 다시 확인 해 주세요.</string>
+    <string name="phoneauth_invalid_verification_code_alert">인증 번호가 올바르지 않습니다.\n다시 입력해주세요.</string>
+    <string name="phoneauth_session_expired_alert">유효시간이 초과 되었습니다.\n다시 인증 요청해 주세요.</string>
     <!-- Strings related to Birth-->
     <string name="registration_birth_title">생년월일을 입력해주세요</string>
     <string name="registration_birth_hint">생년월일</string>
     <string name="registration_birth_subtitle">본인이 만 14세 이상임을 확인하는 절차예요:)</string>
+    <string name="registration_birth_age_validation_title">만 14세 미만이신가요?</string>
+    <string name="registration_birth_age_validation_message">만 14세 미만의 이용자께서는 법정대리인(보호자)의 동의 절차를 최초 1회 거쳐야 이용이 가능합니다.</string>
     <!-- Strings related to Id-->
-    <string name="registration_id_title">영차영차!\n아이디를 입력해주세요</string>
+    <string name="registration_id_title">반가워요!\n이메일을 입력해주세요</string>
     <string name="registration_id_input">아이디</string>
-    <string name="registration_id_hint">아이디를 입력해주세요</string>
+    <string name="registration_id_hint">이메일을 입력해주세요</string>
     <string name="registration_id_duplication_check">중복확인</string>
-    <string name="registration_id_is_duplicated">이미 존재하는 아이디에요!</string>
-    <string name="registration_id_is_ok">사용 가능한 아이디에요!</string>
+    <string name="registration_id_is_duplicated">이미 존재하는 이메일이에요!</string>
+    <string name="registration_id_is_ok">사용 가능한 이메일이에요!</string>
     <!-- Strings related to Password-->
-    <string name="registration_password_title">거의 다 왔어요!\n비밀번호를 입력해주세요</string>
-    <string name="registration_password_input">비밀번호</string>
-    <string name="registration_confirm_password_input">비밀번호 확인</string>\
+    <string name="registration_password_title">영차영차!\n비밀번호를 입력해주세요</string>
+    <string name="registration_password_input">비밀번호를 입력해주세요</string>
+    <string name="registration_confirm_password_input">다시 한 번 더 비밀번호를 입력해주세요</string>
     <string name="registration_password_condition_length">12자 이상 24자 이하</string>
-    <string name="registration_password_condition_character">영문자 및 숫자 포함</string>
+    <string name="registration_password_condition_character_alphabet">영어 포함</string>
+    <string name="registration_password_condition_character_number">숫자 포함</string>
     <string name="registration_password_is_not_same">비밀번호가 일치하지 않아요!</string>
     <string name="registration_password_is_same">비밀번호가 일치해요!</string>
     <!-- Strings related to Register -->
-    <string name="registration_toolbar_accept_terms">약관 동의</string>
+    <string name="registration_toolbar_accept_terms">약관동의</string>
     <string name="registration_toolbar_user_registration">회원가입</string>
     <string name="registration_button_to_next">다음</string>
     <!-- Strings related to ProductList -->
@@ -82,4 +90,8 @@
     <!-- Strings related to album list -->
     <string name="album_selected_button_complete">완료</string>
     <string name="album_selected_error_image">불러올 수 없는 이미지 입니다.</string>
+    <!-- Strings related to alert dialog -->
+    <string name="alert_dialog_with_accpet">네</string>
+    <string name="alert_dialog_with_decline">아니오</string>
+    <string name="alert_dialog_with_check">확인</string>
 </resources>

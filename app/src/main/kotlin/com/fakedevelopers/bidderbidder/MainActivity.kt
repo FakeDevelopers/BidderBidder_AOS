@@ -9,7 +9,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
-import com.fakedevelopers.bidderbidder.ui.product_list.ProductListFragmentDirections
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -35,23 +34,14 @@ class MainActivity : AppCompatActivity() {
                         selectedItemId = R.id.menu_product_list
                     }
                 }
-                R.id.channelListFragment -> {
-                    binding.bottomNavigationMain.run {
-                        visibility = View.VISIBLE
-                        selectedItemId = R.id.menu_chat
-                    }
-                }
+                R.id.channelListFragment -> binding.bottomNavigationMain.visibility = View.VISIBLE
                 else -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_product_registration -> navController.safeNavigate(R.id.productRegistrationFragment)
-                R.id.menu_chat -> {
-                    navController.safeNavigate(
-                        ProductListFragmentDirections.actionProductListFragmentToChannelListFragment()
-                    )
-                }
+                R.id.menu_chat -> navController.safeNavigate(R.id.channelListFragment)
             }
             true
         }
@@ -65,7 +55,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
-        navController.safeNavigate(R.id.productListFragment)
     }
 
     override fun onDestroy() {

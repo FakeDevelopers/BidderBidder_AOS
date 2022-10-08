@@ -1,7 +1,7 @@
 package com.fakedevelopers.bidderbidder.api.repository
 
 import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
-import com.fakedevelopers.bidderbidder.ui.product_detail.ProductDetailDto
+import com.fakedevelopers.bidderbidder.ui.productDetail.ProductDetailDto
 import retrofit2.Response
 import javax.inject.Inject
 

@@ -26,6 +26,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -49,7 +50,7 @@ android {
 
 dependencies {
     // ktlint
-    ktlint 'com.pinterest:ktlint:0.43.1'
+    ktlint 'com.pinterest:ktlint:0.47.1'
     // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:30.5.0')
     implementation 'com.google.firebase:firebase-analytics-ktx:21.1.1'

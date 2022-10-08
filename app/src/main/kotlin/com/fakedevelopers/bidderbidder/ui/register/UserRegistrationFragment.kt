@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -20,10 +21,10 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_BIRTH
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
+import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -65,6 +66,8 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setProgressBar(viewModel.getCurrentStep())
+
         initListener()
         initCollector()
     }
@@ -83,7 +86,15 @@ class UserRegistrationFragment : Fragment() {
             viewModel.toPreviousStep()
         }
     }
-
+    private fun setRegistrationNextButton(state: Boolean) {
+        binding.buttonUserRegistrationNext.let {
+            val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
+            it.isEnabled = state
+            it.setBackgroundColor(
+                ResourcesCompat.getColor(requireActivity().resources, color, null)
+            )
+        }
+    }
     private fun initCollector() {
         // 회원가입 단계 관리
         lifecycleScope.launch {
@@ -101,6 +112,14 @@ class UserRegistrationFragment : Fragment() {
                 }
             }
         }
+
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.nextStepEnabled.collect() {
+                    setRegistrationNextButton(it)
+                }
+            }
+        }
     }
 
     private fun setToolbarTitleByDestination(destinationId: Int) {
@@ -112,15 +131,36 @@ class UserRegistrationFragment : Fragment() {
         }
     }
 
+    private fun setProgressBar(state: RegistrationProgressState) {
+        binding.includeUserRegistrationNavigation.let {
+            if (state == ACCEPT_TERMS) {
+                binding.includeUserRegistrationNavigation.root.visibility = View.GONE
+            } else {
+                binding.includeUserRegistrationNavigation.root.visibility = View.VISIBLE
+            }
+            when (state) {
+                INPUT_ID -> 1
+                INPUT_PASSWORD -> 2
+                PHONE_AUTH_BEFORE_SENDING -> 3
+                PHONE_AUTH_CHECK_AUTH_CODE -> 3
+                CONGRATULATIONS -> 3
+                else -> null
+            }?.let { step ->
+                it.registrationProgressbar.progress = (step * 100.0 / 3).toInt()
+            }
+        }
+    }
+
     // 다음 단계 네비게이션
     private fun toNextStep(state: RegistrationProgressState) {
         NavOptions.Builder().setLaunchSingleTop(true)
+        viewModel.setNextStepEnabled(false)
+        setProgressBar(state)
         when (state) {
             ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
-            INPUT_BIRTH -> navigate(R.id.userRegistrationBirthFragment)
             INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
             INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)
+            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
             CONGRATULATIONS -> findNavController().navigate(R.id.action_userRegistrationFragment_to_productListFragment)
             else -> {
                 // 여긴 아무것도 안해!

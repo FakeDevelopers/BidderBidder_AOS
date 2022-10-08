@@ -1,0 +1,11 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <solid android:color="#fff"/>
+    <stroke
+        android:width="1dp"
+        android:color="#FFDBDBDB"/>
+    <corners
+        android:topLeftRadius="@dimen/registration_view_radious"
+        android:topRightRadius="@dimen/registration_view_radious"
+        android:bottomLeftRadius="@dimen/registration_view_radious"
+        android:bottomRightRadius="@dimen/registration_view_radious"/>
+</shape>
