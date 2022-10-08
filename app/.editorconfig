@@ -11,4 +11,4 @@ max_line_length = 120
 tab_width = 4
 
 [*.{kt,kts}]
-disabled_rules=import-ordering
+ktlint_disabled_rules=import-ordering

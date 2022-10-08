@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.product_search.ProductSearchViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.productSearch.ProductSearchViewModel" />
     </data>
 
     <androidx.appcompat.widget.Toolbar
@@ -30,7 +30,7 @@
                 app:srcCompat="?attr/actionModeCloseDrawable"
                 tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
 
-            <com.fakedevelopers.bidderbidder.ui.custom_view.ClearEditText
+            <com.fakedevelopers.bidderbidder.ui.customView.ClearEditText
                 android:id="@+id/edittext_toolbar_search"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

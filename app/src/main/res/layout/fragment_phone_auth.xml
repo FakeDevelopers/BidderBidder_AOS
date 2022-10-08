@@ -2,13 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.register.phone_auth.PhoneAuthFragment">
+    tools:context=".ui.register.phoneAuth.PhoneAuthFragment">
 
     <data>
-
         <variable
             name="vm"
-            type="com.fakedevelopers.bidderbidder.ui.register.phone_auth.PhoneAuthViewModel" />
+            type="com.fakedevelopers.bidderbidder.ui.register.phoneAuth.PhoneAuthViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,7 +93,6 @@
             tools:visibility="visible" />
 
         <FrameLayout
-            android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/registration_sub_view_height"

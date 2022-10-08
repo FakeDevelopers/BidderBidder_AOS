@@ -1,11 +1,15 @@
 package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.bidderbidder.api.repository.ChatRepository
+import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import com.fakedevelopers.bidderbidder.api.service.ChatService
+import com.fakedevelopers.bidderbidder.api.service.ProductCategoryService
 import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
@@ -90,6 +94,17 @@ object ApiModule {
     fun provideUserProductRegistrationRepository(service: ProductRegistrationService): ProductRegistrationRepository =
         ProductRegistrationRepository(service)
 
+    // 상품 카테고리 요청
+    @Singleton
+    @Provides
+    fun provideProductCategoryService(retrofit: Retrofit): ProductCategoryService =
+        retrofit.create(ProductCategoryService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProductCategoryRepository(service: ProductCategoryService): ProductCategoryRepository =
+        ProductCategoryRepository(service)
+
     // 상품 리스트 요청
     @Singleton
     @Provides
@@ -122,4 +137,15 @@ object ApiModule {
     @Provides
     fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
         ProductDetailRepository(service)
+
+    // 스트림 유저 토큰
+    @Singleton
+    @Provides
+    fun provideChatService(retrofit: Retrofit): ChatService =
+        retrofit.create(ChatService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideChatRepository(service: ChatService): ChatRepository =
+        ChatRepository(service)
 }
