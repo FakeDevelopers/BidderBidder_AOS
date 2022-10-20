@@ -3,9 +3,9 @@ package com.fakedevelopers.bidderbidder.ui.productList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ class ProductListViewModel @Inject constructor(
     private val repository: ProductListRepository
 ) : ViewModel() {
 
-    private val productItems = mutableListOf<ProductItem>()
+    private val productItems = mutableListOf<ProductListType>()
 
     private val _toProductDetail = MutableEventFlow<Long>()
     val toProductDetail = _toProductDetail.asEventFlow()
@@ -40,8 +40,7 @@ class ProductListViewModel @Inject constructor(
 
     val adapter = ProductListAdapter(
         clickLoadMore = { clickLoadMore() },
-        clickProductDetail = { productId -> clickProductDetail(productId) },
-        isReadMoreVisible = { isReadMoreVisible }
+        showProductDetail = { productId -> showProductDetail(productId) }
     )
 
     fun getNextProductList() {
@@ -81,7 +80,7 @@ class ProductListViewModel @Inject constructor(
                     val resultItems = it.body() ?: return@let
                     handleResultItems(resultItems)
                 } else {
-                    Logger.e(it.errorBody().toString())
+                    ApiErrorHandler.print(it.errorBody())
                 }
             }
             setLoadingState(false)
@@ -90,12 +89,15 @@ class ProductListViewModel @Inject constructor(
 
     private fun handleResultItems(resultItems: List<ProductItem>) {
         productItems.addAll(resultItems)
-        startNumber = productItems.lastOrNull()?.productId ?: LATEST_PRODUCT_ID
-        adapter.submitList(productItems.toList())
+        startNumber = resultItems.lastOrNull()?.productId ?: LATEST_PRODUCT_ID
         if (resultItems.size < LIST_COUNT) {
             isReadMoreVisible = false
             isLastProduct = true
         }
+        if (isReadMoreVisible) {
+            productItems.add(ProductReadMore)
+        }
+        adapter.submitList(productItems.toList())
         viewModelScope.launch {
             _isEmptyResult.emit(resultItems.isEmpty())
         }
@@ -106,7 +108,7 @@ class ProductListViewModel @Inject constructor(
         getNextProductList()
     }
 
-    private fun clickProductDetail(productId: Long) {
+    private fun showProductDetail(productId: Long) {
         viewModelScope.launch {
             _toProductDetail.emit(productId)
         }
@@ -120,6 +122,6 @@ class ProductListViewModel @Inject constructor(
 
     companion object {
         private const val LATEST_PRODUCT_ID = -1L
-        const val LIST_COUNT = 20
+        private const val LIST_COUNT = 20
     }
 }
