@@ -69,7 +69,7 @@ class ProductListViewModel @Inject constructor(
         // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
             isLastProduct = false
-            startNumber = -1
+            startNumber = LATEST_PRODUCT_ID
             productItems.clear()
         }
         this.isInitialize = isInitialize
@@ -90,9 +90,7 @@ class ProductListViewModel @Inject constructor(
 
     private fun handleResultItems(resultItems: List<ProductItem>) {
         productItems.addAll(resultItems)
-        if (productItems.isNotEmpty()) {
-            startNumber = productItems.last().productId
-        }
+        startNumber = productItems.lastOrNull()?.productId ?: LATEST_PRODUCT_ID
         adapter.submitList(productItems.toList())
         if (resultItems.size < LIST_COUNT) {
             isReadMoreVisible = false
@@ -121,6 +119,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     companion object {
+        private const val LATEST_PRODUCT_ID = -1L
         const val LIST_COUNT = 20
     }
 }

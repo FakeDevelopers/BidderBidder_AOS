@@ -9,17 +9,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
-import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dec
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.bidderbidder.ui.productList.ProductListViewModel.Companion.LIST_COUNT
 import com.fakedevelopers.bidderbidder.ui.util.ExpirationTimerTask
+import com.fakedevelopers.bidderbidder.ui.util.PriceUtil
 
 class ProductListAdapter(
     private val clickLoadMore: () -> Unit,
     private val clickProductDetail: (Long) -> Unit,
     private val isReadMoreVisible: () -> Boolean
-) : ListAdapter<ProductListDto, RecyclerView.ViewHolder>(diffUtil) {
+) : ListAdapter<ProductItem, RecyclerView.ViewHolder>(diffUtil) {
 
     private var listSize = 0
 
@@ -27,11 +27,9 @@ class ProductListAdapter(
         private val binding: RecyclerProductListBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         private lateinit var timerTask: ExpirationTimerTask
-        fun bind(item: ProductListDto) {
+        fun bind(item: ProductItem) {
             with(binding) {
-                if (::timerTask.isInitialized) {
-                    timerTask.cancel()
-                }
+                timerTask.cancel()
                 timerTask = ExpirationTimerTask(
                     item.expirationDate,
                     1000,
@@ -51,11 +49,10 @@ class ProductListAdapter(
                 } else {
                     hopePrice.visibility = View.VISIBLE
                     textviewProductListHopePrice.visibility = View.VISIBLE
-                    textviewProductListHopePrice.text = "${dec.format(item.hopePrice)}원"
+                    textviewProductListHopePrice.text = PriceUtil.numberToPrice(item.hopePrice)
                 }
-
-                textviewProductListOpeningBid.text = "${dec.format(item.openingBid)}원"
-                textviewProductListParticipant.text = if (item.bidderCount != 0) "${item.bidderCount}명 입찰" else ""
+                textviewProductListOpeningBid.text = PriceUtil.numberToPrice(item.openingBid)
+                textviewProductListParticipant.text = if (item.bidderCount > 0) "${item.bidderCount}명 입찰" else ""
                 // 상품 상세 정보로 넘어가기
                 layoutProductList.setOnClickListener {
                     clickProductDetail(item.productId)
@@ -106,9 +103,9 @@ class ProductListAdapter(
     override fun getItemViewType(position: Int) =
         if (position <= LIST_COUNT && position == itemCount - 1) TYPE_FOOTER else TYPE_ITEM
 
-    override fun getItemCount() = if (listSize == 0 || listSize > LIST_COUNT) super.getItemCount() else listSize
+    override fun getItemCount() = if (listSize !in 1..LIST_COUNT) super.getItemCount() else listSize
 
-    override fun submitList(list: List<ProductListDto>?) {
+    override fun submitList(list: List<ProductItem>?) {
         if (!list.isNullOrEmpty()) {
             listSize = list.size + 1
         }
@@ -119,11 +116,11 @@ class ProductListAdapter(
         private const val TYPE_ITEM = 1
         private const val TYPE_FOOTER = 2
 
-        val diffUtil = object : DiffUtil.ItemCallback<ProductListDto>() {
-            override fun areItemsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
+        val diffUtil = object : DiffUtil.ItemCallback<ProductItem>() {
+            override fun areItemsTheSame(oldItem: ProductItem, newItem: ProductItem) =
                 oldItem.productId == newItem.productId
 
-            override fun areContentsTheSame(oldItem: ProductListDto, newItem: ProductListDto) =
+            override fun areContentsTheSame(oldItem: ProductItem, newItem: ProductItem) =
                 oldItem == newItem
         }
     }

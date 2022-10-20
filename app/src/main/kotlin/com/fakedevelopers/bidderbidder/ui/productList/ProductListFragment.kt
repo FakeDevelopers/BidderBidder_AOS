@@ -27,12 +27,11 @@ import kotlinx.coroutines.launch
 class ProductListFragment : Fragment() {
 
     private var _binding: FragmentProductListBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
-    private val binding get() = _binding!!
-    private val args: ProductListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +53,7 @@ class ProductListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args: ProductListFragmentArgs by navArgs()
         if (viewModel.isInitialize) {
             kotlin.runCatching {
                 args.searchWord
@@ -89,17 +89,18 @@ class ProductListFragment : Fragment() {
         binding.swipeProductList.setOnRefreshListener {
             viewModel.requestProductList(true)
         }
+        val divider = ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list) ?: return
         binding.recyclerProductList.apply {
             addItemDecoration(
                 DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
+                    setDrawable(divider)
                 }
             )
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    binding.recyclerProductList.layoutManager.let {
-                        val lastVisibleItem = (it as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                    (binding.recyclerProductList.layoutManager as? LinearLayoutManager)?.let {
+                        val lastVisibleItem = it.findLastCompletelyVisibleItemPosition()
                         if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
                             viewModel.getNextProductList()
                         }
@@ -133,6 +134,6 @@ class ProductListFragment : Fragment() {
     }
 
     companion object {
-        const val REFRESH_COUNT = 5
+        private const val REFRESH_COUNT = 5
     }
 }
