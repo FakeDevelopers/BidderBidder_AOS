@@ -105,6 +105,7 @@ class ProductListViewModel @Inject constructor(
 
     private fun clickLoadMore() {
         isReadMoreVisible = false
+        productItems.remove(ProductReadMore)
         getNextProductList()
     }
 
