@@ -69,8 +69,8 @@ class ProductListFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoading.collectLatest {
-                    binding.swipeProductList.isRefreshing = it
+                viewModel.isRefreshing.collectLatest { state ->
+                    binding.swipeProductList.isRefreshing = state
                 }
             }
         }
@@ -111,7 +111,9 @@ class ProductListFragment : Fragment() {
                 override fun onLayoutCompleted(state: RecyclerView.State?) {
                     super.onLayoutCompleted(state)
                     if (viewModel.isInitialize) {
-                        binding.recyclerProductList.scrollToPosition(0)
+                        binding.recyclerProductList.post {
+                            layoutManager?.scrollToPosition(0)
+                        }
                         viewModel.setInitializeState(false)
                     }
                 }

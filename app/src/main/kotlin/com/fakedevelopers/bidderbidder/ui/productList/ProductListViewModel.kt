@@ -22,6 +22,9 @@ class ProductListViewModel @Inject constructor(
     private val _toProductDetail = MutableEventFlow<Long>()
     val toProductDetail = _toProductDetail.asEventFlow()
 
+    private val _isRefreshing = MutableEventFlow<Boolean>()
+    val isRefreshing = _isRefreshing.asEventFlow()
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> get() = _isLoading
 
@@ -65,7 +68,6 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun requestProductList(isInitialize: Boolean) {
-        // 최초 실행이거나 리프레쉬 중이면 startNumber를 초기화 한다.
         if (isInitialize) {
             isLastProduct = false
             startNumber = LATEST_PRODUCT_ID
@@ -73,8 +75,7 @@ class ProductListViewModel @Inject constructor(
         }
         this.isInitialize = isInitialize
         viewModelScope.launch {
-            // 추가하기 전에 로딩 띄우기
-            setLoadingState(true)
+            setLoadingState(true, isInitialize)
             repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).let {
                 if (it.isSuccessful) {
                     val resultItems = it.body() ?: return@let
@@ -83,7 +84,7 @@ class ProductListViewModel @Inject constructor(
                     ApiErrorHandler.print(it.errorBody())
                 }
             }
-            setLoadingState(false)
+            setLoadingState(false, isInitialize)
         }
     }
 
@@ -115,8 +116,10 @@ class ProductListViewModel @Inject constructor(
         }
     }
 
-    private fun setLoadingState(state: Boolean) {
-        viewModelScope.launch {
+    private suspend fun setLoadingState(state: Boolean, isInitialize: Boolean) {
+        if (isInitialize) {
+            _isRefreshing.emit(state)
+        } else {
             _isLoading.emit(state)
         }
     }
