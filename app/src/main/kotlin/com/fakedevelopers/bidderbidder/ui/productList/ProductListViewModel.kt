@@ -81,7 +81,7 @@ class ProductListViewModel @Inject constructor(
                     val resultItems = it.body() ?: return@let
                     handleResultItems(resultItems)
                 } else {
-                    ApiErrorHandler.print(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
             setLoadingState(false, isInitialize)
