@@ -10,15 +10,30 @@
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- No Title Bar-->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <!-- DatePicker -->
         <item name="android:datePickerStyle">@style/MyDatePicker</item>
+        <item name="actionButtonStyle">@style/toolbarActionButtonStyle</item>
+    </style>
+
+    <style name="toolbarActionButtonStyle" parent="Widget.AppCompat.Light.ActionButton">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minWidth">0dp</item>
     </style>
 
     <style name="MyDatePicker" parent="android:Widget.Material.Light.DatePicker">
         <item name="android:datePickerMode">spinner</item>
+    </style>
+
+    <style name="productRegistrationButtonDisable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/grey</item>
+    </style>
+
+    <style name="productRegistrationButtonEnable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/black</item>
     </style>
 </resources>
