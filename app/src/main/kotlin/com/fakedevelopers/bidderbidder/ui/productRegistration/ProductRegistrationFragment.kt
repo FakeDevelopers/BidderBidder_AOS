@@ -272,14 +272,21 @@ class ProductRegistrationFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categoryEvent.collectLatest { result ->
                     if (result.isSuccessful) {
-                        val category = result.body() ?: return@collectLatest
-                        viewModel.setProductCategory(category)
-                        setCategory(category)
+                        handleCategoryResult(result.body())
                     } else {
                         ApiErrorHandler.printErrorMessage(result.errorBody())
                     }
                 }
             }
+        }
+    }
+
+    private fun handleCategoryResult(body: List<ProductCategoryDto>?) {
+        body?.let { category ->
+            viewModel.setProductCategory(category)
+            setCategory(category)
+        } ?: run {
+            ApiErrorHandler.printMessage("카테고리 api의 body가 비었어")
         }
     }
 
