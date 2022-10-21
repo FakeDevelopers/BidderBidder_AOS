@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.chat.channel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ChatRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,13 @@ class CLViewModel @Inject constructor(
     fun requestStreamUserToken() {
         val id = streamUserId.value.toLongOrNull() ?: return
         viewModelScope.launch {
-            _streamUserTokenEvent.emit(repository.getStreamUserToken(id))
+            repository.getStreamUserToken(id).let {
+                if (it.isSuccessful) {
+                    _streamUserTokenEvent.emit(it)
+                } else {
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                }
+            }
         }
     }
 
