@@ -1,7 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.productList
 
-sealed class ProductListType {
-    abstract fun isItemTheSame(item: ProductListType): Boolean
+sealed interface ProductListType {
+    fun isItemTheSame(item: ProductListType): Boolean
 }
 
 data class ProductItem(
@@ -13,10 +13,10 @@ data class ProductItem(
     val tick: Int,
     val expirationDate: String,
     val bidderCount: Int
-) : ProductListType() {
+) : ProductListType {
     override fun isItemTheSame(item: ProductListType) = (item as? ProductItem)?.productId == productId
 }
 
-object ProductReadMore : ProductListType() {
+object ProductReadMore : ProductListType {
     override fun isItemTheSame(item: ProductListType) = true
 }
