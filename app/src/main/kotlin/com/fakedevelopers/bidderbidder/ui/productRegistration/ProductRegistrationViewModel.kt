@@ -6,13 +6,11 @@ import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.dateFormatte
 import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.SelectedImageInfo
-import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -37,27 +35,32 @@ class ProductRegistrationViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-    private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
-    private val _productCategory = MutableStateFlow(listOf<ProductCategoryDto>())
-    private val _condition = MutableStateFlow(false)
-    private val _contentLengthVisible = MutableStateFlow(false)
 
-    val selectedImageInfo = SelectedImageInfo()
-    val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
+    private val _categoryEvent = MutableEventFlow<Response<List<ProductCategoryDto>>>()
+    val categoryEvent = _categoryEvent.asEventFlow()
+
+    private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
     val productRegistrationResponse = _productRegistrationResponse.asEventFlow()
-    val productCategory = _productCategory.asStateFlow()
+
+    private val _contentLengthVisible = MutableStateFlow(false)
+    val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
+
+    private val _condition = MutableStateFlow(false)
+    val condition: StateFlow<Boolean> get() = _condition
+
+    private var category = listOf<ProductCategoryDto>()
+    private var categoryID = 0L
+    val selectedImageInfo = SelectedImageInfo()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
     val hopePrice = MutableStateFlow("")
     val openingBid = MutableStateFlow("")
     val tick = MutableStateFlow("")
     val expiration = MutableStateFlow("")
-    var category: List<String> = listOf()
-        private set
-    private var categoryID: Long = 0
 
-    // 등록 조건 완료
-    val condition: StateFlow<Boolean> get() = _condition
+    init {
+        requestProductCategory()
+    }
 
     private fun deleteSelectedImage(uri: String) {
         val list = selectedImageInfo.uris.filter { it != uri }
@@ -125,25 +128,13 @@ class ProductRegistrationViewModel @Inject constructor(
             map["representPicture"] = "0".toPlainRequestBody()
             map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
             map["category"] = categoryID.toString().toPlainRequestBody()
-            repository.postProductRegistration(imageList, map).let {
-                if (it.isSuccessful) {
-                    _productRegistrationResponse.emit(it)
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
-            }
+            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
 
-    fun requestProductCategory() {
+    private fun requestProductCategory() {
         viewModelScope.launch {
-            categoryRepository.getProdectCategory().let {
-                if (it.isSuccessful) {
-                    it.body()?.let { responseBody -> _productCategory.emit(responseBody) }
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
-            }
+            _categoryEvent.emit(categoryRepository.getProductCategory())
         }
     }
 
@@ -186,12 +177,12 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun setCategoryList(list: List<ProductCategoryDto>) {
-        category = list.map { it.categoryName }
+    fun setProductCategory(list: List<ProductCategoryDto>) {
+        category = list
     }
 
     fun setCategoryID(index: Long) {
-        categoryID = productCategory.value[index.toInt()].categoryId
+        categoryID = category[index.toInt()].categoryId
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

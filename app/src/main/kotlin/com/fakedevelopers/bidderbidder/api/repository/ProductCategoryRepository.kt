@@ -8,7 +8,7 @@ import javax.inject.Inject
 class ProductCategoryRepository @Inject constructor(
     private val service: ProductCategoryService
 ) {
-    suspend fun getProdectCategory(): Response<List<ProductCategoryDto>> {
+    suspend fun getProductCategory(): Response<List<ProductCategoryDto>> {
         return service.getProductRegistrationCategory()
     }
 }

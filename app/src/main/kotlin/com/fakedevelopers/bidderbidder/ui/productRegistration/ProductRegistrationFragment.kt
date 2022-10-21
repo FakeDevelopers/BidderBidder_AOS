@@ -39,9 +39,9 @@ import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumImageUtils
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -101,7 +101,6 @@ class ProductRegistrationFragment : Fragment() {
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
-        viewModel.requestProductCategory()
         initListener()
         initCollector()
     }
@@ -147,15 +146,12 @@ class ProductRegistrationFragment : Fragment() {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     s.toString().replace(IS_NOT_NUMBER.toRegex(), "").toIntOrNull()?.let {
                         if (it > MAX_EXPIRATION_TIME) {
-                            binding.edittextProductRegistrationExpiration.apply {
-                                setText(MAX_EXPIRATION_TIME.toString())
-                                setSelection(text.length)
-                            }
+                            setText(MAX_EXPIRATION_TIME.toString())
+                            setSelection(text.length)
                         } else if (it.toString().length != text.length) {
                             setText(it.toString())
                             setSelection(text.length)
                         }
-                        it
                     }
                 }
 
@@ -236,7 +232,6 @@ class ProductRegistrationFragment : Fragment() {
                         findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
                     } else {
                         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
-                        Logger.t("myImage").e(it.errorBody().toString())
                         Toast.makeText(requireContext(), "글쓰기에 실패했어요~", Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -274,27 +269,34 @@ class ProductRegistrationFragment : Fragment() {
             }
         }
         lifecycleScope.launch {
-            viewModel.productCategory.collect {
-                if (it.isNotEmpty()) {
-                    viewModel.setCategoryList(it)
-                    setCategory(viewModel.category)
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categoryEvent.collectLatest { result ->
+                    if (result.isSuccessful) {
+                        handleCategoryResult(result.body())
+                    } else {
+                        ApiErrorHandler.printErrorMessage(result.errorBody())
+                    }
                 }
             }
         }
     }
 
+    private fun handleCategoryResult(body: List<ProductCategoryDto>?) {
+        body?.let { category ->
+            viewModel.setProductCategory(category)
+            setCategory(category)
+        } ?: run {
+            ApiErrorHandler.printMessage("카테고리 api의 body가 비었어")
+        }
+    }
+
     // 희망가 <= 최소 입찰가 인지 검사
     private fun checkPriceCondition(): Boolean {
-        runCatching {
-            Pair(
-                viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLong(),
-                viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLong()
-            )
-        }.onSuccess {
-            if (it.first >= it.second) {
-                Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
-                return false
-            }
+        val openingBid = viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
+        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
+        if (openingBid >= hopePrice) {
+            Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
+            return false
         }
         return true
     }
@@ -308,7 +310,7 @@ class ProductRegistrationFragment : Fragment() {
                     getMultipart(uri, editedBitmap)?.let { multiPart -> list.add(multiPart) }
                 }
             }
-            return@async list.toList()
+            list.toList()
         }
         return result.await()
     }
@@ -347,14 +349,12 @@ class ProductRegistrationFragment : Fragment() {
         }
     }
 
-    private fun setCategory(category: List<String>) {
-        val arrayAdapter = object : ArrayAdapter<String>(
+    private fun setCategory(category: List<ProductCategoryDto>) {
+        val arrayAdapter = ArrayAdapter(
             requireContext(),
             R.layout.spinner_product_registration,
-            category
-        ) {
-            // Do nothing
-        }
+            category.map { it.categoryName }
+        )
         binding.spinnerProductRegistrationCategory.apply {
             adapter = arrayAdapter
             setSelection(arrayAdapter.count - 1)
