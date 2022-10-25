@@ -91,4 +91,10 @@ class PhoneAuthViewModel @Inject constructor(
             remainTime.emit("${timerFormat.format(minute)}:${timerFormat.format(second)}")
         }
     }
+
+    fun isPhoneNumberCheck(): Boolean {
+        val regex = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$".toRegex()
+
+        return regex.matches(phoneNumber.value)
+    }
 }

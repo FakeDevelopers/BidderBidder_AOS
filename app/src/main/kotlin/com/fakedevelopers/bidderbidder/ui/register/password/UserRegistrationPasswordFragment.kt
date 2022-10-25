@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -61,19 +60,6 @@ class UserRegistrationPasswordFragment : Fragment() {
     private fun initListener() {
         // 만료 시간 필터 등록
         binding.apply {
-            edittextPassword.addTextChangedListener() {
-                if (it.contentEquals(edittextPasswordConfirm.text)) {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
-                } else {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_normal)
-                }
-                if (it.isNullOrBlank()) {
-                    passwordPasswordToggle.visibility = View.GONE
-                } else {
-                    passwordClearButton.visibility = View.VISIBLE
-                    passwordPasswordToggle.visibility = View.VISIBLE
-                }
-            }
             edittextPassword.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     if (edittextPassword.text.isNullOrBlank()) {
@@ -85,10 +71,9 @@ class UserRegistrationPasswordFragment : Fragment() {
                     passwordClearButton.visibility = View.GONE
                 }
             }
-            passwordClearButton.setOnTouchListener { _, _ ->
+            passwordClearButton.setOnClickListener {
                 edittextPassword.text?.clear()
                 passwordClearButton.visibility = View.GONE
-                true
             }
             passwordPasswordToggle.setOnClickListener {
                 if (passwordPasswordToggle.isChecked) {
@@ -97,20 +82,6 @@ class UserRegistrationPasswordFragment : Fragment() {
                     edittextPassword.transformationMethod = PasswordTransformationMethod.getInstance()
                 }
             }
-            edittextPasswordConfirm.addTextChangedListener() {
-                if (it.contentEquals(edittextPassword.text)) {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
-                } else {
-                    setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
-                }
-                if (it.isNullOrBlank()) {
-                    passwordConfirmPasswordToggle.visibility = View.GONE
-                } else {
-                    passwordConfirmClearButton.visibility = View.VISIBLE
-                    passwordConfirmPasswordToggle.visibility = View.VISIBLE
-                }
-            }
-
             edittextPasswordConfirm.setOnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) {
                     if (edittextPasswordConfirm.text.isNullOrBlank()) {
@@ -175,6 +146,44 @@ class UserRegistrationPasswordFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userPasswordConfirmState.collectLatest {
                     setPasswordConfirmInfo(it)
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apply {
+                    inputUserPassword.collectLatest {
+                        if (inputUserPassword.value.contentEquals(inputConfirmUserPassword.value)) {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
+                        } else {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_normal)
+                        }
+                        if (inputUserPassword.value.isBlank()) {
+                            binding.passwordPasswordToggle.visibility = View.GONE
+                        } else {
+                            binding.passwordPasswordToggle.visibility = View.VISIBLE
+                            binding.passwordClearButton.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apply {
+                    inputConfirmUserPassword.collectLatest {
+                        if (inputConfirmUserPassword.value.contentEquals(inputUserPassword.value)) {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
+                        } else {
+                            setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+                        }
+                        if (it.isBlank()) {
+                            binding.passwordConfirmPasswordToggle.visibility = View.GONE
+                        } else {
+                            binding.passwordConfirmPasswordToggle.visibility = View.VISIBLE
+                            binding.passwordConfirmClearButton.visibility = View.VISIBLE
+                        }
+                    }
                 }
             }
         }

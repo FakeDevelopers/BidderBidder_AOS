@@ -1,6 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.register.phoneAuth
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -8,14 +7,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -38,7 +35,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
-import java.util.regex.Pattern
 
 @AndroidEntryPoint
 class PhoneAuthFragment : Fragment() {
@@ -104,22 +100,9 @@ class PhoneAuthFragment : Fragment() {
     }
 
     private fun initListener() {
-        // 인증 번호 발송 버튼
-        binding.edittextRegisterPhone.addTextChangedListener {
-            setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
-            setTextInputBackground(R.drawable.text_input_white_background_normal)
-            if (isPhoneNumberCheck(it.toString())) {
-                binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
-                setButtonTextColor(R.color.white)
-                setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
-            } else {
-                setButtonTextColor(R.color.black)
-                setButtonBackground(R.drawable.button_phone_auth_before_send)
-            }
-        }
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
-                if (isPhoneNumberCheck(phoneAuthViewModel.phoneNumber.value)) {
+                if (phoneAuthViewModel.isPhoneNumberCheck()) {
                     runFadeInAlertBox()
                     Handler(Looper.getMainLooper()).postDelayed({
                         runFadeOutAlertBox()
@@ -132,10 +115,6 @@ class PhoneAuthFragment : Fragment() {
                     setTextInputBackground(R.drawable.text_input_white_background_error)
                 }
             }
-        }
-        // 인증 번호 6자리 되면 다음 버튼 활성화
-        binding.edittextPhoneauthAuthcode.addTextChangedListener() {
-            userRegistrationViewModel.setAuthCode(it.toString())
         }
     }
 
@@ -169,22 +148,47 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 인증 번호 발송 버튼
+                phoneAuthViewModel.phoneNumber.collectLatest {
+                    setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                    setTextInputBackground(R.drawable.text_input_white_background_normal)
+                    if (phoneAuthViewModel.isPhoneNumberCheck()) {
+                        binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
+                        setButtonTextColor(R.color.white)
+                        setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
+                    } else {
+                        setButtonTextColor(R.color.black)
+                        setButtonBackground(R.drawable.button_phone_auth_before_send)
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 인증 번호 6자리 되면 다음 버튼 활성화
+                phoneAuthViewModel.authCode.collectLatest {
+                    userRegistrationViewModel.setAuthCode(it)
+                }
+            }
+        }
     }
 
     private fun runFadeInAlertBox() {
-        binding.includeRegistrationAlert.root.let {
-            it.visibility = View.VISIBLE
+        binding.includeRegistrationAlert.root.apply {
+            visibility = View.VISIBLE
             val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
             // starting the animation
-            it.startAnimation(animation)
+            startAnimation(animation)
         }
     }
 
     private fun runFadeOutAlertBox() {
-        binding.includeRegistrationAlert.root.let {
+        binding.includeRegistrationAlert.root.apply {
             val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
-            it.startAnimation(animation)
-            it.visibility = View.INVISIBLE
+            startAnimation(animation)
+            visibility = View.INVISIBLE
         }
     }
 
@@ -196,20 +200,6 @@ class PhoneAuthFragment : Fragment() {
             setTextColor(ContextCompat.getColor(requireContext(), colorId))
             this.isSelected = state
         }
-    }
-
-    private fun isPhoneNumberCheck(cellphoneNumber: String): Boolean {
-        var returnValue = false
-        val regex = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$"
-        val p = Pattern.compile(regex)
-
-        val m = p.matcher(cellphoneNumber)
-
-        if (m.matches()) {
-            returnValue = true
-        }
-
-        return returnValue
     }
 
     private fun setTextInputBackground(drawableId: Int) {
@@ -280,24 +270,21 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
+//    TODO : alertDialog class 나중에 빼기 일단 보류
     private fun alertDialogWithButton(alert_text: String) {
         val builder = AlertDialog.Builder(requireContext())
             .setCancelable(false)
         val alertDialog: AlertDialog = builder.create()
-        val inflater = layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.alert_dialog_with_button, null)
+        val dialogLayout = layoutInflater.inflate(R.layout.alert_dialog_with_button, null)
 
         val textViewMessage = dialogLayout.findViewById<TextView>(R.id.alert_message)
         val alertButton = dialogLayout.findViewById<TextView>(R.id.alert_button)
 
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         textViewMessage.text = alert_text
-        alertButton.setOnTouchListener { _, motionEvent ->
-            if (motionEvent.action == MotionEvent.ACTION_UP) {
-                alertDialog.dismiss()
-            }
-            true
+
+        alertButton.setOnClickListener {
+            alertDialog.dismiss()
         }
         alertDialog.setView(dialogLayout)
         alertDialog.show()

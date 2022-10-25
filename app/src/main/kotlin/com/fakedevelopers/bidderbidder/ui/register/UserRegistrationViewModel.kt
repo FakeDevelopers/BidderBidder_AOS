@@ -29,15 +29,15 @@ class UserRegistrationViewModel : ViewModel() {
     private var _authCode = MutableStateFlow("")
     val authCode: StateFlow<String> get() = _authCode
 
-    /* UserRegistrationBirthFragment */
-    private var _birth = MutableStateFlow("")
-    val birth: StateFlow<String> get() = _birth
-
     /* UserRegistrationIdFragment */
     private var userId = ""
-    private var lastDuplicationState = true
+    var lastDuplicationState = true
+        private set
     private val _userIdDuplicationState = MutableEventFlow<Boolean>()
     val userIdDuplicationState = _userIdDuplicationState.asEventFlow()
+
+    private val _userIdValidationState = MutableEventFlow<Boolean>()
+    val userIdValidationState = _userIdValidationState.asEventFlow()
     val inputUserId = MutableStateFlow("")
 
     /* UserRegistrationPasswordFragment */
@@ -56,7 +56,8 @@ class UserRegistrationViewModel : ViewModel() {
     val inputConfirmUserPassword = MutableStateFlow("")
 
     // 현재 진행 상황
-    private var currentStep = ACCEPT_TERMS
+    var currentStep = ACCEPT_TERMS
+        private set
     private val _changeRegistrationStep = MutableEventFlow<RegistrationProgressState>()
     private val _nextStepEnabled = MutableStateFlow(false)
     val changeRegistrationStep = _changeRegistrationStep.asEventFlow()
@@ -80,15 +81,15 @@ class UserRegistrationViewModel : ViewModel() {
             TYPE_ESSENTIAL -> essentialTerms[idx] = isChecked
             TYPE_OPTIONAL -> optionalTerms[idx] = isChecked
         }
+        if (essentialTerms.all { !it } && optionalTerms.all { !it }) {
+            setAcceptAllState(false)
+        }
         setNextStepEnabled(checkAcceptTerms())
     }
 
     // 필수 약관에 모두 동의 했다면 폰 인증 화면으로 넘어갑니다.
     private fun checkAcceptTerms(): Boolean {
-        if (essentialTerms.all { it }) {
-            return true
-        }
-        return false
+        return essentialTerms.all { it }
     }
 
     // 필수 약관에 모두 동의 했다면 폰 인증 화면으로 넘어갑니다.
@@ -103,10 +104,7 @@ class UserRegistrationViewModel : ViewModel() {
 
     // 코드 조건 확인
     private fun checkNextAuthCode(): Boolean {
-        if (authCode.value.length == 6) {
-            return true
-        }
-        return false
+        return authCode.value.length == 6
     }
 
     // 문자 코드 인증 후에 조건 검사 후 다음 단계 반환
@@ -120,8 +118,8 @@ class UserRegistrationViewModel : ViewModel() {
     fun setAuthCode(authCode: String) {
         viewModelScope.launch {
             _authCode.emit(authCode)
+            setNextStepEnabled(checkNextAuthCode())
         }
-        setNextStepEnabled(checkNextAuthCode())
     }
 
     /* PhoneAuthFragment */
@@ -130,39 +128,13 @@ class UserRegistrationViewModel : ViewModel() {
         phoneAuthToken = token
     }
 
-    /* UserRegistrationBirthFragment */
-    // 생년월일 설정
-    fun setBirth(birth: String) {
-        viewModelScope.launch {
-            _birth.emit(birth)
-        }
-        setNextStepEnabled(checkBirth())
-    }
-
-    // 지금은 단순히 생년월일 유효성 검사
-    private fun checkBirth(): Boolean {
-        if (birth.value.isNotEmpty()) {
-            return true
-        }
-        return false
-    }
-
-    // 지금은 단순히 생년월일로 뭔갈 넣었다면
-    private fun moveBirth(): RegistrationProgressState {
-        if (birth.value.isNotEmpty()) {
-            return INPUT_ID
-        } else {
-            sendFailureMessage(EMPTY_BIRTH)
-            return EMPTY_STATE
-        }
-    }
-
     /* UserRegistrationIdFragment */
     // 아이디 중복 검사
     fun isUserIdDuplicated() {
         // 비어 있다면 검사는 필요 없어
-        if (inputUserId.value.isEmpty()) {
-            setUserIdDuplicationState(true)
+        val regex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$".toRegex()
+        if (!regex.matches(inputUserId.value)) {
+            setUserIdValidationState(true)
             return
         }
         // 여기서는 api를 호출해서 inputId에 중복이 있는지 확인 합니다.
@@ -174,8 +146,6 @@ class UserRegistrationViewModel : ViewModel() {
         }
         setUserIdDuplicationState(lastDuplicationState)
     }
-
-    fun getIdDuplicationState() = lastDuplicationState
 
     // 이미 중복 체크된 아이디거나 중복 체크합니다.
     private fun checkUserId(): Boolean {
@@ -195,6 +165,13 @@ class UserRegistrationViewModel : ViewModel() {
         }
     }
 
+    // 유효한 아이디 여부 표시
+    private fun setUserIdValidationState(state: Boolean) {
+        viewModelScope.launch {
+            _userIdValidationState.emit(state)
+        }
+    }
+
     // 아이디 중복 여부 표시
     private fun setUserIdDuplicationState(state: Boolean) {
         viewModelScope.launch {
@@ -207,8 +184,8 @@ class UserRegistrationViewModel : ViewModel() {
     // 비밀번호 조건 검사
     fun checkPasswordCondition() {
         val lengthCondition = inputUserPassword.value.length in PASSWORD_LENGTH_MINIMUM..PASSWORD_LENGTH_MAXIMUM
-        val alphabetCondition = PASSWORD_ALPHABET_CONDITION.matchEntire(inputUserPassword.value) != null
-        val numberCondition = PASSWORD_NUMBER_CONDITION.matchEntire(inputUserPassword.value) != null
+        val alphabetCondition = PASSWORD_ALPHABET_CONDITION.matches(inputUserPassword.value)
+        val numberCondition = PASSWORD_NUMBER_CONDITION.matches(inputUserPassword.value)
         viewModelScope.launch {
             _userPasswordConditionLengthState.emit(lengthCondition)
             _userPasswordConditionCharacterAlphabetState.emit(alphabetCondition)
@@ -281,8 +258,6 @@ class UserRegistrationViewModel : ViewModel() {
         }
     }
 
-    fun getCurrentStep() = currentStep
-
     // 단계 설정
     fun setCurrentStep(step: RegistrationProgressState) {
         if (step != EMPTY_STATE) {
@@ -331,13 +306,12 @@ class UserRegistrationViewModel : ViewModel() {
         const val NOT_GO_BACKWARDS = "가지마!!"
         const val NOT_AGREE_TO_ESSENTIAL_TERMS = "필수 약관에 모두 동의 해!!"
         const val NOT_RECEIVED_AUTH_CODE = "인증번호를 입력해!!"
-        const val EMPTY_BIRTH = "생년월일이 없잖아!!"
         const val NOT_ID_DUPLICATION_CHECK = "이게 아이디야?!"
 
         // 소나가 뭐라캐서 이름을 고칩니다.
         const val INVALID_REGEX = "이게 비밀번호야?!"
 
         // 테스트용 중복 ID
-        const val EXIST_ID = "bidder123"
+        const val EXIST_ID = "bidder123@gmail.com"
     }
 }
