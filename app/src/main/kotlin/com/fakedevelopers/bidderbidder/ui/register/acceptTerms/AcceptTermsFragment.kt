@@ -42,7 +42,7 @@ class AcceptTermsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        (requireContext().applicationContext as HiltApplication).let {
+        (requireContext().applicationContext as? HiltApplication)?.let {
             binding.includeAcceptTermsTitle.textView4.text = it.setPartialTextColor(
                 getString(R.string.accept_terms_title),
                 R.color.bidderbidder_primary,
@@ -59,6 +59,7 @@ class AcceptTermsFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.acceptAllState.collectLatest {
+                    binding.checkboxAcceptTermsAcceptAll.isChecked = it
                     setAllTermsState(it)
                 }
             }

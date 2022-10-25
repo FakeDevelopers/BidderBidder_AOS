@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -46,7 +45,7 @@ class UserRegistrationIdFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initListener()
         initCollector()
-        if (!viewModel.getIdDuplicationState()) {
+        if (!viewModel.lastDuplicationState) {
             setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
         }
     }
@@ -54,22 +53,8 @@ class UserRegistrationIdFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     private fun initListener() {
         binding.apply {
-            edittextId.addTextChangedListener() {
-                textviewIdDuplicationInfo.visibility = View.INVISIBLE
-                setTextInputBackground(R.drawable.text_input_white_background_normal)
-                if (it.isNullOrBlank()) {
-                    clearButton.visibility = View.GONE
-                } else {
-                    clearButton.visibility = View.VISIBLE
-                }
-            }
             edittextId.setOnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) {
-                    clearButton.visibility = View.VISIBLE
-                    // DO NOTHING
-                } else {
-                    clearButton.visibility = View.GONE
-                }
+                clearButton.visibility = if (hasFocus) View.VISIBLE else View.GONE
             }
             clearButton.setOnTouchListener { _, _ ->
                 edittextId.text?.clear()
@@ -80,6 +65,16 @@ class UserRegistrationIdFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userIdValidationState.collectLatest {
+                    if (it) {
+                        setDuplicationInfo(R.string.registration_id_is_Invalid, R.color.alert_red, false)
+                        setTextInputBackground(R.drawable.text_input_white_background_error)
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userIdDuplicationState.collectLatest {
                     if (it) {
                         setDuplicationInfo(R.string.registration_id_is_duplicated, R.color.alert_red, false)
@@ -87,6 +82,17 @@ class UserRegistrationIdFragment : Fragment() {
                     } else {
                         setDuplicationInfo(R.string.registration_id_is_ok, R.color.bidderbidder_primary, true)
                         setTextInputBackground(R.drawable.text_input_white_background_accepted)
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.apply {
+                    inputUserId.collectLatest {
+                        binding.textviewIdDuplicationInfo.visibility = View.INVISIBLE
+                        setTextInputBackground(R.drawable.text_input_white_background_normal)
+                        binding.clearButton.visibility = if (it.isBlank()) View.GONE else View.VISIBLE
                     }
                 }
             }

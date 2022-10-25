@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -66,7 +66,7 @@ class UserRegistrationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setProgressBar(viewModel.getCurrentStep())
+        setProgressBar(viewModel.currentStep)
 
         initListener()
         initCollector()
@@ -90,9 +90,7 @@ class UserRegistrationFragment : Fragment() {
         binding.buttonUserRegistrationNext.let {
             val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
             it.isEnabled = state
-            it.setBackgroundColor(
-                ResourcesCompat.getColor(requireActivity().resources, color, null)
-            )
+            it.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
         }
     }
     private fun initCollector() {
