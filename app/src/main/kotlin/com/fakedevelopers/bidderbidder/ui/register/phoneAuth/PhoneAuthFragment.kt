@@ -28,7 +28,6 @@ import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -270,8 +269,8 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
-//    TODO : alertDialog class 나중에 빼기 일단 보류
-    private fun alertDialogWithButton(alert_text: String) {
+//  alertDialog class 나중에 빼기 일단 보류
+    private fun alertDialogWithButton(alertText: String) {
         val builder = AlertDialog.Builder(requireContext())
             .setCancelable(false)
         val alertDialog: AlertDialog = builder.create()
@@ -281,7 +280,7 @@ class PhoneAuthFragment : Fragment() {
         val alertButton = dialogLayout.findViewById<TextView>(R.id.alert_button)
 
         alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        textViewMessage.text = alert_text
+        textViewMessage.text = alertText
 
         alertButton.setOnClickListener {
             alertDialog.dismiss()
@@ -292,16 +291,6 @@ class PhoneAuthFragment : Fragment() {
         val height = resources.getDimensionPixelSize(R.dimen.alert_dialog_height)
         alertDialog.window?.setLayout(width, height)
     }
-
-    // 에러 메세지 추출
-    private fun getAuthErrorMessage(e: FirebaseAuthException) =
-        when (e.errorCode) {
-            getString(R.string.phoneauth_invalid_verification_code_type) ->
-                getString(R.string.phoneauth_invalid_verification_code_message)
-            getString(R.string.phoneauth_session_expired_type) ->
-                getString(R.string.phoneauth_session_expired_message)
-            else -> e.errorCode
-        }
 
     override fun onDestroyView() {
         super.onDestroyView()
