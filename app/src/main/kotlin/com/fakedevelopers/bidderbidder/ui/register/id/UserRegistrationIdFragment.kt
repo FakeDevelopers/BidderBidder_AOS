@@ -114,8 +114,8 @@ class UserRegistrationIdFragment : Fragment() {
             ContextCompat.getDrawable(requireContext(), drawableId)
     }
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
 }

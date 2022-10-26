@@ -43,13 +43,13 @@ class UserRegistrationViewModel : ViewModel() {
     /* UserRegistrationPasswordFragment */
     private var userPassword = ""
     private val _userPasswordConditionLengthState = MutableStateFlow(false)
-    private val _userPasswordConditionCharacterAlphabetState = MutableStateFlow(false)
-    private val _userPasswordConditionCharacterNumberState = MutableStateFlow(false)
+    private val _userPasswordConditionAlphabetState = MutableStateFlow(false)
+    private val _userPasswordConditionNumberState = MutableStateFlow(false)
     private val _userPasswordConfirmState = MutableStateFlow(false)
     private val _userPasswordConfirmVisible = MutableEventFlow<Boolean>()
     val userPasswordConditionLengthState: StateFlow<Boolean> get() = _userPasswordConditionLengthState
-    val userPasswordConditionAlphabetState: StateFlow<Boolean> get() = _userPasswordConditionCharacterAlphabetState
-    val userPasswordConditionNumberState: StateFlow<Boolean> get() = _userPasswordConditionCharacterNumberState
+    val userPasswordConditionAlphabetState: StateFlow<Boolean> get() = _userPasswordConditionAlphabetState
+    val userPasswordConditionNumberState: StateFlow<Boolean> get() = _userPasswordConditionNumberState
     val userPasswordConfirmState: StateFlow<Boolean> get() = _userPasswordConfirmState
     val userPasswordConfirmVisible = _userPasswordConfirmVisible.asEventFlow()
     val inputUserPassword = MutableStateFlow("")
@@ -136,6 +136,8 @@ class UserRegistrationViewModel : ViewModel() {
         if (!regex.matches(inputUserId.value)) {
             setUserIdValidationState(true)
             return
+        } else {
+            setUserIdValidationState(false)
         }
         // 여기서는 api를 호출해서 inputId에 중복이 있는지 확인 합니다.
         // 물론 아직 그런건 없으므로 테스트용 EXIST_ID와 같은지만 비교해봅니다.
@@ -148,12 +150,7 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     // 이미 중복 체크된 아이디거나 중복 체크합니다.
-    private fun checkUserId(): Boolean {
-        if (!lastDuplicationState && userId == inputUserId.value) {
-            return true
-        }
-        return false
-    }
+    private fun checkUserId() = !lastDuplicationState && userId == inputUserId.value
 
     // 이미 중복 체크된 아이디거나 중복 체크를 통과한 아이디면 다음 단계 반환
     private fun getNextStepOfInputId(): RegistrationProgressState {
@@ -188,13 +185,11 @@ class UserRegistrationViewModel : ViewModel() {
         val numberCondition = PASSWORD_NUMBER_CONDITION.matches(inputUserPassword.value)
         viewModelScope.launch {
             _userPasswordConditionLengthState.emit(lengthCondition)
-            _userPasswordConditionCharacterAlphabetState.emit(alphabetCondition)
-            _userPasswordConditionCharacterNumberState.emit(numberCondition)
+            _userPasswordConditionAlphabetState.emit(alphabetCondition)
+            _userPasswordConditionNumberState.emit(numberCondition)
             _userPasswordConfirmVisible.emit(lengthCondition && alphabetCondition && numberCondition)
         }
-        if (lengthCondition && alphabetCondition && numberCondition) {
-            checkPasswordConfirm()
-        }
+        checkPasswordConfirm()
     }
 
     // 비밀번호 확인
@@ -286,32 +281,32 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     companion object {
-        const val NUMBER_OF_ESSENTIAL_TERM = 4
-        const val NUMBER_OF_OPTIONAL_TERM = 1
+        private const val NUMBER_OF_ESSENTIAL_TERM = 4
+        private const val NUMBER_OF_OPTIONAL_TERM = 1
 
         // 약관 타입
-        const val TYPE_ESSENTIAL = 0
-        const val TYPE_OPTIONAL = 1
+        private const val TYPE_ESSENTIAL = 0
+        private const val TYPE_OPTIONAL = 1
 
         // 비밀번호 조건
-        const val PASSWORD_LENGTH_MINIMUM = 12
-        const val PASSWORD_LENGTH_MAXIMUM = 24
+        private const val PASSWORD_LENGTH_MINIMUM = 12
+        private const val PASSWORD_LENGTH_MAXIMUM = 24
 
         // 허용되는 특수문자 : !@#$%^+-=
         // 나중에 명확히 정해지면 그걸루 가도 되겠죠
-        val PASSWORD_ALPHABET_CONDITION = Regex("^(?=.*[A-Za-z])[a-zA-Z0-9!@#\$%^+\\-=]*$")
-        val PASSWORD_NUMBER_CONDITION = Regex("^(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
+        private val PASSWORD_ALPHABET_CONDITION = Regex("^(?=.*[A-Za-z])[a-zA-Z0-9!@#\$%^+\\-=]*$")
+        private val PASSWORD_NUMBER_CONDITION = Regex("^(?=.*[0-9])[a-zA-Z0-9!@#\$%^+\\-=]*$")
 
         // 실패 메세지
-        const val NOT_GO_BACKWARDS = "가지마!!"
-        const val NOT_AGREE_TO_ESSENTIAL_TERMS = "필수 약관에 모두 동의 해!!"
-        const val NOT_RECEIVED_AUTH_CODE = "인증번호를 입력해!!"
-        const val NOT_ID_DUPLICATION_CHECK = "이게 아이디야?!"
+        private const val NOT_GO_BACKWARDS = "가지마!!"
+        private const val NOT_AGREE_TO_ESSENTIAL_TERMS = "필수 약관에 모두 동의 해!!"
+        private const val NOT_RECEIVED_AUTH_CODE = "인증번호를 입력해!!"
+        private const val NOT_ID_DUPLICATION_CHECK = "이게 아이디야?!"
 
         // 소나가 뭐라캐서 이름을 고칩니다.
-        const val INVALID_REGEX = "이게 비밀번호야?!"
+        private const val INVALID_REGEX = "이게 비밀번호야?!"
 
         // 테스트용 중복 ID
-        const val EXIST_ID = "bidder123@gmail.com"
+        private const val EXIST_ID = "bidder123@gmail.com"
     }
 }

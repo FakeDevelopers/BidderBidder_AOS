@@ -4,8 +4,6 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -103,9 +101,7 @@ class PhoneAuthFragment : Fragment() {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
                 if (phoneAuthViewModel.isPhoneNumberCheck()) {
                     runFadeInAlertBox()
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        runFadeOutAlertBox()
-                    }, 1000)
+                    runFadeOutAlertBox()
                     sendPhoneAuthCode()
                     setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
                     setTextInputBackground(R.drawable.text_input_white_background_normal)
@@ -175,19 +171,23 @@ class PhoneAuthFragment : Fragment() {
     }
 
     private fun runFadeInAlertBox() {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
         binding.includeRegistrationAlert.root.apply {
-            visibility = View.VISIBLE
-            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
-            // starting the animation
-            startAnimation(animation)
+            post {
+                startAnimation(animation)
+                visibility = View.VISIBLE
+            }
         }
     }
 
     private fun runFadeOutAlertBox() {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
+        animation.startOffset = 1000
         binding.includeRegistrationAlert.root.apply {
-            val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
-            startAnimation(animation)
-            visibility = View.INVISIBLE
+            post {
+                startAnimation(animation)
+                visibility = View.INVISIBLE
+            }
         }
     }
 
