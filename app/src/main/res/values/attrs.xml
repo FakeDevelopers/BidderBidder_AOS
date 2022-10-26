@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- TextInputLayout -->
+    <declare-styleable name="TextInputLayout">
+        <attr name="textInputLayoutNormalSelectorDrawable" format="reference"/>
+        <attr name="textInputLayoutErrorDrawable" format="reference"/>
+    </declare-styleable>
+</resources>

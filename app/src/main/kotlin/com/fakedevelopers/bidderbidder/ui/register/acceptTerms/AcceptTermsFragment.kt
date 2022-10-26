@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAcceptTermsBinding
 import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
@@ -41,9 +42,24 @@ class AcceptTermsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (requireContext().applicationContext as? HiltApplication)?.let {
+            binding.includeAcceptTermsTitle.textView4.text = it.setPartialTextColor(
+                getString(R.string.accept_terms_title),
+                R.color.bidderbidder_primary,
+                0,
+                4
+            )
+            binding.includeAcceptTermsTitle.textView4.text = it.setPartialTextColor(
+                binding.includeAcceptTermsTitle.textView4.text,
+                R.color.bidderbidder_primary,
+                19,
+                21
+            )
+        }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.acceptAllState.collectLatest {
+                    binding.checkboxAcceptTermsAcceptAll.isChecked = it
                     setAllTermsState(it)
                 }
             }

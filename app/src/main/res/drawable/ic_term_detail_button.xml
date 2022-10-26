@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="@dimen/registration_drawable_accept_detail_width"
+    android:height="@dimen/registration_drawable_accept_detail_height"
+    android:viewportWidth="8"
+    android:viewportHeight="12">
+    <path
+        android:fillColor="#FFDBDBDB"
+        android:fillType="evenOdd"
+        android:pathData="M1.46 11.76L6.9 6.54c0.3-0.3 0.3-0.78 0-1.08L1.46 0.24c-0.34-0.32-0.86-0.32-1.2 0-0.35 0.34-0.35 0.9 0 1.24l4.56 4.38c0.08 0.08 0.08 0.2 0 0.29l-4.56 4.37c-0.35 0.34-0.35 0.9 0 1.24C0.43 11.92 0.65 12 0.86 12c0.22 0 0.43-0.08 0.6-0.24Z"/>
+</vector>

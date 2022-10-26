@@ -1,10 +1,16 @@
 package com.fakedevelopers.bidderbidder.ui.register.phoneAuth
 
+import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -14,13 +20,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentPhoneAuthBinding
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_BIRTH
+import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
 import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
@@ -91,22 +96,19 @@ class PhoneAuthFragment : Fragment() {
         initCollector()
     }
 
-    override fun onStart() {
-        super.onStart()
-        // 인증 검사 도중 화면을 나가면 인증 검사 요청 자체가 날라가서 다음 단계 진행이 안됨
-        // 그럴 때 다시 다음 단계 버튼을 켜줘야 한다.
-        userRegistrationViewModel.run {
-            if (!nextStepEnabled.value) {
-                setNextStepEnabled(true)
-            }
-        }
-    }
-
     private fun initListener() {
-        // 인증 번호 발송 버튼
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
-                sendPhoneAuthCode()
+                if (phoneAuthViewModel.isPhoneNumberCheck()) {
+                    runFadeInAlertBox()
+                    runFadeOutAlertBox()
+                    sendPhoneAuthCode()
+                    setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                    setTextInputBackground(R.drawable.text_input_white_background_normal)
+                } else {
+                    setPhoneValidInfo(R.string.phoneauth_number_is_invalid, R.color.alert_red, false)
+                    setTextInputBackground(R.drawable.text_input_white_background_error)
+                }
             }
         }
     }
@@ -128,14 +130,89 @@ class PhoneAuthFragment : Fragment() {
                 }
             }
         }
-        // 타이머 visibility
+        // 타이머 상태
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                phoneAuthViewModel.timerVisibility.collectLatest {
-                    binding.textviewPhoneauthTimer.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                phoneAuthViewModel.timerState.collectLatest {
+                    if (it) {
+                        binding.textviewPhoneauthTimer.visibility = View.VISIBLE
+                    } else {
+                        binding.textviewPhoneauthTimer.visibility = View.INVISIBLE
+                        alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
+                    }
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 인증 번호 발송 버튼
+                phoneAuthViewModel.phoneNumber.collectLatest {
+                    setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                    setTextInputBackground(R.drawable.text_input_white_background_normal)
+                    if (phoneAuthViewModel.isPhoneNumberCheck()) {
+                        binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
+                        setButtonTextColor(R.color.white)
+                        setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
+                    } else {
+                        setButtonTextColor(R.color.black)
+                        setButtonBackground(R.drawable.button_phone_auth_before_send)
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                // 인증 번호 6자리 되면 다음 버튼 활성화
+                phoneAuthViewModel.authCode.collectLatest {
+                    userRegistrationViewModel.setAuthCode(it)
+                }
+            }
+        }
+    }
+
+    private fun runFadeInAlertBox() {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in)
+        binding.includeRegistrationAlert.root.apply {
+            post {
+                startAnimation(animation)
+                visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun runFadeOutAlertBox() {
+        val animation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out)
+        animation.startOffset = 1000
+        binding.includeRegistrationAlert.root.apply {
+            post {
+                startAnimation(animation)
+                visibility = View.INVISIBLE
+            }
+        }
+    }
+
+    // 중복 체크 표시
+    private fun setPhoneValidInfo(stringId: Int, colorId: Int, state: Boolean) {
+        binding.textviewPhoneValidInfo.apply {
+            visibility = if (state) View.INVISIBLE else View.VISIBLE
+            setText(stringId)
+            setTextColor(ContextCompat.getColor(requireContext(), colorId))
+            this.isSelected = state
+        }
+    }
+
+    private fun setTextInputBackground(drawableId: Int) {
+        binding.edittextRegisterPhone.background =
+            ContextCompat.getDrawable(requireContext(), drawableId)
+    }
+
+    private fun setButtonBackground(drawableId: Int) {
+        binding.buttonPhoneauthSendCode.background =
+            ContextCompat.getDrawable(requireContext(), drawableId)
+    }
+
+    private fun setButtonTextColor(color: Int) {
+        binding.buttonPhoneauthSendCode.setTextColor(resources.getColor(color, null))
     }
 
     private fun handlePhoneAuthEvent(state: PhoneAuthState) {
@@ -147,6 +224,7 @@ class PhoneAuthFragment : Fragment() {
             }
             isEnabled = state != PhoneAuthState.SENDING
         }
+        binding.edittextPhoneauthAuthcode.visibility = View.VISIBLE
         binding.edittextPhoneauthAuthcode.isEnabled = state == PhoneAuthState.SENT
     }
 
@@ -157,7 +235,7 @@ class PhoneAuthFragment : Fragment() {
                 user.getIdToken(true).addOnSuccessListener { result ->
                     userRegistrationViewModel.apply {
                         setPhoneAuthToken(result.token ?: "")
-                        setCurrentStep(INPUT_BIRTH)
+                        setCurrentStep(CONGRATULATIONS)
                     }
                 }
             }
@@ -183,25 +261,36 @@ class PhoneAuthFragment : Fragment() {
     private fun signInWithPhoneAuthCredential() {
         // 검사 받는 동안은 버튼을 막아 둔다.
         if (phoneAuthViewModel.authCode.value.isNotEmpty()) {
-            userRegistrationViewModel.setNextStepEnabled(false)
             phoneAuthViewModel.getAuthResult().addOnCompleteListener(requireActivity()) { task ->
                 handleAuthResult(task)
             }.addOnFailureListener {
-                val e = it as FirebaseAuthException
-                Toast.makeText(requireContext(), getAuthErrorMessage(e), Toast.LENGTH_SHORT).show()
+                alertDialogWithButton(getString(R.string.phoneauth_invalid_verification_code_alert))
             }
         }
     }
 
-    // 에러 메세지 추출
-    private fun getAuthErrorMessage(e: FirebaseAuthException) =
-        when (e.errorCode) {
-            getString(R.string.phoneauth_invalid_verification_code_type) ->
-                getString(R.string.phoneauth_invalid_verification_code_message)
-            getString(R.string.phoneauth_session_expired_type) ->
-                getString(R.string.phoneauth_session_expired_message)
-            else -> e.errorCode
+//  alertDialog class 나중에 빼기 일단 보류
+    private fun alertDialogWithButton(alertText: String) {
+        val builder = AlertDialog.Builder(requireContext())
+            .setCancelable(false)
+        val alertDialog: AlertDialog = builder.create()
+        val dialogLayout = layoutInflater.inflate(R.layout.alert_dialog_with_button, null)
+
+        val textViewMessage = dialogLayout.findViewById<TextView>(R.id.alert_message)
+        val alertButton = dialogLayout.findViewById<TextView>(R.id.alert_button)
+
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        textViewMessage.text = alertText
+
+        alertButton.setOnClickListener {
+            alertDialog.dismiss()
         }
+        alertDialog.setView(dialogLayout)
+        alertDialog.show()
+        val width = resources.getDimensionPixelSize(R.dimen.alert_dialog_width)
+        val height = resources.getDimensionPixelSize(R.dimen.alert_dialog_height)
+        alertDialog.window?.setLayout(width, height)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

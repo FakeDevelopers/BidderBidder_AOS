@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="title"
             type="String" />
@@ -18,15 +19,17 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@{title}"
-            android:textSize="22sp"
-            android:textStyle="bold"
             android:textColor="@color/black"
+            android:textSize="@dimen/registration_title_size"
+            android:textStyle="bold"
+            android:lineSpacingExtra="@dimen/registration_title_line_space"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="회원가입회원가입\n회원가입회원가입"/>
+            tools:ignore="SpUsage"
+            tools:text="회원가입회원가입\n회원가입회원가입" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
