@@ -143,49 +143,50 @@ class AlbumListFragment : Fragment() {
             null,
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
-        ).let {
-            it?.let { cursor ->
-                val albums = mutableMapOf<String, MutableList<Pair<String, Long>>>()
-                albums[ALL_PICTURES] = mutableListOf()
-                val albumNameSummary = mutableMapOf<String, String>()
-                albumNameSummary[ALL_PICTURES] = ALL_PICTURES
-                while (cursor.moveToNext()) {
-                    // 이미지 Uri
-                    val imageUri = ContentUris.withAppendedId(
-                        uri,
-                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                    ).toString()
-                    // 최근 수정 날짜
-                    val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                    // 전체보기에 저장
-                    albums[ALL_PICTURES]?.add(imageUri to date)
-                    // 이미지 상대 경로에 저장
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
-                        if (!albumNameSummary.containsKey(path)) {
-                            path.split("/").let { split ->
-                                albumNameSummary[path] = split[split.lastIndex - 1]
-                                albums[path] = mutableListOf()
-                            }
+        )?.let { cursor ->
+            val albums = mutableMapOf<String, MutableList<AlbumItem>>()
+            albums[ALL_PICTURES] = mutableListOf()
+            val albumNameSummary = mutableMapOf<String, String>()
+            albumNameSummary[ALL_PICTURES] = ALL_PICTURES
+            while (cursor.moveToNext()) {
+                // 이미지 Uri
+                val imageUri = ContentUris.withAppendedId(
+                    uri,
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                ).toString()
+                // 최근 수정 날짜
+                val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
+                val albumItem = AlbumItem(imageUri, date)
+                // 전체보기에 저장
+                albums[ALL_PICTURES]?.add(albumItem)
+                // 이미지 상대 경로에 저장
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
+                    if (!albumNameSummary.containsKey(path)) {
+                        path.split("/").let { split ->
+                            albumNameSummary[path] = split[split.lastIndex - 1]
+                            albums[path] = mutableListOf()
                         }
-                        albums[path]?.add(imageUri to date)
                     }
+                    albums[path]?.add(albumItem)
                 }
-                viewModel.initAlbumInfo(albums)
-                initSpinner(albumNameSummary)
-                // 앨범 전환 시 가장 위로 스크롤
-                binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
-                    override fun onLayoutCompleted(state: RecyclerView.State?) {
-                        super.onLayoutCompleted(state)
-                        // onLayoutCompleted는 정말 여러번 호출됩니다.
-                        // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
-                        if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
-                            viewModel.setScrollFlag()
+            }
+            viewModel.initAlbumInfo(albums)
+            initSpinner(albumNameSummary)
+            // 앨범 전환 시 가장 위로 스크롤
+            binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
+                override fun onLayoutCompleted(state: RecyclerView.State?) {
+                    super.onLayoutCompleted(state)
+                    // onLayoutCompleted는 정말 여러번 호출됩니다.
+                    // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
+                    if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
+                        viewModel.setScrollFlag()
+                        binding.recyclerAlbumList.post {
                             binding.recyclerAlbumList.scrollToPosition(0)
                         }
                     }
                 }
-                cursor.close()
             }
+            cursor.close()
         }
     }
 

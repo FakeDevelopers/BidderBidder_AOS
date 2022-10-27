@@ -26,7 +26,7 @@ class AlbumListViewModel : ViewModel() {
     private val _addedImageList = hashSetOf<String>()
     private val removedImageList = hashSetOf<String>()
     private var totalPictureCount = 0
-    private lateinit var allImages: Map<String, MutableList<Pair<String, Long>>>
+    private lateinit var allImages: Map<String, MutableList<AlbumItem>>
 
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
     val onListChange = _onListChange.asEventFlow()
@@ -83,7 +83,7 @@ class AlbumListViewModel : ViewModel() {
         }
     }
 
-    fun initAlbumInfo(map: Map<String, MutableList<Pair<String, Long>>>) {
+    fun initAlbumInfo(map: Map<String, MutableList<AlbumItem>>) {
         allImages = map
     }
 
@@ -143,7 +143,7 @@ class AlbumListViewModel : ViewModel() {
                     changeBitmaps.remove(uri)
                     // 페이저에 보이는 이미지 원상 복구
                     allImages[currentAlbum.value]?.let { list ->
-                        albumPagerAdapter.notifyItemChanged(list.indexOfFirst { it.first == uri })
+                        albumPagerAdapter.notifyItemChanged(list.indexOfFirst { it.uri == uri })
                     }
                 }
                 // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
@@ -167,17 +167,17 @@ class AlbumListViewModel : ViewModel() {
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
-    fun getCurrentUri() = allImages[currentAlbum.value]!![currentViewPagerIdx].first
+    fun getCurrentUri() = allImages[currentAlbum.value]?.get(currentViewPagerIdx)?.uri ?: ""
 
     fun getPictureUri(albumName: String = currentAlbum.value, position: Int) =
-        allImages[albumName]?.get(position)?.first ?: ""
+        allImages[albumName]?.get(position)?.uri ?: ""
 
     // 수정된 비트맵 가져오기
     fun getEditedBitmapInfo(uri: String) =
         selectedImageInfo.changeBitmaps[uri]
 
     fun isAlbumListChanged() =
-        albumListAdapter.currentList[0] == allImages[currentAlbum.value]?.let { it[0] }
+        albumListAdapter.currentList[0] == allImages[currentAlbum.value]?.get(0)
 
     fun onAlbumListChanged(uri: String, type: Int) {
         when (type) {
@@ -209,12 +209,13 @@ class AlbumListViewModel : ViewModel() {
         if (validAddedImageList.isNotEmpty()) {
             // 앨범 리스트 갱신
             for ((uri, rel, date) in validAddedImageList) {
-                allImages[ALL_PICTURES]?.add(uri to date)
-                allImages[rel]?.add(uri to date)
+                val albumItem = AlbumItem(uri, date)
+                allImages[ALL_PICTURES]?.add(albumItem)
+                allImages[rel]?.add(albumItem)
             }
             // 수정된 날짜 기준으로 소팅
             for (key in allImages.keys) {
-                allImages[key]?.sortByDescending { it.second }
+                allImages[key]?.sortByDescending { it.modifiedTime }
             }
             _addedImageList.clear()
         }
@@ -223,7 +224,7 @@ class AlbumListViewModel : ViewModel() {
 
     // 유효하지 않은 이미지 제거
     private fun removeInvalidImage(uri: String) {
-        val invalidImage = allImages[ALL_PICTURES]?.find { it.first == uri }
+        val invalidImage = allImages[ALL_PICTURES]?.find { it.uri == uri }
         allImages[ALL_PICTURES]?.remove(invalidImage)
         for (key in allImages.keys) {
             if (allImages[key]?.remove(invalidImage) == true) {
@@ -234,7 +235,7 @@ class AlbumListViewModel : ViewModel() {
 
     private fun setAdapterList(albumName: String = currentAlbum.value) {
         allImages[albumName]?.let { list ->
-            val currentList = mutableListOf<Pair<String, Long>>().apply { addAll(list) }
+            val currentList = mutableListOf<AlbumItem>().apply { addAll(list) }
             albumListAdapter.submitList(currentList)
             albumPagerAdapter.submitList(currentList)
             totalPictureCount = list.size
@@ -253,14 +254,12 @@ class AlbumListViewModel : ViewModel() {
     // 앨범 뷰 페이저
     private fun showViewPager(uri: String) {
         allImages[currentAlbum.value]?.let { album ->
-            album.indexOf(album.find { it.first == uri }).let {
-                if (it != -1) {
-                    viewModelScope.launch {
-                        _startViewPagerIndex.emit(it)
-                    }
-                    // 뷰 페이저 띄우기
-                    setAlbumViewMode(AlbumViewState.PAGER)
+            val idx = album.indexOf(album.find { it.uri == uri })
+            if (idx != -1) {
+                viewModelScope.launch {
+                    _startViewPagerIndex.emit(idx)
                 }
+                setAlbumViewMode(AlbumViewState.PAGER)
             }
         }
     }

@@ -1,6 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
 
-import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -18,34 +17,33 @@ class AlbumPagerAdapter(
     private val sendErrorToast: () -> Unit,
     private val getEditedImage: (String) -> BitmapInfo?,
     private val setSelectedImageList: (String) -> Unit
-) : ListAdapter<Pair<String, Long>, AlbumPagerAdapter.ViewHolder>(diffUtil) {
+) : ListAdapter<AlbumItem, AlbumPagerAdapter.ViewHolder>(diffUtil) {
     private lateinit var contentResolverUtil: ContentResolverUtil
 
     inner class ViewHolder(
-        private val binding: RecyclerAlbumPagerBinding,
-        private val context: Context
+        private val binding: RecyclerAlbumPagerBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
-        fun bind(item: Pair<String, Long>) {
-            getEditedImage(item.first)?.let { bitmapInfo ->
+        fun bind(item: AlbumItem) {
+            getEditedImage(item.uri)?.let { bitmapInfo ->
                 binding.imageviewAlbumPager.rotation = bitmapInfo.degree
             } ?: run { binding.imageviewAlbumPager.rotation = 0f }
             setGlide(item)
             binding.layoutAlbumPager.setOnClickListener {
-                if (isValidImage(item.first)) {
-                    setSelectedImageList(item.first)
+                if (isValidImage(item.uri)) {
+                    setSelectedImageList(item.uri)
                 } else {
                     sendErrorToast()
                 }
             }
         }
 
-        private fun setGlide(item: Pair<String, Long>) {
-            Glide.with(context)
-                .load(item.first)
+        private fun setGlide(item: AlbumItem) {
+            Glide.with(binding.root.context)
+                .load(item.uri)
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
-                .signature(ObjectKey(item.second))
+                .signature(ObjectKey(item.modifiedTime))
                 .listener(
                     GlideRequestListener(
                         loadFailed = { isErrorImage = true },
@@ -63,8 +61,7 @@ class AlbumPagerAdapter(
         return ViewHolder(
             RecyclerAlbumPagerBinding.bind(
                 LayoutInflater.from(parent.context).inflate(R.layout.recycler_album_pager, parent, false)
-            ),
-            parent.context
+            )
         )
     }
 
