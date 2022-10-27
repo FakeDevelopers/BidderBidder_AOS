@@ -30,23 +30,22 @@ class ContentResolverUtil(
         return if (invalidSelectedImageList.isNotEmpty()) validSelectedImageList else uriList
     }
 
-    fun getDateModifiedFromUri(uri: Uri): Pair<String, Long> {
+    fun getDateModifiedFromUri(uri: Uri): Pair<String, Long>? =
         contentResolver.query(
             uri,
             arrayOf(
-                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
             null,
             null,
             null
-        )?.let {
-            it.moveToNext()
-            val relativePath = it.getString(it.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH))
-            val dateModified = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
-            it.close()
-            return relativePath to dateModified
+        )?.let { cursor ->
+            cursor.moveToNext()
+            val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+            val token = path.split("/")
+            val modified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
+            cursor.close()
+            token[token.lastIndex - 1] to modified
         }
-        return "" to 0L
-    }
 }

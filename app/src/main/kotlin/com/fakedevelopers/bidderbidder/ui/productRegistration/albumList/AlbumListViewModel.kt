@@ -50,6 +50,7 @@ class AlbumListViewModel @Inject constructor(
     // 현재 뷰 페이저 인덱스
     var currentViewPagerIdx = 0
         private set
+
     // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
     var scrollToTopFlag = false
         private set

@@ -139,7 +139,7 @@ class AlbumListFragment : Fragment() {
             uri,
             arrayOf(
                 MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
             null,
@@ -162,14 +162,13 @@ class AlbumListFragment : Fragment() {
                 // 전체보기에 저장
                 albums[ALL_PICTURES]?.add(albumItem)
                 // 이미지 상대 경로에 저장
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
-                    if (!albumNameSummary.containsKey(path)) {
-                        path.split("/").let { split ->
-                            albumNameSummary[path] = split[split.lastIndex - 1]
-                            albums[path] = mutableListOf()
-                        }
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
+                    val url = path.substringBeforeLast("/")
+                    if (!albumNameSummary.containsKey(url)) {
+                        albumNameSummary[url] = url.split("/").last()
+                        albums[url] = mutableListOf()
                     }
-                    albums[path]?.add(albumItem)
+                    albums[url]?.add(albumItem)
                 }
             }
             viewModel.initAlbumInfo(albums)
@@ -336,13 +335,9 @@ class AlbumListFragment : Fragment() {
         // 앨범 리스트 갱신
         // 도중에 추가된 이미지들이 유효한지 검사한다.
         val list = mutableListOf<Triple<String, String, Long>>()
-        for (uri in viewModel.addedImageList) {
-            // 해당 uri이 유효하면 list에 추가
-            Uri.parse(uri).let {
-                if (contentResolverUtil.isExist(it)) {
-                    val (rel, date) = contentResolverUtil.getDateModifiedFromUri(it)
-                    list.add(Triple(uri, rel, date))
-                }
+        viewModel.addedImageList.map { Uri.parse(it) }.filter { contentResolverUtil.isExist(it) }.forEach { uri ->
+            contentResolverUtil.getDateModifiedFromUri(uri)?.let {
+                list.add(Triple(uri.toString(), it.first, it.second))
             }
         }
         if (albumName != null) {
