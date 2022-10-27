@@ -9,17 +9,17 @@ import android.os.Build
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 class AlbumImageUtils(val context: Context) {
 
     // getBitmap은 API 29에서 Deprecated 됐읍니다.
     @Suppress("DEPRECATION")
-    suspend fun getBitmapByURI(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): Bitmap? {
-        val bitmap = CoroutineScope(dispatcher).async {
+    suspend fun getBitmapByURI(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
+        withContext(dispatcher) {
+            var bitmap: Bitmap? = null
             runCatching {
                 if (Build.VERSION.SDK_INT >= 28) {
                     ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
@@ -28,12 +28,10 @@ class AlbumImageUtils(val context: Context) {
                     MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(uri))
                 }
             }.onSuccess {
-                return@async it
+                bitmap = it
             }
-            return@async null
+            bitmap
         }
-        return bitmap.await()
-    }
 
     fun getMimeTypeAndExtension(uri: String): Pair<String, String> {
         val mimeType = context.contentResolver.getType(Uri.parse(uri)).toString()
