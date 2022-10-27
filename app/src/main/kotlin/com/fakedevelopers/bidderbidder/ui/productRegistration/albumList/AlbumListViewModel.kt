@@ -280,15 +280,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(selectedImageInfo.uris, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(selectedImageInfo.uris, i, i - 1)
-            }
-        }
+        Collections.swap(selectedImageInfo.uris, fromPosition, toPosition)
         selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageInfo.uris) })
         albumListAdapter.notifyDataSetChanged()
         albumPagerAdapter.notifyDataSetChanged()
