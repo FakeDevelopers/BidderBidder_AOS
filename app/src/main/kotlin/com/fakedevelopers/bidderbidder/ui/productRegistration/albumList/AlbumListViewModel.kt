@@ -21,30 +21,37 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     contentResolverUtil: ContentResolverUtil
 ) : ViewModel() {
-
-    private val currentAlbum = MutableStateFlow("")
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
+    val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
+
     private val _onListChange = MutableEventFlow<Boolean>()
+    val onListChange = _onListChange.asEventFlow()
+
     private val _pagerSelectedState = MutableEventFlow<Boolean>()
+    val pagerSelectedState = _pagerSelectedState.asEventFlow()
+
     private val _selectErrorImage = MutableEventFlow<Boolean>()
+    val selectErrorImage = _selectErrorImage.asEventFlow()
+
     private val _startViewPagerIndex = MutableEventFlow<Int>()
+    val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
+
     private val _editButtonEnableState = MutableStateFlow(false)
+    val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
+
+    private var currentAlbum = ""
+    private var totalPictureCount = 0
+    private var allImages = mapOf<String, MutableList<AlbumItem>>()
     private val _addedImageList = hashSetOf<String>()
     private val removedImageList = hashSetOf<String>()
-    private var totalPictureCount = 0
-    private lateinit var allImages: Map<String, MutableList<AlbumItem>>
-
-    val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
-    val onListChange = _onListChange.asEventFlow()
-    val pagerSelectedState = _pagerSelectedState.asEventFlow()
-    val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
-    val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
-    val selectErrorImage = _selectErrorImage.asEventFlow()
     val addedImageList: Set<String> get() = _addedImageList
     val selectedImageInfo = SelectedImageInfo()
 
     // 현재 뷰 페이저 인덱스
     var currentViewPagerIdx = 0
+        private set
+    // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
+    var scrollToTopFlag = false
         private set
 
     // 그리드 앨범 리스트 어뎁터
@@ -74,9 +81,6 @@ class AlbumListViewModel @Inject constructor(
     ) { fromPosition, toPosition ->
         swapSelectedImage(fromPosition, toPosition)
     }
-
-    // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
-    var scrollToTopFlag = false
 
     fun initSelectedImageList(selectedImageInfo: SelectedImageInfo) {
         this.selectedImageInfo.apply {
@@ -143,20 +147,18 @@ class AlbumListViewModel @Inject constructor(
             selectedImageInfo.uris.add(uri)
         } else {
             val idx = findSelectedImageIndex(uri)
-            selectedImageInfo.run {
-                uris.removeAt(idx)
-                // 수정된 내용(BitmapInfo)도 같이 삭제
-                if (changeBitmaps.contains(uri)) {
-                    changeBitmaps.remove(uri)
-                    // 페이저에 보이는 이미지 원상 복구
-                    allImages[currentAlbum.value]?.let { list ->
-                        albumPagerAdapter.notifyItemChanged(list.indexOfFirst { it.uri == uri })
-                    }
+            selectedImageInfo.uris.removeAt(idx)
+            // 수정된 내용(BitmapInfo)도 같이 삭제
+            if (selectedImageInfo.changeBitmaps.contains(uri)) {
+                selectedImageInfo.changeBitmaps.remove(uri)
+                // 페이저에 보이는 이미지 원상 복구
+                allImages[currentAlbum]?.let { list ->
+                    albumPagerAdapter.notifyItemChanged(list.indexOfFirst { it.uri == uri })
                 }
-                // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
-                if (uris.isNotEmpty() && idx == 0) {
-                    selectedPictureAdapter.notifyItemChanged(1)
-                }
+            }
+            // 첫번째 사진이 삭제 된다면 다음 사진에게 대표직을 물려줌
+            if (selectedImageInfo.uris.isNotEmpty() && idx == 0) {
+                selectedPictureAdapter.notifyItemChanged(1)
             }
         }
         // 현재 보기 모드가 페이저라면 선택 상태를 변경해준다.
@@ -174,9 +176,9 @@ class AlbumListViewModel @Inject constructor(
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
-    fun getCurrentUri() = allImages[currentAlbum.value]?.get(currentViewPagerIdx)?.uri ?: ""
+    fun getCurrentUri() = allImages[currentAlbum]?.get(currentViewPagerIdx)?.uri ?: ""
 
-    fun getPictureUri(albumName: String = currentAlbum.value, position: Int) =
+    fun getPictureUri(albumName: String = currentAlbum, position: Int) =
         allImages[albumName]?.get(position)?.uri ?: ""
 
     // 수정된 비트맵 가져오기
@@ -184,7 +186,7 @@ class AlbumListViewModel @Inject constructor(
         selectedImageInfo.changeBitmaps[uri]
 
     fun isAlbumListChanged() =
-        albumListAdapter.currentList[0] == allImages[currentAlbum.value]?.get(0)
+        albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
 
     fun onAlbumListChanged(uri: String, type: Int) {
         when (type) {
@@ -204,7 +206,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun updateAlbumList(
         validAddedImageList: List<Triple<String, String, Long>>,
-        albumName: String = currentAlbum.value
+        albumName: String = currentAlbum
     ) {
         if (removedImageList.isNotEmpty()) {
             // 앨범 리스트 갱신
@@ -240,7 +242,7 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    private fun setAdapterList(albumName: String = currentAlbum.value) {
+    private fun setAdapterList(albumName: String = currentAlbum) {
         allImages[albumName]?.let { list ->
             val currentList = mutableListOf<AlbumItem>().apply { addAll(list) }
             albumListAdapter.submitList(currentList)
@@ -249,18 +251,16 @@ class AlbumListViewModel @Inject constructor(
         }
         albumListAdapter.notifyDataSetChanged()
         selectedPictureAdapter.notifyDataSetChanged()
-        if (albumName != currentAlbum.value) {
-            viewModelScope.launch {
-                currentAlbum.emit(albumName)
-                // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
-                setScrollFlag()
-            }
+        if (albumName != currentAlbum) {
+            currentAlbum = albumName
+            // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
+            setScrollFlag()
         }
     }
 
     // 앨범 뷰 페이저
     private fun showViewPager(uri: String) {
-        allImages[currentAlbum.value]?.let { album ->
+        allImages[currentAlbum]?.let { album ->
             val idx = album.indexOf(album.find { it.uri == uri })
             if (idx != -1) {
                 viewModelScope.launch {
@@ -272,7 +272,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     private fun setSelectedImageList() {
-        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageInfo.uris) })
+        selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
         albumListAdapter.notifyDataSetChanged()
         viewModelScope.launch {
             _onListChange.emit(true)
@@ -281,7 +281,7 @@ class AlbumListViewModel @Inject constructor(
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
         Collections.swap(selectedImageInfo.uris, fromPosition, toPosition)
-        selectedPictureAdapter.submitList(mutableListOf<String>().apply { addAll(selectedImageInfo.uris) })
+        selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
         albumListAdapter.notifyDataSetChanged()
         albumPagerAdapter.notifyDataSetChanged()
     }
