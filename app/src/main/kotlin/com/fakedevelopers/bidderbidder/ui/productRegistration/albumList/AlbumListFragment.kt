@@ -357,8 +357,8 @@ class AlbumListFragment : Fragment() {
         const val MODIFY_IMAGE = BASE_FLAG + NOTIFY_UPDATE
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
         requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         _binding = null
