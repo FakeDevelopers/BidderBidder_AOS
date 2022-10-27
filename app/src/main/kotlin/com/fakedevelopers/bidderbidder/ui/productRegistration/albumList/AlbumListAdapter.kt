@@ -15,12 +15,12 @@ import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
 class AlbumListAdapter(
+    private val contentResolverUtil: ContentResolverUtil,
     private val findSelectedImageIndex: (String) -> Int,
     private val sendErrorToast: () -> Unit,
     private val showViewPager: (String) -> Unit,
     private val setSelectedImageList: (String, Boolean) -> Unit
 ) : ListAdapter<AlbumItem, AlbumListAdapter.ViewHolder>(diffUtil) {
-    private lateinit var contentResolverUtil: ContentResolverUtil
 
     inner class ViewHolder(
         private val binding: RecyclerPictureSelectBinding
@@ -80,7 +80,6 @@ class AlbumListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        contentResolverUtil = ContentResolverUtil(parent.context)
         return ViewHolder(
             RecyclerPictureSelectBinding.bind(
                 LayoutInflater.from(parent.context).inflate(R.layout.recycler_picture_select, parent, false)
@@ -95,7 +94,7 @@ class AlbumListAdapter(
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<AlbumItem>() {
             override fun areItemsTheSame(oldItem: AlbumItem, newItem: AlbumItem) =
-                oldItem == newItem
+                oldItem.uri == newItem.uri
 
             override fun areContentsTheSame(oldItem: AlbumItem, newItem: AlbumItem) =
                 oldItem == newItem

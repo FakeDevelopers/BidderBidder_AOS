@@ -33,14 +33,20 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.productRegistration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationDto
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumImageUtils.Companion.ROTATE_DEGREE
+import com.fakedevelopers.bidderbidder.ui.util.AlbumImageUtils.Companion.ROTATE_DEGREE
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class AlbumListFragment : Fragment() {
+
+    @Inject
+    lateinit var contentResolverUtil: ContentResolverUtil
 
     private var _binding: FragmentAlbumListBinding? = null
     private val viewModel: AlbumListViewModel by viewModels()
@@ -66,10 +72,6 @@ class AlbumListFragment : Fragment() {
                 setPagerUI(position)
             }
         }
-    }
-
-    private val contentResolverUtil by lazy {
-        ContentResolverUtil(requireContext())
     }
 
     // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.

@@ -1,6 +1,6 @@
-package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
+package com.fakedevelopers.bidderbidder.ui.util
 
-import android.content.Context
+import android.content.ContentResolver
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.graphics.Matrix
@@ -13,8 +13,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Locale
 
-class AlbumImageUtils(val context: Context) {
-
+class AlbumImageUtils(
+    private val contentResolver: ContentResolver
+) {
     // getBitmap은 API 29에서 Deprecated 됐읍니다.
     @Suppress("DEPRECATION")
     suspend fun getBitmapByURI(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO) =
@@ -22,10 +23,10 @@ class AlbumImageUtils(val context: Context) {
             var bitmap: Bitmap? = null
             runCatching {
                 if (Build.VERSION.SDK_INT >= 28) {
-                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(context.contentResolver, Uri.parse(uri)))
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, Uri.parse(uri)))
                 } else {
                     // API 28 이하는 createSource 사용 불가
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, Uri.parse(uri))
+                    MediaStore.Images.Media.getBitmap(contentResolver, Uri.parse(uri))
                 }
             }.onSuccess {
                 bitmap = it
@@ -34,7 +35,7 @@ class AlbumImageUtils(val context: Context) {
         }
 
     fun getMimeTypeAndExtension(uri: String): Pair<String, String> {
-        val mimeType = context.contentResolver.getType(Uri.parse(uri)).toString()
+        val mimeType = contentResolver.getType(Uri.parse(uri)).toString()
         var extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType).toString()
         if (extension == "jpg") {
             extension = "jpeg"

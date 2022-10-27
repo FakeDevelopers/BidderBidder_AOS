@@ -1,11 +1,12 @@
 package com.fakedevelopers.bidderbidder.ui.util
 
-import android.content.Context
+import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
 
-class ContentResolverUtil(context: Context) {
-    private val contentResolver = context.contentResolver
+class ContentResolverUtil(
+    private val contentResolver: ContentResolver
+) {
 
     fun isExist(uri: Uri): Boolean {
         contentResolver.runCatching {

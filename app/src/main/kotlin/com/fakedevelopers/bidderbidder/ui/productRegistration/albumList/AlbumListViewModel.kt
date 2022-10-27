@@ -7,14 +7,20 @@ import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumLis
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.ALL_PICTURES
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.MODIFY_IMAGE
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.REMOVE_IMAGE
+import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
+import javax.inject.Inject
 
-class AlbumListViewModel : ViewModel() {
+@HiltViewModel
+class AlbumListViewModel @Inject constructor(
+    contentResolverUtil: ContentResolverUtil
+) : ViewModel() {
 
     private val currentAlbum = MutableStateFlow("")
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
@@ -43,6 +49,7 @@ class AlbumListViewModel : ViewModel() {
 
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
+        contentResolverUtil,
         findSelectedImageIndex = { findSelectedImageIndex(it) },
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
         showViewPager = { uri -> showViewPager(uri) }
@@ -52,6 +59,7 @@ class AlbumListViewModel : ViewModel() {
 
     // 뷰 페이저 앨범 리스트 어뎁터
     val albumPagerAdapter = AlbumPagerAdapter(
+        contentResolverUtil,
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
         getEditedImage = { uri -> getEditedBitmapInfo(uri) }
     ) { uri ->
@@ -116,8 +124,7 @@ class AlbumListViewModel : ViewModel() {
     }
 
     fun setSelectedImage(list: List<String>) {
-        val invalidList = selectedImageInfo.uris.filter { !list.contains(it) }
-        for (uri in invalidList) {
+        selectedImageInfo.uris.filter { !list.contains(it) }.forEach { uri ->
             removeInvalidImage(uri)
         }
         viewModelScope.launch {

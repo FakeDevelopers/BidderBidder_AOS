@@ -14,11 +14,11 @@ import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
 class AlbumPagerAdapter(
+    private val contentResolverUtil: ContentResolverUtil,
     private val sendErrorToast: () -> Unit,
     private val getEditedImage: (String) -> BitmapInfo?,
     private val setSelectedImageList: (String) -> Unit
 ) : ListAdapter<AlbumItem, AlbumPagerAdapter.ViewHolder>(diffUtil) {
-    private lateinit var contentResolverUtil: ContentResolverUtil
 
     inner class ViewHolder(
         private val binding: RecyclerAlbumPagerBinding
@@ -57,7 +57,6 @@ class AlbumPagerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        contentResolverUtil = ContentResolverUtil(parent.context)
         return ViewHolder(
             RecyclerAlbumPagerBinding.bind(
                 LayoutInflater.from(parent.context).inflate(R.layout.recycler_album_pager, parent, false)
