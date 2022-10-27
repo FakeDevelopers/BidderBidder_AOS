@@ -150,8 +150,7 @@ class AlbumListViewModel @Inject constructor(
             val idx = findSelectedImageIndex(uri)
             selectedImageInfo.uris.removeAt(idx)
             // 수정된 내용(BitmapInfo)도 같이 삭제
-            if (selectedImageInfo.changeBitmaps.contains(uri)) {
-                selectedImageInfo.changeBitmaps.remove(uri)
+            if (selectedImageInfo.changeBitmaps.remove(uri) != null) {
                 // 페이저에 보이는 이미지 원상 복구
                 allImages[currentAlbum]?.let { list ->
                     albumPagerAdapter.notifyItemChanged(list.indexOfFirst { it.uri == uri })
