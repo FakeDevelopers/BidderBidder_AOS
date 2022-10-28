@@ -74,17 +74,9 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
         val list = selectedImageInfo.uris.toMutableList()
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(list, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(list, i, i - 1)
-            }
-        }
+        Collections.swap(list, fromPosition, toPosition)
         adapter.submitList(list)
-        selectedImageInfo.uris = list.toMutableList()
+        selectedImageInfo.uris = list
     }
 
     private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)

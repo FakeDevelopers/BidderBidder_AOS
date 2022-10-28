@@ -136,17 +136,15 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.apply {
-                    inputUserPassword.collectLatest {
-                        checkPasswordsSame()
+                viewModel.inputUserPassword.collectLatest {
+                    checkPasswordsSame()
 
-                        binding.apply {
-                            if (inputUserPassword.value.isBlank()) {
-                                passwordPasswordToggle.visibility = View.GONE
-                            } else {
-                                passwordPasswordToggle.visibility = View.VISIBLE
-                                passwordClearButton.visibility = View.VISIBLE
-                            }
+                    binding.apply {
+                        if (it.isBlank()) {
+                            passwordPasswordToggle.visibility = View.GONE
+                        } else {
+                            passwordPasswordToggle.visibility = View.VISIBLE
+                            passwordClearButton.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -154,17 +152,15 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.apply {
-                    inputConfirmUserPassword.collectLatest {
-                        checkPasswordsSame()
+                viewModel.inputConfirmUserPassword.collectLatest {
+                    checkPasswordsSame()
 
-                        binding.apply {
-                            if (it.isBlank()) {
-                                passwordConfirmPasswordToggle.visibility = View.GONE
-                            } else {
-                                passwordConfirmPasswordToggle.visibility = View.VISIBLE
-                                passwordConfirmClearButton.visibility = View.VISIBLE
-                            }
+                    binding.apply {
+                        if (it.isBlank()) {
+                            passwordConfirmPasswordToggle.visibility = View.GONE
+                        } else {
+                            passwordConfirmPasswordToggle.visibility = View.VISIBLE
+                            passwordConfirmClearButton.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -210,8 +206,8 @@ class UserRegistrationPasswordFragment : Fragment() {
     }
     private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
 }

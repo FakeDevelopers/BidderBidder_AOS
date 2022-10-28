@@ -38,7 +38,7 @@ import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumImageUtils
+import com.fakedevelopers.bidderbidder.ui.util.AlbumImageUtils
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.KeyboardVisibilityUtils
@@ -51,15 +51,21 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okio.BufferedSink
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ProductRegistrationFragment : Fragment() {
+
+    @Inject
+    lateinit var contentResolverUtil: ContentResolverUtil
+
+    @Inject
+    lateinit var albumImageUtils: AlbumImageUtils
 
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private var _binding: FragmentProductRegistrationBinding? = null
-
     private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
     private val backPressedCallback by lazy {
@@ -68,12 +74,6 @@ class ProductRegistrationFragment : Fragment() {
                 findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
             }
         }
-    }
-    private val contentResolverUtil by lazy {
-        ContentResolverUtil(requireContext())
-    }
-    private val albumImageUtils by lazy {
-        AlbumImageUtils(requireContext())
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -272,14 +272,21 @@ class ProductRegistrationFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categoryEvent.collectLatest { result ->
                     if (result.isSuccessful) {
-                        val category = result.body() ?: return@collectLatest
-                        viewModel.setProductCategory(category)
-                        setCategory(category)
+                        handleCategoryResult(result.body())
                     } else {
                         ApiErrorHandler.printErrorMessage(result.errorBody())
                     }
                 }
             }
+        }
+    }
+
+    private fun handleCategoryResult(body: List<ProductCategoryDto>?) {
+        body?.let { category ->
+            viewModel.setProductCategory(category)
+            setCategory(category)
+        } ?: run {
+            ApiErrorHandler.printMessage("카테고리 api의 body가 비었어")
         }
     }
 

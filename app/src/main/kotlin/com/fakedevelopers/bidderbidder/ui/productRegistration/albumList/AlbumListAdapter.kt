@@ -1,6 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
 
-import android.content.Context
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -16,24 +15,23 @@ import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.GlideRequestListener
 
 class AlbumListAdapter(
+    private val contentResolverUtil: ContentResolverUtil,
     private val findSelectedImageIndex: (String) -> Int,
     private val sendErrorToast: () -> Unit,
     private val showViewPager: (String) -> Unit,
     private val setSelectedImageList: (String, Boolean) -> Unit
-) : ListAdapter<Pair<String, Long>, AlbumListAdapter.ViewHolder>(diffUtil) {
-    private lateinit var contentResolverUtil: ContentResolverUtil
+) : ListAdapter<AlbumItem, AlbumListAdapter.ViewHolder>(diffUtil) {
 
     inner class ViewHolder(
-        private val binding: RecyclerPictureSelectBinding,
-        private val context: Context
+        private val binding: RecyclerPictureSelectBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         private var isErrorImage = false
-        fun bind(item: Pair<String, Long>) {
-            Glide.with(context)
-                .load(item.first)
+        fun bind(item: AlbumItem) {
+            Glide.with(binding.root.context)
+                .load(item.uri)
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
-                .signature(ObjectKey(item.second))
+                .signature(ObjectKey(item.modifiedTime))
                 .listener(
                     GlideRequestListener(
                         loadFailed = { isErrorImage = true },
@@ -43,21 +41,21 @@ class AlbumListAdapter(
                 .into(binding.imageviewPictureSelect)
             // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
             // 수정된 이미지는 다른 색의 테두리로 수정 여부를 표시
-            findSelectedImageIndex(item.first).let { count ->
-                setPictureSelectCount(count != -1, count + 1)
-                binding.layoutPictureSelectChoice.setOnClickListener {
-                    if (isValidImage(item.first)) {
-                        setSelectedImageList(item.first, binding.backgroundPictrueSelect.visibility != View.VISIBLE)
-                        setPictureSelectCount(binding.backgroundPictrueSelect.visibility != View.VISIBLE, count + 1)
-                    } else {
-                        sendErrorToast()
-                    }
+            val selectedIndex = findSelectedImageIndex(item.uri)
+            setPictureSelectCount(selectedIndex != -1, selectedIndex + 1)
+            binding.layoutPictureSelectChoice.setOnClickListener {
+                if (isValidImage(item.uri)) {
+                    val visibleState = binding.backgroundPictrueSelect.visibility != View.VISIBLE
+                    setSelectedImageList(item.uri, visibleState)
+                    setPictureSelectCount(visibleState, selectedIndex + 1)
+                } else {
+                    sendErrorToast()
                 }
             }
             // 뷰 페이저
             binding.layoutPictureSelectPager.setOnClickListener {
-                if (isValidImage(item.first)) {
-                    showViewPager(item.first)
+                if (isValidImage(item.uri)) {
+                    showViewPager(item.uri)
                 } else {
                     sendErrorToast()
                 }
@@ -82,12 +80,10 @@ class AlbumListAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        contentResolverUtil = ContentResolverUtil(parent.context)
         return ViewHolder(
             RecyclerPictureSelectBinding.bind(
                 LayoutInflater.from(parent.context).inflate(R.layout.recycler_picture_select, parent, false)
-            ),
-            parent.context
+            )
         )
     }
 
@@ -96,12 +92,12 @@ class AlbumListAdapter(
     }
 
     companion object {
-        val diffUtil = object : DiffUtil.ItemCallback<Pair<String, Long>>() {
-            override fun areItemsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
-                oldItem.first == newItem.first && oldItem.second == newItem.second
+        val diffUtil = object : DiffUtil.ItemCallback<AlbumItem>() {
+            override fun areItemsTheSame(oldItem: AlbumItem, newItem: AlbumItem) =
+                oldItem.uri == newItem.uri
 
-            override fun areContentsTheSame(oldItem: Pair<String, Long>, newItem: Pair<String, Long>) =
-                oldItem.first == newItem.first && oldItem.second == newItem.second
+            override fun areContentsTheSame(oldItem: AlbumItem, newItem: AlbumItem) =
+                oldItem == newItem
         }
     }
 }
