@@ -47,8 +47,11 @@ class ContentResolverUtil(
             if (result) {
                 val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
                 val token = path.split("/")
-                val modified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
-                updatedAlbumItem = UpdatedAlbumItem(uri.toString(), token[token.lastIndex - 1], modified)
+                updatedAlbumItem = UpdatedAlbumItem(
+                    uri.toString(),
+                    token[token.lastIndex - 1],
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
+                )
             }
             cursor.close()
             updatedAlbumItem
