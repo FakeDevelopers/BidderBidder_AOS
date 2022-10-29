@@ -1,8 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
 
-import android.content.ContentResolver.NOTIFY_DELETE
-import android.content.ContentResolver.NOTIFY_INSERT
-import android.content.ContentResolver.NOTIFY_UPDATE
 import android.content.ContentUris
 import android.database.ContentObserver
 import android.net.Uri
@@ -35,6 +32,7 @@ import com.fakedevelopers.bidderbidder.ui.productRegistration.DragAndDropCallbac
 import com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationDto
 import com.fakedevelopers.bidderbidder.ui.util.AlbumImageUtils.Companion.ROTATE_DEGREE
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -77,10 +75,10 @@ class AlbumListFragment : Fragment() {
     // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.
     private val contentObserver by lazy {
         object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-                super.onChange(selfChange, uri, flags)
-                uri?.let {
-                    viewModel.onAlbumListChanged(it.toString(), flags)
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                super.onChange(selfChange, uri)
+                if (uri != null) {
+                    viewModel.onAlbumListChanged(uri.toString())
                 }
             }
         }
@@ -171,6 +169,9 @@ class AlbumListFragment : Fragment() {
                     albums[url]?.add(albumItem)
                 }
             }
+            albums.keys.forEach {
+                Logger.t("bidder").i("$it ${albums[it]?.size}")
+            }
             viewModel.initAlbumInfo(albums)
             initSpinner(albumNameSummary)
             // 앨범 전환 시 가장 위로 스크롤
@@ -180,7 +181,7 @@ class AlbumListFragment : Fragment() {
                     // onLayoutCompleted는 정말 여러번 호출됩니다.
                     // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
                     if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
-                        viewModel.setScrollFlag()
+                        viewModel.switchScrollFlag()
                         binding.recyclerAlbumList.post {
                             binding.recyclerAlbumList.scrollToPosition(0)
                         }
@@ -332,29 +333,19 @@ class AlbumListFragment : Fragment() {
                 )
             }
         }
-        // 앨범 리스트 갱신
-        // 도중에 추가된 이미지들이 유효한지 검사한다.
-        val list = mutableListOf<Triple<String, String, Long>>()
-        viewModel.addedImageList.map { Uri.parse(it) }.filter { contentResolverUtil.isExist(it) }.forEach { uri ->
-            contentResolverUtil.getDateModifiedFromUri(uri)?.let {
-                list.add(Triple(uri.toString(), it.first, it.second))
-            }
-        }
-        if (albumName != null) {
-            viewModel.updateAlbumList(list, albumName)
-        } else {
-            viewModel.updateAlbumList(list)
-        }
+        viewModel.updateAlbumList(getValidUpdatedImageList(), albumName)
     }
 
-    companion object {
-        const val ALL_PICTURES = "전체보기"
-
-        // 이미지 변경 플래그
-        private const val BASE_FLAG = 32768
-        const val ADD_IMAGE = BASE_FLAG + NOTIFY_INSERT
-        const val REMOVE_IMAGE = BASE_FLAG + NOTIFY_DELETE
-        const val MODIFY_IMAGE = BASE_FLAG + NOTIFY_UPDATE
+    // 앨범 리스트 갱신
+    // 도중에 추가된 이미지들이 유효한지 검사한다.
+    private fun getValidUpdatedImageList(): List<UpdatedAlbumItem> {
+        val list = mutableListOf<UpdatedAlbumItem>()
+        viewModel.updatedImageList.map { Uri.parse(it) }.filter { contentResolverUtil.isExist(it) }.forEach { uri ->
+            contentResolverUtil.getDateModifiedFromUri(uri)?.let {
+                list.add(UpdatedAlbumItem(uri.toString(), it.first, it.second))
+            }
+        }
+        return list.toList()
     }
 
     override fun onDestroyView() {
@@ -363,5 +354,9 @@ class AlbumListFragment : Fragment() {
         requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         _binding = null
         backPressedCallback.remove()
+    }
+
+    companion object {
+        const val ALL_PICTURES = "전체보기"
     }
 }

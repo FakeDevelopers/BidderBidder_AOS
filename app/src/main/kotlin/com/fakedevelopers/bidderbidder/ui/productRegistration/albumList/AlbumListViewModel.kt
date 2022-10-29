@@ -3,10 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.productRegistration.SelectedPictureListAdapter
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.ADD_IMAGE
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.ALL_PICTURES
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.MODIFY_IMAGE
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumListFragment.Companion.REMOVE_IMAGE
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
@@ -39,12 +36,12 @@ class AlbumListViewModel @Inject constructor(
     private val _editButtonEnableState = MutableStateFlow(false)
     val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
 
+    private val _updatedImageList = hashSetOf<String>()
+    val updatedImageList: Set<String> get() = _updatedImageList
+
     private var currentAlbum = ""
     private var totalPictureCount = 0
     private var allImages = mapOf<String, MutableList<AlbumItem>>()
-    private val _addedImageList = hashSetOf<String>()
-    private val removedImageList = hashSetOf<String>()
-    val addedImageList: Set<String> get() = _addedImageList
     val selectedImageInfo = SelectedImageInfo()
 
     // 현재 뷰 페이저 인덱스
@@ -110,7 +107,7 @@ class AlbumListViewModel @Inject constructor(
         selectedImageInfo.changeBitmaps.remove(uri)
     }
 
-    fun setScrollFlag() {
+    fun switchScrollFlag() {
         scrollToTopFlag = !scrollToTopFlag
     }
 
@@ -130,7 +127,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun setSelectedImage(list: List<String>) {
         selectedImageInfo.uris.filter { !list.contains(it) }.forEach { uri ->
-            removeInvalidImage(uri)
+            removeImage(uri)
         }
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
@@ -188,15 +185,8 @@ class AlbumListViewModel @Inject constructor(
     fun isAlbumListChanged() =
         albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
 
-    fun onAlbumListChanged(uri: String, type: Int) {
-        when (type) {
-            ADD_IMAGE -> _addedImageList.add(uri)
-            REMOVE_IMAGE -> removedImageList.add(uri)
-            MODIFY_IMAGE -> {
-                _addedImageList.add(uri)
-                removedImageList.add(uri)
-            }
-        }
+    fun onAlbumListChanged(uri: String) {
+        _updatedImageList.add(uri)
     }
 
     // 편집 버튼 클릭
@@ -205,40 +195,33 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun updateAlbumList(
-        validAddedImageList: List<Triple<String, String, Long>>,
-        albumName: String = currentAlbum
+        updatedAlbumItems: List<UpdatedAlbumItem>,
+        albumName: String?
     ) {
-        if (removedImageList.isNotEmpty()) {
-            // 앨범 리스트 갱신
-            for (uri in removedImageList) {
-                removeInvalidImage(uri)
-            }
-            removedImageList.clear()
+        updatedImageList.forEach { uri ->
+            removeImage(uri)
         }
-        if (validAddedImageList.isNotEmpty()) {
-            // 앨범 리스트 갱신
-            for ((uri, rel, date) in validAddedImageList) {
-                val albumItem = AlbumItem(uri, date)
-                allImages[ALL_PICTURES]?.add(albumItem)
-                allImages[rel]?.add(albumItem)
-            }
-            // 수정된 날짜 기준으로 소팅
+        // 앨범 리스트 갱신
+        updatedAlbumItems.forEach { item ->
+            val albumItem = AlbumItem(item.uri, item.modified)
+            allImages[ALL_PICTURES]?.add(albumItem)
+            allImages[item.path]?.add(albumItem)
+        }
+        // 수정된 날짜 기준으로 소팅
+        if (updatedAlbumItems.isNotEmpty()) {
             for (key in allImages.keys) {
                 allImages[key]?.sortByDescending { it.modifiedTime }
             }
-            _addedImageList.clear()
         }
-        setAdapterList(albumName)
+        _updatedImageList.clear()
+        setAdapterList(albumName ?: currentAlbum)
     }
 
     // 유효하지 않은 이미지 제거
-    private fun removeInvalidImage(uri: String) {
-        val invalidImage = allImages[ALL_PICTURES]?.find { it.uri == uri }
-        allImages[ALL_PICTURES]?.remove(invalidImage)
+    private fun removeImage(uri: String) {
+        val targetImage = allImages[ALL_PICTURES]?.find { it.uri == uri } ?: return
         for (key in allImages.keys) {
-            if (allImages[key]?.remove(invalidImage) == true) {
-                break
-            }
+            allImages[key]?.remove(targetImage)
         }
     }
 
@@ -254,7 +237,7 @@ class AlbumListViewModel @Inject constructor(
         if (albumName != currentAlbum) {
             currentAlbum = albumName
             // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
-            setScrollFlag()
+            switchScrollFlag()
         }
     }
 
