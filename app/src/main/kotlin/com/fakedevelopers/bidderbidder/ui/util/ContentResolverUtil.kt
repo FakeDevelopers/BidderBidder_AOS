@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.util
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
+import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.UpdatedAlbumItem
 
 class ContentResolverUtil(
     private val contentResolver: ContentResolver
@@ -30,7 +31,7 @@ class ContentResolverUtil(
         return if (invalidSelectedImageList.isNotEmpty()) validSelectedImageList else uriList
     }
 
-    fun getDateModifiedFromUri(uri: Uri): Pair<String, Long>? =
+    fun getDateModifiedFromUri(uri: Uri): UpdatedAlbumItem? =
         contentResolver.query(
             uri,
             arrayOf(
@@ -46,6 +47,6 @@ class ContentResolverUtil(
             val token = path.split("/")
             val modified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
             cursor.close()
-            token[token.lastIndex - 1] to modified
+            UpdatedAlbumItem(uri.toString(), token[token.lastIndex - 1], modified)
         }
 }
