@@ -339,10 +339,7 @@ class AlbumListFragment : Fragment() {
     // 앨범 리스트 갱신
     // 도중에 추가된 이미지들이 유효한지 검사한다.
     private fun getValidUpdatedImageList() =
-        viewModel.updatedImageList
-            .map { Uri.parse(it) }
-            .filter { contentResolverUtil.isExist(it) }
-            .mapNotNull { contentResolverUtil.getDateModifiedFromUri(it) }
+        viewModel.updatedImageList.mapNotNull { contentResolverUtil.getDateModifiedFromUri(Uri.parse(it)) }
 
     override fun onDestroyView() {
         super.onDestroyView()

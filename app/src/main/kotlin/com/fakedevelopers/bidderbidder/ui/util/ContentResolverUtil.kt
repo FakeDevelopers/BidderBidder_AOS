@@ -42,11 +42,15 @@ class ContentResolverUtil(
             null,
             null
         )?.let { cursor ->
-            cursor.moveToNext()
-            val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
-            val token = path.split("/")
-            val modified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
+            var updatedAlbumItem: UpdatedAlbumItem? = null
+            val result = cursor.moveToNext()
+            if (result) {
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                val token = path.split("/")
+                val modified = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
+                updatedAlbumItem = UpdatedAlbumItem(uri.toString(), token[token.lastIndex - 1], modified)
+            }
             cursor.close()
-            UpdatedAlbumItem(uri.toString(), token[token.lastIndex - 1], modified)
+            updatedAlbumItem
         }
 }
