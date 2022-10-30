@@ -1,8 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.productRegistration.albumList
 
-import android.content.ContentResolver.NOTIFY_DELETE
-import android.content.ContentResolver.NOTIFY_INSERT
-import android.content.ContentResolver.NOTIFY_UPDATE
 import android.content.ContentUris
 import android.database.ContentObserver
 import android.net.Uri
@@ -33,14 +30,21 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.bidderbidder.ui.productRegistration.DragAndDropCallback
 import com.fakedevelopers.bidderbidder.ui.productRegistration.ProductRegistrationDto
-import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.AlbumImageUtils.Companion.ROTATE_DEGREE
+import com.fakedevelopers.bidderbidder.ui.util.AlbumImageUtils.Companion.ROTATE_DEGREE
 import com.fakedevelopers.bidderbidder.ui.util.ContentResolverUtil
+import com.orhanobut.logger.Logger
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
+@AndroidEntryPoint
 class AlbumListFragment : Fragment() {
+
+    @Inject
+    lateinit var contentResolverUtil: ContentResolverUtil
 
     private var _binding: FragmentAlbumListBinding? = null
     private val viewModel: AlbumListViewModel by viewModels()
@@ -68,17 +72,13 @@ class AlbumListFragment : Fragment() {
         }
     }
 
-    private val contentResolverUtil by lazy {
-        ContentResolverUtil(requireContext())
-    }
-
     // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.
     private val contentObserver by lazy {
         object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean, uri: Uri?, flags: Int) {
-                super.onChange(selfChange, uri, flags)
-                uri?.let {
-                    viewModel.onAlbumListChanged(it.toString(), flags)
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                super.onChange(selfChange, uri)
+                if (uri != null) {
+                    viewModel.onAlbumListChanged(uri.toString())
                 }
             }
         }
@@ -137,55 +137,58 @@ class AlbumListFragment : Fragment() {
             uri,
             arrayOf(
                 MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
             null,
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
-        ).let {
-            it?.let { cursor ->
-                val albums = mutableMapOf<String, MutableList<Pair<String, Long>>>()
-                albums[ALL_PICTURES] = mutableListOf()
-                val albumNameSummary = mutableMapOf<String, String>()
-                albumNameSummary[ALL_PICTURES] = ALL_PICTURES
-                while (cursor.moveToNext()) {
-                    // 이미지 Uri
-                    val imageUri = ContentUris.withAppendedId(
-                        uri,
-                        cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                    ).toString()
-                    // 최근 수정 날짜
-                    val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                    // 전체보기에 저장
-                    albums[ALL_PICTURES]?.add(imageUri to date)
-                    // 이미지 상대 경로에 저장
-                    cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH)).let { path ->
-                        if (!albumNameSummary.containsKey(path)) {
-                            path.split("/").let { split ->
-                                albumNameSummary[path] = split[split.lastIndex - 1]
-                                albums[path] = mutableListOf()
-                            }
-                        }
-                        albums[path]?.add(imageUri to date)
+        )?.let { cursor ->
+            val albums = mutableMapOf<String, MutableList<AlbumItem>>()
+            albums[ALL_PICTURES] = mutableListOf()
+            val albumNameSummary = mutableMapOf<String, String>()
+            albumNameSummary[ALL_PICTURES] = ALL_PICTURES
+            while (cursor.moveToNext()) {
+                // 이미지 Uri
+                val imageUri = ContentUris.withAppendedId(
+                    uri,
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                ).toString()
+                // 최근 수정 날짜
+                val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
+                val albumItem = AlbumItem(imageUri, date)
+                // 전체보기에 저장
+                albums[ALL_PICTURES]?.add(albumItem)
+                // 이미지 상대 경로에 저장
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
+                    val url = path.substringBeforeLast("/")
+                    if (!albumNameSummary.containsKey(url)) {
+                        albumNameSummary[url] = url.split("/").last()
+                        albums[url] = mutableListOf()
                     }
+                    albums[url]?.add(albumItem)
                 }
-                viewModel.initAlbumInfo(albums)
-                initSpinner(albumNameSummary)
-                // 앨범 전환 시 가장 위로 스크롤
-                binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
-                    override fun onLayoutCompleted(state: RecyclerView.State?) {
-                        super.onLayoutCompleted(state)
-                        // onLayoutCompleted는 정말 여러번 호출됩니다.
-                        // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
-                        if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
-                            viewModel.setScrollFlag()
+            }
+            albums.keys.forEach {
+                Logger.t("bidder").i("$it ${albums[it]?.size}")
+            }
+            viewModel.initAlbumInfo(albums)
+            initSpinner(albumNameSummary)
+            // 앨범 전환 시 가장 위로 스크롤
+            binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
+                override fun onLayoutCompleted(state: RecyclerView.State?) {
+                    super.onLayoutCompleted(state)
+                    // onLayoutCompleted는 정말 여러번 호출됩니다.
+                    // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
+                    if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
+                        viewModel.switchScrollFlag()
+                        binding.recyclerAlbumList.post {
                             binding.recyclerAlbumList.scrollToPosition(0)
                         }
                     }
                 }
-                cursor.close()
             }
+            cursor.close()
         }
     }
 
@@ -330,40 +333,23 @@ class AlbumListFragment : Fragment() {
                 )
             }
         }
-        // 앨범 리스트 갱신
-        // 도중에 추가된 이미지들이 유효한지 검사한다.
-        val list = mutableListOf<Triple<String, String, Long>>()
-        for (uri in viewModel.addedImageList) {
-            // 해당 uri이 유효하면 list에 추가
-            Uri.parse(uri).let {
-                if (contentResolverUtil.isExist(it)) {
-                    val (rel, date) = contentResolverUtil.getDateModifiedFromUri(it)
-                    list.add(Triple(uri, rel, date))
-                }
-            }
-        }
-        if (albumName != null) {
-            viewModel.updateAlbumList(list, albumName)
-        } else {
-            viewModel.updateAlbumList(list)
-        }
+        viewModel.updateAlbumList(getValidUpdatedImageList(), albumName)
     }
 
-    companion object {
-        const val ALL_PICTURES = "전체보기"
+    // 앨범 리스트 갱신
+    // 도중에 추가된 이미지들이 유효한지 검사한다.
+    private fun getValidUpdatedImageList() =
+        viewModel.updatedImageList.mapNotNull { contentResolverUtil.getDateModifiedFromUri(Uri.parse(it)) }
 
-        // 이미지 변경 플래그
-        private const val BASE_FLAG = 32768
-        const val ADD_IMAGE = BASE_FLAG + NOTIFY_INSERT
-        const val REMOVE_IMAGE = BASE_FLAG + NOTIFY_DELETE
-        const val MODIFY_IMAGE = BASE_FLAG + NOTIFY_UPDATE
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
         requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         _binding = null
         backPressedCallback.remove()
+    }
+
+    companion object {
+        const val ALL_PICTURES = "전체보기"
     }
 }
