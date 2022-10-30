@@ -22,11 +22,19 @@ class AlbumListAdapter(
     private val setSelectedImageList: (String, Boolean) -> Unit
 ) : ListAdapter<AlbumItem, AlbumListAdapter.ViewHolder>(diffUtil) {
 
+    private val viewHolders = hashSetOf<ViewHolder>()
+
     inner class ViewHolder(
         private val binding: RecyclerPictureSelectBinding
     ) : RecyclerView.ViewHolder(binding.root) {
+
         private var isErrorImage = false
+        private var currentUri = ""
+        var isSelected = false
+            private set
+
         fun bind(item: AlbumItem) {
+            currentUri = item.uri
             Glide.with(binding.root.context)
                 .load(item.uri)
                 .placeholder(R.drawable.the_cat)
@@ -39,15 +47,15 @@ class AlbumListAdapter(
                     )
                 )
                 .into(binding.imageviewPictureSelect)
-            // 선택된 사진 리스트에 현재 item이 포함되어 있다면 표시해줍니다.
-            // 수정된 이미지는 다른 색의 테두리로 수정 여부를 표시
-            val selectedIndex = findSelectedImageIndex(item.uri)
-            setPictureSelectCount(selectedIndex != -1, selectedIndex + 1)
+            setPictureSelectCount()
             binding.layoutPictureSelectChoice.setOnClickListener {
                 if (isValidImage(item.uri)) {
-                    val visibleState = binding.backgroundPictrueSelect.visibility != View.VISIBLE
-                    setSelectedImageList(item.uri, visibleState)
-                    setPictureSelectCount(visibleState, selectedIndex + 1)
+                    isSelected = !isSelected
+                    setSelectedImageList(item.uri, isSelected)
+                    setPictureSelectCount()
+                    if (!isSelected) {
+                        refreshSelectedOrder()
+                    }
                 } else {
                     sendErrorToast()
                 }
@@ -62,21 +70,22 @@ class AlbumListAdapter(
             }
         }
 
-        private fun isValidImage(item: String) = !isErrorImage && contentResolverUtil.isExist(Uri.parse(item))
-
-        private fun setPictureSelectCount(state: Boolean, count: Int) {
+        fun setPictureSelectCount() {
+            val selectedCount = findSelectedImageIndex(currentUri) + 1
+            isSelected = selectedCount != 0
+            binding.backgroundPictrueSelect.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
             binding.textviewPictureSelectCount.apply {
-                text = if (state) {
-                    binding.backgroundPictrueSelect.visibility = View.VISIBLE
+                text = if (this@ViewHolder.isSelected) {
                     setBackgroundResource(R.drawable.shape_picture_select_count)
-                    count.toString()
+                    selectedCount.toString()
                 } else {
-                    binding.backgroundPictrueSelect.visibility = View.INVISIBLE
                     setBackgroundResource(R.drawable.shape_picture_select_empty)
                     ""
                 }
             }
         }
+
+        private fun isValidImage(item: String) = !isErrorImage && contentResolverUtil.isExist(Uri.parse(item))
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -89,6 +98,28 @@ class AlbumListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    override fun onViewAttachedToWindow(holder: ViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        viewHolders.add(holder)
+    }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        viewHolders.remove(holder)
+    }
+
+    fun refreshSelectedOrder() {
+        viewHolders.filter { it.isSelected }.forEach { holder ->
+            holder.setPictureSelectCount()
+        }
+    }
+
+    fun refreshAll() {
+        viewHolders.forEach { holder ->
+            holder.setPictureSelectCount()
+        }
     }
 
     companion object {

@@ -157,8 +157,7 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun setUrlList(list: List<String>) {
         viewModelScope.launch {
-            adapter.submitList(list)
-            adapter.notifyDataSetChanged()
+            adapter.submitList(list.toMutableList())
         }
         selectedImageInfo.uris = list.toMutableList()
     }
