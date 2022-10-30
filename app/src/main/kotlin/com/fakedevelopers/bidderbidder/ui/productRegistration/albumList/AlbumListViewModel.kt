@@ -73,12 +73,13 @@ class AlbumListViewModel @Inject constructor(
 
     // 선택 사진 리스트 어뎁터
     val selectedPictureAdapter = SelectedPictureListAdapter(
-        deleteSelectedImage = { setSelectedState(it) },
+        deleteSelectedImage = {
+            setSelectedState(it)
+            albumListAdapter.refreshSelectedOrder()
+        },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        swapComplete = { albumPagerAdapter.notifyDataSetChanged() }
-    ) { fromPosition, toPosition ->
-        swapSelectedImage(fromPosition, toPosition)
-    }
+        swapSelectedImage = { fromPosition, toPosition -> swapSelectedImage(fromPosition, toPosition) }
+    )
 
     fun initSelectedImageList(selectedImageInfo: SelectedImageInfo) {
         this.selectedImageInfo.apply {
@@ -118,7 +119,7 @@ class AlbumListViewModel @Inject constructor(
     fun setAlbumViewMode(state: AlbumViewState) {
         // 보기 모드를 전환하기 전에 변경 사항을 반영해준다
         if (state == AlbumViewState.GRID) {
-            albumListAdapter.notifyDataSetChanged()
+            albumListAdapter.refreshAll()
         }
         viewModelScope.launch {
             _albumViewMode.emit(state)
@@ -128,16 +129,17 @@ class AlbumListViewModel @Inject constructor(
     fun setSelectedImage(list: List<String>) {
         selectedImageInfo.uris.filter { !list.contains(it) }.forEach { uri ->
             removeImage(uri)
+            selectedImageInfo.changeBitmaps.remove(uri)
         }
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
             if (list.isNotEmpty() && !list.contains(selectedImageInfo.uris[0])) {
                 selectedPictureAdapter.notifyItemChanged(findSelectedImageIndex(list[0]))
             }
-            albumListAdapter.notifyDataSetChanged()
             setAdapterList()
         }
         selectedImageInfo.uris = list.toMutableList()
+        albumListAdapter.refreshSelectedOrder()
     }
 
     fun setSelectedState(uri: String, state: Boolean = false) {
@@ -217,7 +219,6 @@ class AlbumListViewModel @Inject constructor(
         setAdapterList(albumName ?: currentAlbum)
     }
 
-    // 유효하지 않은 이미지 제거
     private fun removeImage(uri: String) {
         val targetImage = allImages[ALL_PICTURES]?.find { it.uri == uri } ?: return
         for (key in allImages.keys) {
@@ -232,8 +233,6 @@ class AlbumListViewModel @Inject constructor(
             albumPagerAdapter.submitList(currentList)
             totalPictureCount = list.size
         }
-        albumListAdapter.notifyDataSetChanged()
-        selectedPictureAdapter.notifyDataSetChanged()
         if (albumName != currentAlbum) {
             currentAlbum = albumName
             // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
@@ -256,7 +255,6 @@ class AlbumListViewModel @Inject constructor(
 
     private fun setSelectedImageList() {
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
-        albumListAdapter.notifyDataSetChanged()
         viewModelScope.launch {
             _onListChange.emit(true)
         }
@@ -265,7 +263,6 @@ class AlbumListViewModel @Inject constructor(
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
         Collections.swap(selectedImageInfo.uris, fromPosition, toPosition)
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
-        albumListAdapter.notifyDataSetChanged()
-        albumPagerAdapter.notifyDataSetChanged()
+        albumListAdapter.refreshSelectedOrder()
     }
 }
