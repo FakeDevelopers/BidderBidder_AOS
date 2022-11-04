@@ -22,10 +22,10 @@ class ProductSearchViewModel @Inject constructor(
 
     private val _searchWord = MutableSharedFlow<String>()
     private val _historySet = MutableSharedFlow<Set<String>>()
+    private val _popularList = MutableStateFlow<MutableList<String>>(mutableListOf())
 
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
-    private val popularList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private var prevSearchBar = ""
 
     val searchHistoryAdapter = SearchHistoryAdapter(
@@ -35,12 +35,12 @@ class ProductSearchViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getProductSearchRank(LIST_COUNT).let {
                 if (it.isSuccessful) {
-                    submitList(it.body() ?: listOf(""))
+                    _popularList.emit(it.body() as MutableList<String>)
                 } else {
-                    submitList(listOf(""))
                     ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
+            submitList(_popularList.value)
         }
     }
     val searchResultAdapter = SearchResultAdapter { searchEvent(it) }
