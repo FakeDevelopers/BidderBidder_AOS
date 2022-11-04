@@ -21,6 +21,7 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.SEARCH_HISTORY
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.datastore
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductSearchBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -28,6 +29,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+@AndroidEntryPoint
 class ProductSearchFragment : Fragment() {
 
     private var _binding: FragmentProductSearchBinding? = null
