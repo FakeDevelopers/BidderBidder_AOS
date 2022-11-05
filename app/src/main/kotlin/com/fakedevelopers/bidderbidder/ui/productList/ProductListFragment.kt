@@ -29,6 +29,32 @@ class ProductListFragment : Fragment() {
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
+    private val infinityScroll by lazy {
+        object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                (binding.recyclerProductList.layoutManager as? LinearLayoutManager)?.let {
+                    val lastVisibleItem = it.findLastCompletelyVisibleItemPosition()
+                    if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
+                        viewModel.getNextProductList()
+                    }
+                }
+            }
+        }
+    }
+    private val linearLayoutManager by lazy {
+        object : LinearLayoutManager(requireContext()) {
+            override fun onLayoutCompleted(state: RecyclerView.State?) {
+                super.onLayoutCompleted(state)
+                if (viewModel.isInitialize) {
+                    binding.recyclerProductList.post {
+                        binding.recyclerProductList.layoutManager?.scrollToPosition(0)
+                    }
+                    viewModel.setInitializeState(false)
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -87,28 +113,8 @@ class ProductListFragment : Fragment() {
             viewModel.requestProductList(true)
         }
         binding.recyclerProductList.apply {
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    (layoutManager as? LinearLayoutManager)?.let {
-                        val lastVisibleItem = it.findLastCompletelyVisibleItemPosition()
-                        if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
-                            viewModel.getNextProductList()
-                        }
-                    }
-                }
-            })
-            layoutManager = object : LinearLayoutManager(requireContext()) {
-                override fun onLayoutCompleted(state: RecyclerView.State?) {
-                    super.onLayoutCompleted(state)
-                    if (viewModel.isInitialize) {
-                        binding.recyclerProductList.post {
-                            layoutManager?.scrollToPosition(0)
-                        }
-                        viewModel.setInitializeState(false)
-                    }
-                }
-            }
+            addOnScrollListener(infinityScroll)
+            layoutManager = linearLayoutManager
         }
         binding.toolbarProductList.setOnMenuItemClickListener {
             if (it.itemId == R.id.toolbar_search) {
@@ -123,6 +129,10 @@ class ProductListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.recyclerProductList.run {
+            layoutManager = null
+            removeOnScrollListener(infinityScroll)
+        }
         _binding = null
     }
 
