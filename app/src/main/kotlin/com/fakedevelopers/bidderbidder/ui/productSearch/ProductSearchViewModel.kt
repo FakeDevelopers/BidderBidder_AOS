@@ -4,9 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
-import com.fakedevelopers.bidderbidder.ui.util.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -16,13 +14,12 @@ import kotlin.random.Random
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
-    private val repository: ProductSearchRepository,
-    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
+    private val repository: ProductSearchRepository
 ) : ViewModel() {
 
     private val _searchWord = MutableSharedFlow<String>()
     private val _historySet = MutableSharedFlow<Set<String>>()
-    private val _popularList = MutableStateFlow<MutableList<String>>(mutableListOf())
+    private var popularList = listOf<String>()
 
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
@@ -31,27 +28,20 @@ class ProductSearchViewModel @Inject constructor(
     val searchHistoryAdapter = SearchHistoryAdapter(
         eraseHistory = { eraseHistoryEvent(it) }
     ) { searchEvent(it) }
-    val searchPopularAdapter = SearchPopularAdapter { searchEvent(it) }.apply {
-        viewModelScope.launch {
-            repository.getProductSearchRank(LIST_COUNT).let {
-                if (it.isSuccessful) {
-                    _popularList.emit(it.body() as MutableList<String>)
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
-            }
-            submitList(_popularList.value)
-        }
-    }
+    val searchPopularAdapter = SearchPopularAdapter { searchEvent(it) }
     val searchResultAdapter = SearchResultAdapter { searchEvent(it) }
     val searchBar = MutableStateFlow("")
     val searchWord: SharedFlow<String> get() = _searchWord
     val historySet: SharedFlow<Set<String>> get() = _historySet
 
+    init {
+        requestSearchRank()
+    }
+
     fun searchEvent(word: String) {
         val list = mutableListOf<String>()
         list.addAll(searchHistoryAdapter.currentList)
-        viewModelScope.launch(ioDispatcher) {
+        viewModelScope.launch {
             // 중복 단어 선택시 set이 순서 변경을 인식 못함
             // 그래서 set을 비운 다음 다시 채워줌
             if (list.contains(word)) {
@@ -92,6 +82,19 @@ class ProductSearchViewModel @Inject constructor(
         prevSearchBar = searchBar.value
     }
 
+    private fun requestSearchRank() {
+        viewModelScope.launch {
+            repository.getProductSearchRank(LIST_COUNT).let {
+                if (it.isSuccessful) {
+                    popularList = it.body() as MutableList<String>
+                } else {
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                }
+            }
+            searchPopularAdapter.submitList(popularList)
+        }
+    }
+
     fun setHistoryList(list: List<String>) {
         searchHistoryAdapter.submitList(list.toMutableList())
     }
@@ -122,6 +125,6 @@ class ProductSearchViewModel @Inject constructor(
     }
 
     companion object {
-        const val LIST_COUNT = 10
+        private const val LIST_COUNT = 10
     }
 }
