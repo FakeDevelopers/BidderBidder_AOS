@@ -85,7 +85,7 @@ class ProductSearchViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getProductSearchRank(LIST_COUNT).let {
                 if (it.isSuccessful) {
-                    searchPopularAdapter.submitList(it.body())
+                    searchPopularAdapter.submitList(it.body() ?: listOf(""))
                 } else {
                     ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
