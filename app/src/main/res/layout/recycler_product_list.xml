@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_product_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,12 +9,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview_product_list"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="24dp"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
-        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -28,73 +29,120 @@
 
     <TextView
         android:id="@+id/textview_product_list_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="우는 고양이"
+        android:maxLines="2"
+        android:ellipsize="end"
         android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@id/opening_bid"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/cardview_product_list"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="우는 고양이\n우는 고양이"/>
 
     <TextView
         android:id="@+id/hope_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="즉시 구매가"
+        android:layout_marginTop="16dp"
+        android:text="즉시구매가"
+        android:textColor="@color/bidderbidder_primary"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/imageview_product_list_expire"
         app:layout_constraintStart_toEndOf="@+id/cardview_product_list"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product_list_title" />
+        app:layout_constraintTop_toBottomOf="@+id/opening_bid"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/textview_product_list_hope_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="5,000원"
+        android:layout_marginStart="16dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toBottomOf="@+id/hope_price"
         app:layout_constraintStart_toEndOf="@+id/hope_price"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product_list_title" />
+        app:layout_constraintTop_toTopOf="@+id/hope_price"
+        tools:text="5,000원" />
 
     <TextView
         android:id="@+id/opening_bid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:text="최소 입찰가"
+        android:layout_marginTop="16dp"
+        android:text="최소입찰가"
+        android:textColor="@color/black"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/hope_price"
         app:layout_constraintStart_toEndOf="@+id/cardview_product_list"
-        app:layout_constraintTop_toBottomOf="@+id/hope_price" />
+        app:layout_constraintTop_toBottomOf="@+id/textview_product_list_title"
+        app:layout_constraintVertical_chainStyle="packed" />
 
     <TextView
         android:id="@+id/textview_product_list_opening_bid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:text="1,000원"
+        android:layout_marginStart="16dp"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toBottomOf="@+id/opening_bid"
         app:layout_constraintStart_toEndOf="@+id/opening_bid"
-        app:layout_constraintTop_toBottomOf="@+id/textview_product_list_hope_price" />
+        app:layout_constraintTop_toTopOf="@+id/opening_bid"
+        tools:text="1,000원"/>
 
     <TextView
         android:id="@+id/textview_product_list_expire"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
-        android:text="1시간 30분 후 마감"
-        app:layout_constraintStart_toEndOf="@+id/cardview_product_list"
-        app:layout_constraintTop_toBottomOf="@+id/opening_bid" />
+        android:layout_marginStart="4dp"
+        android:textSize="10sp"
+        android:includeFontPadding="false"
+        app:layout_constraintBottom_toBottomOf="@+id/imageview_product_list_expire"
+        app:layout_constraintStart_toEndOf="@+id/imageview_product_list_expire"
+        app:layout_constraintTop_toTopOf="@+id/imageview_product_list_expire"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="마감 까지: 1시간 30분"/>
 
     <TextView
         android:id="@+id/textview_product_list_participant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:text="몇 명 입찰"
-        android:textSize="11sp"
+        android:includeFontPadding="false"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/textview_product_list_expire"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textview_product_list_expire"
+        app:layout_constraintTop_toTopOf="@+id/textview_product_list_expire"
+        tools:text="21명 입찰"/>
+
+    <ImageView
+        android:id="@+id/imageview_product_list_expire"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/cardview_product_list"
+        app:layout_constraintTop_toBottomOf="@+id/hope_price"
+        app:srcCompat="@drawable/vector_clock" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

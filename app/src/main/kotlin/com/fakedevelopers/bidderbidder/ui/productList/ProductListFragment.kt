@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -14,7 +12,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
@@ -27,12 +24,11 @@ import kotlinx.coroutines.launch
 class ProductListFragment : Fragment() {
 
     private var _binding: FragmentProductListBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
-    private val binding get() = _binding!!
-    private val args: ProductListFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +50,7 @@ class ProductListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val args: ProductListFragmentArgs by navArgs()
         if (viewModel.isInitialize) {
             kotlin.runCatching {
                 args.searchWord
@@ -69,8 +66,8 @@ class ProductListFragment : Fragment() {
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isLoading.collectLatest {
-                    binding.swipeProductList.isRefreshing = it
+                viewModel.isRefreshing.collectLatest { state ->
+                    binding.swipeProductList.isRefreshing = state
                 }
             }
         }
@@ -90,16 +87,11 @@ class ProductListFragment : Fragment() {
             viewModel.requestProductList(true)
         }
         binding.recyclerProductList.apply {
-            addItemDecoration(
-                DividerItemDecoration(requireContext(), LinearLayout.VERTICAL).apply {
-                    setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider_product_list)!!)
-                }
-            )
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
-                    binding.recyclerProductList.layoutManager.let {
-                        val lastVisibleItem = (it as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+                    (layoutManager as? LinearLayoutManager)?.let {
+                        val lastVisibleItem = it.findLastCompletelyVisibleItemPosition()
                         if (it.itemCount <= lastVisibleItem + REFRESH_COUNT) {
                             viewModel.getNextProductList()
                         }
@@ -110,7 +102,9 @@ class ProductListFragment : Fragment() {
                 override fun onLayoutCompleted(state: RecyclerView.State?) {
                     super.onLayoutCompleted(state)
                     if (viewModel.isInitialize) {
-                        binding.recyclerProductList.scrollToPosition(0)
+                        binding.recyclerProductList.post {
+                            layoutManager?.scrollToPosition(0)
+                        }
                         viewModel.setInitializeState(false)
                     }
                 }
@@ -133,6 +127,6 @@ class ProductListFragment : Fragment() {
     }
 
     companion object {
-        const val REFRESH_COUNT = 5
+        private const val REFRESH_COUNT = 5
     }
 }
