@@ -1,32 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="@dimen/registration_toolbar_height">
 
     <ImageButton
         android:id="@+id/button_back"
-        tools:ignore="ContentDescription,SpeakableTextPresentCheck"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="@dimen/registration_toolbar_top_padding"
         android:backgroundTint="@android:color/transparent"
-        android:minHeight="48dp"
+        android:paddingStart="@dimen/registration_toolbar_left_padding"
+        android:src="@drawable/ic_back_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable" />
+        tools:ignore="ContentDescription,RtlSymmetry,SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/textview_title"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/registration_toolbar_top_padding"
+        android:gravity="center_vertical"
         android:text="@string/registration_toolbar_user_registration"
         android:textColor="@color/black"
+        android:textSize="@dimen/registration_text_size_up"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpUsage" />
 </androidx.constraintlayout.widget.ConstraintLayout>

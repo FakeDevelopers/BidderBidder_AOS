@@ -1,6 +1,8 @@
 package com.fakedevelopers.bidderbidder.ui.register.password
 
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,9 +45,51 @@ class UserRegistrationPasswordFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initListener()
         initCollector()
-        if (viewModel.userPasswordConditionLengthState.value && viewModel.userPasswordConditionCharacterState.value) {
+        if (viewModel.userPasswordConditionLengthState.value &&
+            viewModel.userPasswordConditionAlphabetState.value &&
+            viewModel.userPasswordConditionAlphabetState.value
+        ) {
             binding.textviewPasswordConfirmInfo.visibility = View.VISIBLE
+        }
+    }
+
+    private fun initListener() {
+        // 만료 시간 필터 등록
+        binding.apply {
+            edittextPassword.setOnFocusChangeListener { _, hasFocus ->
+                passwordClearButton.visibility = getVisibility(
+                    hasFocus && edittextPassword.text.isNullOrBlank().not()
+                )
+            }
+            passwordClearButton.setOnClickListener {
+                edittextPassword.text?.clear()
+                passwordClearButton.visibility = View.GONE
+            }
+            passwordPasswordToggle.setOnClickListener {
+                edittextPassword.transformationMethod = if (passwordPasswordToggle.isChecked) {
+                    HideReturnsTransformationMethod.getInstance()
+                } else {
+                    PasswordTransformationMethod.getInstance()
+                }
+            }
+            edittextPasswordConfirm.setOnFocusChangeListener { _, hasFocus ->
+                passwordConfirmClearButton.visibility = getVisibility(
+                    hasFocus && edittextPasswordConfirm.text.isNullOrBlank().not()
+                )
+            }
+            passwordConfirmClearButton.setOnClickListener() {
+                edittextPasswordConfirm.text?.clear()
+                passwordConfirmClearButton.visibility = View.GONE
+            }
+            passwordConfirmPasswordToggle.setOnClickListener {
+                edittextPasswordConfirm.transformationMethod = if (passwordConfirmPasswordToggle.isChecked) {
+                    HideReturnsTransformationMethod.getInstance()
+                } else {
+                    PasswordTransformationMethod.getInstance()
+                }
+            }
         }
     }
 
@@ -61,8 +105,16 @@ class UserRegistrationPasswordFragment : Fragment() {
         // 비밀번호 문자 조건
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConditionCharacterState.collectLatest {
-                    setTextViewColor(binding.textviewPasswordConditionCharacter, getColorId(it))
+                viewModel.userPasswordConditionAlphabetState.collectLatest {
+                    setTextViewColor(binding.textviewPasswordConditionAlphabet, getColorId(it))
+                }
+            }
+        }
+        // 비밀번호 숫자 조건
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userPasswordConditionNumberState.collectLatest {
+                    setTextViewColor(binding.textviewPasswordConditionNumber, getColorId(it))
                 }
             }
         }
@@ -70,7 +122,7 @@ class UserRegistrationPasswordFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userPasswordConfirmVisible.collectLatest {
-                    binding.textviewPasswordConfirmInfo.visibility = if (it) View.VISIBLE else View.INVISIBLE
+                    binding.textviewPasswordConfirmInfo.visibility = getVisibility(it)
                 }
             }
         }
@@ -82,27 +134,80 @@ class UserRegistrationPasswordFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.inputUserPassword.collectLatest {
+                    checkPasswordsSame()
+
+                    binding.apply {
+                        if (it.isBlank()) {
+                            passwordPasswordToggle.visibility = View.GONE
+                        } else {
+                            passwordPasswordToggle.visibility = View.VISIBLE
+                            passwordClearButton.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.inputConfirmUserPassword.collectLatest {
+                    checkPasswordsSame()
+
+                    binding.apply {
+                        if (it.isBlank()) {
+                            passwordConfirmPasswordToggle.visibility = View.GONE
+                        } else {
+                            passwordConfirmPasswordToggle.visibility = View.VISIBLE
+                            passwordConfirmClearButton.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getVisibility(state: Boolean) = if (state) View.VISIBLE else View.INVISIBLE
+
+    // 두 비밀번호가 같으면 색 파란색 다르면 빨간색으로 설정
+    private fun checkPasswordsSame() {
+        viewModel.apply {
+            if (inputConfirmUserPassword.value.contentEquals(inputUserPassword.value)) {
+                setEditPasswordConfirmBackground(R.drawable.text_input_white_background_accepted)
+            } else {
+                setEditPasswordConfirmBackground(R.drawable.text_input_white_background_error)
+            }
+        }
     }
 
     private fun setPasswordConfirmInfo(state: Boolean) {
         binding.textviewPasswordConfirmInfo.let {
+            it.isSelected = state
             if (state) {
                 it.setText(R.string.registration_password_is_same)
+                it.onCheckIsTextEditor()
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.bidderbidder_primary))
             } else {
                 it.setText(R.string.registration_password_is_not_same)
+                it.setTextColor(ContextCompat.getColor(requireContext(), R.color.alert_red))
             }
-            setTextViewColor(it, getColorId(state))
         }
+    }
+
+    private fun setEditPasswordConfirmBackground(drawableId: Int) {
+        binding.edittextPasswordConfirm.background = ContextCompat.getDrawable(requireContext(), drawableId)
     }
 
     private fun setTextViewColor(tv: TextView, colorId: Int) {
         tv.setTextColor(ContextCompat.getColor(requireContext(), colorId))
+        tv.isSelected = colorId == R.color.bidderbidder_primary
+        tv.isEnabled = viewModel.inputUserPassword.value.isNotEmpty()
     }
+    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 
-    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.alert_red
-
-    override fun onDestroy() {
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
-        super.onDestroy()
     }
 }

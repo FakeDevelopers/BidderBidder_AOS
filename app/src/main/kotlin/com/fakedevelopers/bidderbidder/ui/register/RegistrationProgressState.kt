@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.register
 
 enum class RegistrationProgressState {
+    EMPTY_STATE,
     ACCEPT_TERMS,
     PHONE_AUTH_BEFORE_SENDING,
     PHONE_AUTH_CHECK_AUTH_CODE,

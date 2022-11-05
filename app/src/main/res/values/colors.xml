@@ -2,6 +2,7 @@
 <resources>
     <color name="bidderbidder_primary">#FF21CEFF</color>
     <color name="bidderbidder_secondary">#FF5D5FEF</color>
+    <color name="bidderbidder_gray">#D6D6D6</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -18,4 +19,10 @@
     <color name="common_login_background">#DBDBDB</color>
     <color name="small_text_button">#B4B4B4</color>
     <color name="edit_text_hint">#C4C4C4</color>
+    <color name="text_input_white_background">#FFFFFF</color>
+    <color name="text_input_white_border">#F2F2F2</color>
+    <color name="button_warn_border">#F93D5D</color>
+    <color name="button_warn_background">#12F93D5D</color>
+    <color name="text_input_hint_color_normal">#979797</color>
+    <color name="progressbar_disabled">#DBDBDB</color>
 </resources>

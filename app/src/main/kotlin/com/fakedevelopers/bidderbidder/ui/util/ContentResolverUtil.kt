@@ -1,11 +1,13 @@
 package com.fakedevelopers.bidderbidder.ui.util
 
-import android.content.Context
+import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
+import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.UpdatedAlbumItem
 
-class ContentResolverUtil(context: Context) {
-    private val contentResolver = context.contentResolver
+class ContentResolverUtil(
+    private val contentResolver: ContentResolver
+) {
 
     fun isExist(uri: Uri): Boolean {
         contentResolver.runCatching {
@@ -29,23 +31,29 @@ class ContentResolverUtil(context: Context) {
         return if (invalidSelectedImageList.isNotEmpty()) validSelectedImageList else uriList
     }
 
-    fun getDateModifiedFromUri(uri: Uri): Pair<String, Long> {
+    fun getDateModifiedFromUri(uri: Uri): UpdatedAlbumItem? =
         contentResolver.query(
             uri,
             arrayOf(
-                MediaStore.Images.Media.RELATIVE_PATH,
+                MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
             null,
             null,
             null
-        )?.let {
-            it.moveToNext()
-            val relativePath = it.getString(it.getColumnIndexOrThrow(MediaStore.Images.Media.RELATIVE_PATH))
-            val dateModified = it.getLong(it.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
-            it.close()
-            return relativePath to dateModified
+        )?.let { cursor ->
+            var updatedAlbumItem: UpdatedAlbumItem? = null
+            val result = cursor.moveToNext()
+            if (result) {
+                val path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                val token = path.substringBeforeLast("/")
+                updatedAlbumItem = UpdatedAlbumItem(
+                    uri.toString(),
+                    token,
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.ImageColumns.DATE_MODIFIED))
+                )
+            }
+            cursor.close()
+            updatedAlbumItem
         }
-        return "" to 0L
-    }
 }

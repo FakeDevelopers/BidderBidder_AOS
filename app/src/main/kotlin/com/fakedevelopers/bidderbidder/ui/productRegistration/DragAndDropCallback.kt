@@ -19,7 +19,7 @@ class DragAndDropCallback(
         viewHolder: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        adapter.onItemDragMove(viewHolder.adapterPosition, target.adapterPosition)
+        adapter.onItemDragMove(viewHolder.absoluteAdapterPosition, target.absoluteAdapterPosition)
         return true
     }
 
@@ -66,8 +66,8 @@ class DragAndDropCallback(
     ) {
         val newDX =
             if (
-                (viewHolder.adapterPosition == 0 && dX < 0) ||
-                (viewHolder.adapterPosition == recyclerView.adapter!!.itemCount - 1 && dX > 0)
+                (viewHolder.absoluteAdapterPosition == 0 && dX < 0) ||
+                (viewHolder.absoluteAdapterPosition == recyclerView.adapter!!.itemCount - 1 && dX > 0)
             ) {
                 0.0f
             } else {
