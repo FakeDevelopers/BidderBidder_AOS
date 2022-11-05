@@ -129,7 +129,10 @@ class ProductListFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        binding.recyclerProductList.removeOnScrollListener(infinityScroll)
+        binding.recyclerProductList.run {
+            layoutManager = null
+            removeOnScrollListener(infinityScroll)
+        }
         _binding = null
     }
 
