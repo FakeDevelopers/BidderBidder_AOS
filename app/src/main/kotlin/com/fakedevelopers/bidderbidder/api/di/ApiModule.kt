@@ -6,6 +6,7 @@ import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
+import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.service.ChatService
@@ -13,6 +14,7 @@ import com.fakedevelopers.bidderbidder.api.service.ProductCategoryService
 import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
+import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.google.firebase.auth.FirebaseAuth
@@ -148,4 +150,15 @@ object ApiModule {
     @Provides
     fun provideChatRepository(service: ChatService): ChatRepository =
         ChatRepository(service)
+
+    // 인기 검색어 요청
+    @Singleton
+    @Provides
+    fun provideProductSearchService(retrofit: Retrofit): ProductSearchService =
+        retrofit.create(ProductSearchService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
+        ProductSearchRepository(service)
 }

@@ -2,16 +2,19 @@ package com.fakedevelopers.bidderbidder.ui.productSearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
+import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
+import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.random.Random
 
-class ProductSearchViewModel(
-    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.IO
+@HiltViewModel
+class ProductSearchViewModel @Inject constructor(
+    private val repository: ProductSearchRepository
 ) : ViewModel() {
 
     private val _searchWord = MutableSharedFlow<String>()
@@ -19,24 +22,25 @@ class ProductSearchViewModel(
 
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
-    private val popularList = MutableStateFlow<MutableList<String>>(mutableListOf())
     private var prevSearchBar = ""
 
     val searchHistoryAdapter = SearchHistoryAdapter(
         eraseHistory = { eraseHistoryEvent(it) }
     ) { searchEvent(it) }
-    val searchPopularAdapter = SearchPopularAdapter { searchEvent(it) }.apply {
-        submitList(listOf("test", "테스트", "아반떼", "야옹이", "인조인간"))
-    }
+    val searchPopularAdapter = SearchPopularAdapter { searchEvent(it) }
     val searchResultAdapter = SearchResultAdapter { searchEvent(it) }
     val searchBar = MutableStateFlow("")
     val searchWord: SharedFlow<String> get() = _searchWord
     val historySet: SharedFlow<Set<String>> get() = _historySet
 
+    init {
+        requestSearchRank()
+    }
+
     fun searchEvent(word: String) {
         val list = mutableListOf<String>()
         list.addAll(searchHistoryAdapter.currentList)
-        viewModelScope.launch(defaultDispatcher) {
+        viewModelScope.launch {
             // 중복 단어 선택시 set이 순서 변경을 인식 못함
             // 그래서 set을 비운 다음 다시 채워줌
             if (list.contains(word)) {
@@ -77,6 +81,18 @@ class ProductSearchViewModel(
         prevSearchBar = searchBar.value
     }
 
+    private fun requestSearchRank() {
+        viewModelScope.launch {
+            repository.getProductSearchRank(LIST_COUNT).let {
+                if (it.isSuccessful) {
+                    searchPopularAdapter.submitList(it.body() ?: listOf(""))
+                } else {
+                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                }
+            }
+        }
+    }
+
     fun setHistoryList(list: List<String>) {
         searchHistoryAdapter.submitList(list.toMutableList())
     }
@@ -104,5 +120,9 @@ class ProductSearchViewModel(
             searchHistoryAdapter.submitList(list)
             _historySet.emit(list.toSet())
         }
+    }
+
+    companion object {
+        private const val LIST_COUNT = 10
     }
 }
