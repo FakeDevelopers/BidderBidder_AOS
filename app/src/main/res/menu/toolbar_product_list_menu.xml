@@ -4,8 +4,13 @@
 
     <item
         android:id="@+id/toolbar_search"
-        android:icon="?android:attr/actionModeWebSearchDrawable"
+        android:icon="@drawable/vector_search"
         android:title="@string/toolbar_search"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/toolbar_menu"
+        android:icon="@drawable/vector_menu"
+        android:title="메뉴"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/toolbar_alarm"

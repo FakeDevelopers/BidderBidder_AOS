@@ -7,12 +7,12 @@
         android:title="@string/bottom_home"
         android:enabled="true"/>
     <item
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/vector_search"
         android:title="Item"
         android:enabled="true"/>
     <item
         android:id="@+id/menu_product_registration"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:icon="@drawable/vector_registration"
         android:title="@string/bottom_writing"
         android:enabled="true"/>
     <item

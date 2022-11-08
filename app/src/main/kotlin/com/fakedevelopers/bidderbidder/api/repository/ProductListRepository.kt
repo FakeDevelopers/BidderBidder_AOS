@@ -1,7 +1,7 @@
 package com.fakedevelopers.bidderbidder.api.repository
 
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
-import com.fakedevelopers.bidderbidder.ui.productList.ProductListDto
+import com.fakedevelopers.bidderbidder.ui.productList.ProductItem
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -13,7 +13,7 @@ class ProductListRepository @Inject constructor(
         searchType: Int,
         listCount: Int,
         startNumber: Long
-    ): Response<List<ProductListDto>> {
+    ): Response<List<ProductItem>> {
         return service.getProductList(searchWord, searchType, listCount, startNumber)
     }
 }
