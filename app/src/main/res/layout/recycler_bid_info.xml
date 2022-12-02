@@ -1,41 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textview_rank"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingVertical="4dp">
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1등" />
 
-        <TextView
-            android:id="@+id/textview_rank"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            tools:text="1" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textview_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/textview_rank"
+        app:layout_constraintStart_toEndOf="@id/textview_rank"
+        app:layout_constraintTop_toTopOf="@id/textview_rank"
+        tools:text="김한빈" />
 
-        <TextView
-            android:id="@+id/textview_nickname"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            tools:text="김민성" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textview_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:textSize="8sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textview_rank"
+        tools:text="2022.11.01" />
 
-        <TextView
-            android:id="@+id/textview_bid"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            tools:text="1,000,000,000,000" />
-    </LinearLayout>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textview_bid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/textview_nickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/textview_nickname"
+        tools:text="100,000원" />
 
-    <com.google.android.material.divider.MaterialDivider
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
