@@ -57,12 +57,22 @@
                         android:id="@+id/viewpager_product_detail_pictures"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:adapter="@{vm.productDetailAdapter}"
                         android:nestedScrollingEnabled="true"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:layout_height="300dp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_picture_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        tools:text="1 / 2" />
 
                     <include
                         android:id="@+id/include_product_detail_seller"
@@ -73,16 +83,6 @@
                         app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
                         app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
                         app:layout_constraintTop_toBottomOf="@id/viewpager_product_detail_pictures" />
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/textview_product_detail_picture_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:textSize="12sp"
-                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
-                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
-                        tools:text="1 / 2" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:id="@+id/divider_product_detail_level0"
@@ -98,7 +98,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        android:text="@{vm.title}"
+                        android:text="@{vm.productDetailDto.productTitle}"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -124,6 +124,7 @@
                         android:layout_marginEnd="4dp"
                         android:drawableLeft="@drawable/vector_eye"
                         android:drawablePadding="2dp"
+                        android:text="7"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_category_and_time"
                         app:layout_constraintEnd_toStartOf="@id/textview_product_detail_hearts"
@@ -136,6 +137,7 @@
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/vector_heart"
                         android:drawablePadding="2dp"
+                        android:text="3"
                         android:textSize="11sp"
                         app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_views"
                         app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
@@ -158,7 +160,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="@{vm.minimumBid}"
+                        android:text="@{@string/price_format(vm.productDetailDto.openingBid)}"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
@@ -173,6 +175,7 @@
                         android:text="@string/product_detail_hope_price"
                         android:textColor="@color/bidderbidder_primary"
                         android:textSize="12sp"
+                        android:visibility="@{vm.productDetailDto.hopePrice == 0 ? View.GONE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@+id/textview_product_detail_label_minumum_bid"
                         app:layout_constraintStart_toStartOf="@id/textview_product_detail_hope_price"
                         app:layout_constraintTop_toTopOf="@+id/textview_product_detail_label_minumum_bid" />
@@ -181,10 +184,11 @@
                         android:id="@+id/textview_product_detail_hope_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{vm.hopePrice}"
+                        android:text="@{@string/price_format(vm.productDetailDto.hopePrice)}"
                         android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
+                        android:visibility="@{vm.productDetailDto.hopePrice == 0 ? View.GONE : View.VISIBLE}"
                         app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_minumum_bid"
                         app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
                         app:layout_constraintHorizontal_bias="0.3"
@@ -198,7 +202,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24sp"
                         android:lineSpacingExtra="8dp"
-                        android:text="@{vm.contents}"
+                        android:text="@{vm.productDetailDto.productContent}"
                         android:textColor="@color/black"
                         android:textSize="13sp"
                         app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
@@ -220,6 +224,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16sp"
+                        android:text="@{@string/product_detail_bidder_count(vm.productDetailDto.bidderCount)}"
                         android:textColor="@color/black"
                         android:textSize="13sp"
                         android:textStyle="bold"
@@ -232,6 +237,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="11sp"
+                        android:text="@{@string/product_detail_tick(vm.productDetailDto.tick)}"
                         app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_current_bidding"
                         app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
                         app:layout_constraintTop_toTopOf="@id/textview_product_detail_current_bidding"
@@ -247,14 +253,15 @@
                     android:layout_marginTop="24dp"
                     android:adapter="@{vm.bidInfoAdapter}"
                     android:nestedScrollingEnabled="false"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/recycler_bid_info"/>
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/textview_product_detail_secret_rank"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginTop="24dp"
+                    android:layout_marginVertical="8dp"
                     android:text="@string/product_detail_secret_rank"
                     android:textColor="@color/black"
                     android:textSize="12sp"

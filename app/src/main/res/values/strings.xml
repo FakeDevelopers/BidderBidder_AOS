@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">BidderBidder</string>
+    <string name="price_format">%,2d 원</string>
     <!-- Strings related to permission-->
     <string name="read_external_storage">미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.</string>
     <!-- Strings related to loginType -->
@@ -90,15 +91,15 @@
     <string name="alert_dialog_with_decline">아니오</string>
     <string name="alert_dialog_with_check">확인</string>
     <!-- Strings related to Product Detail -->
-    <string name="product_detail_picture_count">%1d / $2d</string>
+    <string name="product_detail_picture_count">%1d / %2d</string>
     <string name="product_detail_category_and_time">%1s • %2s</string>
     <string name="product_detail_expired">경매 마감</string>
     <string name="product_detail_minimum_bid">최소입찰가</string>
     <string name="product_detail_hope_price">즉시구매가</string>
     <string name="product_detail_btn_buy">즉시 구매하기</string>
     <string name="product_detail_btn_bid">입찰하기</string>
-    <string name="product_detail_current_bidding">입찰 현황 %1d</string>
-    <string name="product_detail_tick">입찰 단위 %1s</string>
+    <string name="product_detail_bidder_count">입찰 현황 %1d</string>
+    <string name="product_detail_tick">입찰 단위 %,2d원</string>
     <string name="product_detail_rank">%1d등</string>
     <string name="product_detail_secret_rank">*1–3등은 비공개 처리됩니다</string>
     <string name="product_detail_secret_price">비공개</string>
