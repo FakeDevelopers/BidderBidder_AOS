@@ -17,7 +17,7 @@ import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
-import com.fakedevelopers.bidderbidder.ui.util.HttpRequestExtensions
+import com.fakedevelopers.bidderbidder.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -26,9 +26,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -37,6 +35,14 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NormalOkHttpClient
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -55,23 +61,23 @@ object ApiModule {
 
     @Singleton
     @Provides
-    @AuthRetrofit
-    fun provideAuthOkHttpClient() = if (BuildConfig.DEBUG.not()) {
+    @AuthOkHttpClient
+    fun provideAuthOkHttpClient(authInterceptor: LoginAuthInterceptor) = if (BuildConfig.DEBUG.not()) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
         OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
+            .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
             .build()
     } else {
         OkHttpClient.Builder()
-            .addInterceptor(AuthInterceptor())
+            .addInterceptor(authInterceptor)
             .build()
     }
 
     @Singleton
     @Provides
-    @NormalRetrofit
+    @NormalOkHttpClient
     fun provideNormalOkHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -94,7 +100,7 @@ object ApiModule {
     @Singleton
     @Provides
     @AuthRetrofit
-    fun provideAuthRetrofit(@AuthRetrofit okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    fun provideAuthRetrofit(@AuthOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
@@ -106,7 +112,7 @@ object ApiModule {
     @Singleton
     @Provides
     @NormalRetrofit
-    fun provideNormalRetrofit(@NormalRetrofit okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    fun provideNormalRetrofit(@NormalOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
@@ -212,16 +218,7 @@ object ApiModule {
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepository(service)
 
-    class AuthInterceptor : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
-            val newRequest = request().newBuilder()
-            FirebaseAuth.getInstance().currentUser?.run {
-                this.getIdToken(false).let {
-                    val authorization = HttpRequestExtensions.BEARER_TOKEN_PREFIX + it.result.token
-                    newRequest.addHeader("Authorization", authorization)
-                }
-            }
-            proceed(newRequest.build())
-        }
-    }
+    @Singleton
+    @Provides
+    fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
 }
