@@ -37,6 +37,14 @@ import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
+annotation class AuthOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NormalOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
 annotation class AuthRetrofit
 
 @Qualifier
@@ -52,7 +60,7 @@ object ApiModule {
 
     @Singleton
     @Provides
-    @AuthRetrofit
+    @AuthOkHttpClient
     fun provideAuthOkHttpClient(authInterceptor: LoginAuthInterceptor) = if (BuildConfig.DEBUG.not()) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
@@ -68,7 +76,7 @@ object ApiModule {
 
     @Singleton
     @Provides
-    @NormalRetrofit
+    @NormalOkHttpClient
     fun provideNormalOkHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -86,7 +94,7 @@ object ApiModule {
     @Singleton
     @Provides
     @AuthRetrofit
-    fun provideAuthRetrofit(@AuthRetrofit okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    fun provideAuthRetrofit(@AuthOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
@@ -98,7 +106,7 @@ object ApiModule {
     @Singleton
     @Provides
     @NormalRetrofit
-    fun provideNormalRetrofit(@NormalRetrofit okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    fun provideNormalRetrofit(@NormalOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
