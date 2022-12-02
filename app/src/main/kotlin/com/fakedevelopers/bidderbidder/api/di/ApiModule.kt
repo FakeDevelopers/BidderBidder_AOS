@@ -17,6 +17,7 @@ import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
+import com.fakedevelopers.bidderbidder.ui.util.HttpRequestExtensions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -25,7 +26,9 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -161,4 +164,17 @@ object ApiModule {
     @Provides
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepository(service)
+
+    class AuthInterceptor : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
+            val newRequest = request().newBuilder()
+            FirebaseAuth.getInstance().currentUser?.run {
+                this.getIdToken(false).let {
+                    val authorization = HttpRequestExtensions.BEARER_TOKEN_PREFIX + it.result.token
+                    newRequest.addHeader("Authorization", authorization)
+                }
+            }
+            proceed(newRequest.build())
+        }
+    }
 }
