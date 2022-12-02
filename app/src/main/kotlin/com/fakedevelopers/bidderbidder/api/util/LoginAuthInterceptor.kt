@@ -11,11 +11,9 @@ class LoginAuthInterceptor @Inject constructor(
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
         val newRequest = request().newBuilder()
-        firebase.currentUser?.run {
-            this.getIdToken(false).let {
-                val authorization = HttpRequestExtensions.BEARER_TOKEN_PREFIX + it.result.token
-                newRequest.addHeader("Authorization", authorization)
-            }
+        firebase.currentUser?.getIdToken(false)?.let {
+            val authorization = HttpRequestExtensions.BEARER_TOKEN_PREFIX + it.result.token
+            newRequest.addHeader("Authorization", authorization)
         }
         proceed(newRequest.build())
     }
