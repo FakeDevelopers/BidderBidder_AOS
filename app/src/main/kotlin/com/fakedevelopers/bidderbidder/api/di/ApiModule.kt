@@ -17,6 +17,7 @@ import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
+import com.fakedevelopers.bidderbidder.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -31,7 +32,24 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.Locale
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NormalOkHttpClient
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class NormalRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -42,7 +60,24 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
+    @AuthOkHttpClient
+    fun provideAuthOkHttpClient(authInterceptor: LoginAuthInterceptor) = if (BuildConfig.DEBUG.not()) {
+        val loggingInterceptor = HttpLoggingInterceptor()
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
+            .build()
+    } else {
+        OkHttpClient.Builder()
+            .addInterceptor(authInterceptor)
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @NormalOkHttpClient
+    fun provideNormalOkHttpClient() = if (BuildConfig.DEBUG) {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
         OkHttpClient.Builder()
@@ -58,7 +93,20 @@ object ApiModule {
 
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    @AuthRetrofit
+    fun provideAuthRetrofit(@AuthOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+        return Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(baseUrl)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    @NormalRetrofit
+    fun provideNormalRetrofit(@NormalOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
@@ -79,7 +127,9 @@ object ApiModule {
     // 로그인 요청
     @Singleton
     @Provides
-    fun provideUserLoginService(retrofit: Retrofit): UserLoginService = retrofit.create(UserLoginService::class.java)
+    fun provideUserLoginService(@NormalRetrofit retrofit: Retrofit): UserLoginService = retrofit.create(
+        UserLoginService::class.java
+    )
 
     @Singleton
     @Provides
@@ -88,7 +138,7 @@ object ApiModule {
     // 게시글 등록 요청
     @Singleton
     @Provides
-    fun provideUserProductRegistrationService(retrofit: Retrofit): ProductRegistrationService =
+    fun provideUserProductRegistrationService(@NormalRetrofit retrofit: Retrofit): ProductRegistrationService =
         retrofit.create(ProductRegistrationService::class.java)
 
     @Singleton
@@ -99,7 +149,7 @@ object ApiModule {
     // 상품 카테고리 요청
     @Singleton
     @Provides
-    fun provideProductCategoryService(retrofit: Retrofit): ProductCategoryService =
+    fun provideProductCategoryService(@NormalRetrofit retrofit: Retrofit): ProductCategoryService =
         retrofit.create(ProductCategoryService::class.java)
 
     @Singleton
@@ -110,7 +160,7 @@ object ApiModule {
     // 상품 리스트 요청
     @Singleton
     @Provides
-    fun provideProductListService(retrofit: Retrofit): ProductListService =
+    fun provideProductListService(@NormalRetrofit retrofit: Retrofit): ProductListService =
         retrofit.create(ProductListService::class.java)
 
     @Singleton
@@ -121,7 +171,7 @@ object ApiModule {
     // 구글 로그인 요청
     @Singleton
     @Provides
-    fun provideSigninGoogleService(retrofit: Retrofit): SigninGoogleService =
+    fun provideSigninGoogleService(@AuthRetrofit retrofit: Retrofit): SigninGoogleService =
         retrofit.create(SigninGoogleService::class.java)
 
     @Singleton
@@ -132,7 +182,7 @@ object ApiModule {
     // 상품 상세 정보, 입찰
     @Singleton
     @Provides
-    fun provideProductDetailService(retrofit: Retrofit): ProductDetailService =
+    fun provideProductDetailService(@NormalRetrofit retrofit: Retrofit): ProductDetailService =
         retrofit.create(ProductDetailService::class.java)
 
     @Singleton
@@ -143,7 +193,7 @@ object ApiModule {
     // 스트림 유저 토큰
     @Singleton
     @Provides
-    fun provideChatService(retrofit: Retrofit): ChatService =
+    fun provideChatService(@NormalRetrofit retrofit: Retrofit): ChatService =
         retrofit.create(ChatService::class.java)
 
     @Singleton
@@ -154,11 +204,15 @@ object ApiModule {
     // 인기 검색어 요청
     @Singleton
     @Provides
-    fun provideProductSearchService(retrofit: Retrofit): ProductSearchService =
+    fun provideProductSearchService(@NormalRetrofit retrofit: Retrofit): ProductSearchService =
         retrofit.create(ProductSearchService::class.java)
 
     @Singleton
     @Provides
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepository(service)
+
+    @Singleton
+    @Provides
+    fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
 }
