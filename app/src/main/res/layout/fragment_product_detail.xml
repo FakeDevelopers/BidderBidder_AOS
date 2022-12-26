@@ -68,11 +68,75 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
+                        android:textColor="@color/white"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
                         app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
                         tools:text="1 / 2" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_end"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        tools:text="24분" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_divider_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/product_detail_remain_time_divider"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_end"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_end" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_middle"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_detail_remain_time_divider"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_divider_end"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_divider_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_divider_end"
+                        tools:text="3시간"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_divider_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/product_detail_remain_time_divider"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_middle"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_middle"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_middle" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_start"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_detail_remain_time_divider"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_divider_start"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_divider_start"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_divider_start"
+                        tools:text="1일"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textView_product_detail_expired"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/product_detail_expired"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end" />
 
                     <include
                         android:id="@+id/include_product_detail_seller"
@@ -112,6 +176,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
+                        android:text="음반 • 5시간 전"
                         android:textSize="11sp"
                         app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
                         app:layout_constraintTop_toBottomOf="@id/textview_product_detail_title"
@@ -261,7 +326,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="16dp"
-                    android:layout_marginVertical="8dp"
+                    android:layout_marginBottom="16dp"
                     android:text="@string/product_detail_secret_rank"
                     android:textColor="@color/black"
                     android:textSize="12sp"

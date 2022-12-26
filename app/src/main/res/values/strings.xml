@@ -98,6 +98,7 @@
     <!-- Strings related to Product Detail -->
     <string name="product_detail_picture_count">%1d / %2d</string>
     <string name="product_detail_category_and_time">%1s • %2s</string>
+    <string name="product_detail_remain_time_divider">:</string>
     <string name="product_detail_expired">경매 마감</string>
     <string name="product_detail_before_hours">%1d시간 전</string>
     <string name="product_detail_before_days">%1d일 전</string>
