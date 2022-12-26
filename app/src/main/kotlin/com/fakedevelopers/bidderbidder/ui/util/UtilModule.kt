@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object UtilModule {
+class UtilModule {
 
     @Singleton
     @Provides
@@ -21,4 +21,8 @@ object UtilModule {
     @Provides
     fun provideAlbumImageUtil(@ApplicationContext context: Context) =
         AlbumImageUtils(context.contentResolver)
+
+    @Singleton
+    @Provides
+    fun provideDateUtil() = DateUtil()
 }
