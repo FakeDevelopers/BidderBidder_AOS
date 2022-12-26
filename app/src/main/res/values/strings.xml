@@ -63,6 +63,8 @@
     <string name="registration_button_to_next">다음</string>
     <!-- Strings related to ProductList -->
     <string name="productlist_load_more">더보기</string>
+    <string name="productlist_expired">마감</string>
+    <string name="productlist_remain_time">남은 시간: %1s</string>
     <!-- Strings related to Bottom Navigation -->
     <string name="bottom_home">홈</string>
     <string name="bottom_writing">글쓰기</string>
@@ -94,6 +96,10 @@
     <string name="product_detail_picture_count">%1d / %2d</string>
     <string name="product_detail_category_and_time">%1s • %2s</string>
     <string name="product_detail_expired">경매 마감</string>
+    <string name="product_detail_before_hours">%1d시간 전</string>
+    <string name="product_detail_before_days">%1d일 전</string>
+    <string name="product_detail_before_months">%1d달 전</string>
+    <string name="product_detail_before_years">%1d년 전</string>
     <string name="product_detail_minimum_bid">최소입찰가</string>
     <string name="product_detail_hope_price">즉시구매가</string>
     <string name="product_detail_btn_buy">즉시 구매하기</string>
