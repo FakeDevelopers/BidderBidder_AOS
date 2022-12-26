@@ -35,8 +35,7 @@ class ProductListAdapter(
                 timerTask = ExpirationTimerTask(
                     remainTime = dateUtil.getRemainTimeMillisecond(productItem.expirationDate) ?: 0L,
                     tick = { remainTime ->
-                        textviewProductListExpire.text =
-                            binding.root.context.getString(R.string.productlist_remain_time, remainTime)
+                        textviewProductListExpire.text = dateUtil.getRemainTimeString(remainTime)
                     },
                     finish = {
                         textviewProductListExpire.text =

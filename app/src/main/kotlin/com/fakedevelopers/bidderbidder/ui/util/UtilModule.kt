@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class UtilModule {
+object UtilModule {
 
     @Singleton
     @Provides
@@ -24,5 +24,5 @@ class UtilModule {
 
     @Singleton
     @Provides
-    fun provideDateUtil() = DateUtil()
+    fun provideDateUtil(@ApplicationContext context: Context) = DateUtil(context)
 }

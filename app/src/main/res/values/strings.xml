@@ -109,4 +109,9 @@
     <string name="product_detail_rank">%1d등</string>
     <string name="product_detail_secret_rank">*1–3등은 비공개 처리됩니다</string>
     <string name="product_detail_secret_price">비공개</string>
+    <!-- Strings related to time -->
+    <string name="time_days">%1d일</string>
+    <string name="time_hours">%1d시간</string>
+    <string name="time_minutes">%1d분</string>
+    <string name="time_seconds">%1d초</string>
 </resources>
