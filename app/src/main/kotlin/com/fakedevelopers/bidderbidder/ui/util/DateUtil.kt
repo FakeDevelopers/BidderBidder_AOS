@@ -14,8 +14,8 @@ class DateUtil(
         timeZone = TimeZone.getTimeZone("Asia/Seoul")
     }
 
-    fun getRemainTimeMillisecond(expirationDate: String) =
-        formatter.parse(expirationDate)?.run { time - System.currentTimeMillis() }
+    fun getRemainTimeMillisecond(date: String) =
+        formatter.parse(date)?.run { time - System.currentTimeMillis() }
 
     fun getRemainTimeString(remainTime: RemainTime): String {
         val list = mutableListOf<String>()
