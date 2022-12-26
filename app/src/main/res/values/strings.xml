@@ -67,7 +67,10 @@
     <string name="productlist_remain_time">남은 시간: %1s</string>
     <!-- Strings related to Bottom Navigation -->
     <string name="bottom_home">홈</string>
+    <string name="bottom_search">검색</string>
     <string name="bottom_writing">글쓰기</string>
+    <string name="bottom_chatting">채팅</string>
+    <string name="bottom_mypage">MY</string>
     <!-- Strings related to Toolbar -->
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
