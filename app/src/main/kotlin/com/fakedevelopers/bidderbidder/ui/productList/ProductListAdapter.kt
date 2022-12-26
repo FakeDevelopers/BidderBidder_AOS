@@ -3,6 +3,7 @@ package com.fakedevelopers.bidderbidder.ui.productList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -11,10 +12,12 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListBinding
 import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBinding
+import com.fakedevelopers.bidderbidder.ui.util.DateUtil
 import com.fakedevelopers.bidderbidder.ui.util.ExpirationTimerTask
 import com.fakedevelopers.bidderbidder.ui.util.PriceUtil
 
 class ProductListAdapter(
+    private val dateUtil: DateUtil,
     private val clickLoadMore: () -> Unit,
     private val showProductDetail: (Long) -> Unit
 ) : ListAdapter<ProductListType, RecyclerView.ViewHolder>(diffUtil) {
@@ -30,10 +33,15 @@ class ProductListAdapter(
                     timerTask.cancel()
                 }
                 timerTask = ExpirationTimerTask(
-                    productItem.expirationDate,
-                    1000,
-                    tick = { remainTimeString -> textviewProductListExpire.text = "남은 시간: $remainTimeString" },
-                    finish = { textviewProductListExpire.text = "마감" }
+                    remainTime = dateUtil.getRemainTimeMillisecond(productItem.expirationDate) ?: 0L,
+                    tick = { remainTime ->
+                        textviewProductListExpire.text =
+                            binding.root.context.getString(R.string.productlist_remain_time, remainTime)
+                    },
+                    finish = {
+                        textviewProductListExpire.text =
+                            binding.root.context.getString(R.string.productlist_expired)
+                    }
                 )
                 timerTask.start()
                 Glide.with(root.context)
@@ -42,12 +50,9 @@ class ProductListAdapter(
                     .error(R.drawable.error_cat)
                     .into(imageProductList)
                 textviewProductListTitle.text = productItem.productTitle
-                if (productItem.hopePrice == 0L) {
-                    hopePrice.visibility = View.GONE
-                    textviewProductListHopePrice.visibility = View.GONE
-                } else {
-                    hopePrice.visibility = View.VISIBLE
-                    textviewProductListHopePrice.visibility = View.VISIBLE
+                hopePrice.isVisible = productItem.hopePrice != 0L
+                textviewProductListHopePrice.isVisible = productItem.hopePrice != 0L
+                if (productItem.hopePrice != 0L) {
                     textviewProductListHopePrice.text = PriceUtil.numberToPrice(productItem.hopePrice)
                 }
                 textviewProductListOpeningBid.text = PriceUtil.numberToPrice(productItem.openingBid)

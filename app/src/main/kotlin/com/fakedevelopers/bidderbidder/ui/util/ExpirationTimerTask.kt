@@ -1,16 +1,13 @@
 package com.fakedevelopers.bidderbidder.ui.util
 
 import android.os.CountDownTimer
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.TimeZone
 
 class ExpirationTimerTask(
-    expirationDate: String,
-    countDownInterval: Long,
+    remainTime: Long,
+    countDownInterval: Long = 1000L,
     private val tick: ((String) -> Unit)? = null,
     private val finish: (() -> Unit)? = null
-) : CountDownTimer(getRemainTimeMillisecond(expirationDate), countDownInterval) {
+) : CountDownTimer(remainTime, countDownInterval) {
 
     override fun onTick(millisUntilFinished: Long) {
         tick?.invoke(getRemainTimeString(millisUntilFinished))
@@ -44,14 +41,5 @@ class ExpirationTimerTask(
             }
         }
         return remainTimeString.toString()
-    }
-
-    companion object {
-        private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm").apply {
-            timeZone = TimeZone.getTimeZone("Asia/Seoul")
-        }
-
-        private fun getRemainTimeMillisecond(expirationDate: String) =
-            dateFormat.parse(expirationDate)!!.time - dateFormat.parse(dateFormat.format(Date()))!!.time
     }
 }
