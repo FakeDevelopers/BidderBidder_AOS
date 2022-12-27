@@ -83,6 +83,17 @@ class AcceptTermsFragment : Fragment() {
                 }
             }
         }
+        lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                acceptTermViewModel.termContentsEvent.collectLatest {
+                    if (it.isSuccessful) {
+                        it.body()?.let { _ ->
+                            // TODO
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setAllTermsState(state: Boolean) {
@@ -127,7 +138,7 @@ class AcceptTermsFragment : Fragment() {
                 termType = type
                 vm = viewModel
                 buttonReadMore.setOnClickListener {
-                    // TODO
+                    acceptTermViewModel.requestTermContents(termId)
                 }
             }.root
         )

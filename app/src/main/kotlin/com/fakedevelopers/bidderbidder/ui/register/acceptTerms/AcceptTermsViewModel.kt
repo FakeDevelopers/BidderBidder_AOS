@@ -15,7 +15,10 @@ class AcceptTermsViewModel @Inject constructor(
     private val repository: RegistrationTermRepository
 ) : ViewModel() {
     private val _termListEvent = MutableEventFlow<Response<TermListDto>>()
+    private val _termContentsEvent = MutableEventFlow<Response<String>>()
+
     val termListEvent = _termListEvent.asEventFlow()
+    val termContentsEvent = _termContentsEvent.asEventFlow()
 
     init {
         requestTermList()
@@ -24,6 +27,12 @@ class AcceptTermsViewModel @Inject constructor(
     private fun requestTermList() {
         viewModelScope.launch {
             _termListEvent.emit(repository.getRegistrationTermList())
+        }
+    }
+
+    fun requestTermContents(id: Long) {
+        viewModelScope.launch {
+            _termContentsEvent.emit(repository.getRegistrationTermContents(id))
         }
     }
 }

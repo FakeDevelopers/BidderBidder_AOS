@@ -11,4 +11,8 @@ class RegistrationTermRepository @Inject constructor(
     suspend fun getRegistrationTermList(): Response<TermListDto> {
         return service.getRegistrationTermList()
     }
+
+    suspend fun getRegistrationTermContents(id: Long): Response<String> {
+        return service.getRegistrationTermContents(id)
+    }
 }
