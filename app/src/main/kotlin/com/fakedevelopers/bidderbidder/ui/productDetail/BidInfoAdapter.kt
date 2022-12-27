@@ -16,9 +16,17 @@ class BidInfoAdapter : ListAdapter<BidInfo, BidInfoAdapter.ViewHolder>(diffUtil)
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BidInfo) {
             binding.run {
-                textviewRank.text = item.index.toString()
-                textviewNickname.text = item.userNickname
-                textviewBid.text = if (item.bid == -1L) "비공개" else dec.format(item.bid)
+                binding.textviewRank.text = binding.root.context.getString(R.string.product_detail_rank, item.index)
+                if (item.index == 1) {
+                    binding.textviewRank.setTextColor(binding.root.context.getColor(R.color.bidderbidder_primary))
+                }
+                binding.textviewNickname.text = item.userNickname
+                binding.textviewBid.text =
+                    if (item.bid == -1L) {
+                        binding.root.context.getString(R.string.product_detail_secret_rank)
+                    } else {
+                        dec.format(item.bid)
+                    }
             }
         }
     }
