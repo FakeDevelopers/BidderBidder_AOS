@@ -23,7 +23,7 @@ class BidInfoAdapter : ListAdapter<BidInfo, BidInfoAdapter.ViewHolder>(diffUtil)
                 binding.textviewNickname.text = item.userNickname
                 binding.textviewBid.text =
                     if (item.bid == -1L) {
-                        binding.root.context.getString(R.string.product_detail_secret_rank)
+                        binding.root.context.getString(R.string.product_detail_secret_price)
                     } else {
                         dec.format(item.bid)
                     }
