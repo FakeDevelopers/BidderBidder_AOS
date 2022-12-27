@@ -14,14 +14,17 @@ import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAcceptTermsBinding
 import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AcceptTermsFragment : Fragment() {
 
     private var _binding: FragmentAcceptTermsBinding? = null
 
     private val binding get() = _binding!!
+    private val acceptTermViewModel: AcceptTermsViewModel by viewModels()
     private val viewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
     }
