@@ -18,8 +18,8 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private val essentialTerms = Array(NUMBER_OF_ESSENTIAL_TERM) { false }
-    private val optionalTerms = Array(NUMBER_OF_OPTIONAL_TERM) { false }
+    private var essentialTerms = MutableList(NUMBER_OF_ESSENTIAL_TERM) { false }
+    private var optionalTerms = MutableList(NUMBER_OF_OPTIONAL_TERM) { false }
     val acceptAllState = _acceptAllState.asEventFlow()
 
     /* PhoneAuthFragment */
@@ -73,6 +73,11 @@ class UserRegistrationViewModel : ViewModel() {
         viewModelScope.launch {
             _acceptAllState.emit(isChecked)
         }
+    }
+
+    fun setTermSize(essentialSize: Int, optionalSize: Int) {
+        essentialTerms = MutableList(essentialSize) { false }
+        optionalTerms = MutableList(optionalSize) { false }
     }
 
     // 약관 선택 상태 변경
@@ -281,7 +286,7 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     companion object {
-        private const val NUMBER_OF_ESSENTIAL_TERM = 4
+        private const val NUMBER_OF_ESSENTIAL_TERM = 2
         private const val NUMBER_OF_OPTIONAL_TERM = 1
 
         // 약관 타입
