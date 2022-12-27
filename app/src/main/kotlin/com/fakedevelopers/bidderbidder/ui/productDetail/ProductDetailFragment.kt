@@ -137,7 +137,7 @@ class ProductDetailFragment : Fragment() {
         val lastPriceIndex = textView.text.indexOfLast { c -> c in '0'..'9' } + 1
         textView.text = SpannableStringBuilder(textView.text).apply {
             setSpan(
-                RelativeSizeSpan(0.75f),
+                RelativeSizeSpan(REMAIN_TIME_RELATIVE_SIZE),
                 lastPriceIndex,
                 textView.text.length,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -155,5 +155,9 @@ class ProductDetailFragment : Fragment() {
         super.onDestroyView()
         binding.viewpagerProductDetailPictures.unregisterOnPageChangeCallback(onPageChanged)
         _binding = null
+    }
+
+    companion object {
+        private const val REMAIN_TIME_RELATIVE_SIZE = 0.75f
     }
 }
