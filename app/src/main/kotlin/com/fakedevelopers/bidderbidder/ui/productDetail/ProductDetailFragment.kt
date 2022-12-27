@@ -1,9 +1,15 @@
 package com.fakedevelopers.bidderbidder.ui.productDetail
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
@@ -117,6 +123,31 @@ class ProductDetailFragment : Fragment() {
             binding.textviewProductListRemainTimeDividerStart.isVisible = remainTime.hour > 0
             binding.textviewProductListRemainTimeDividerEnd.isVisible = remainTime.hour > 0 || remainTime.minute > 0
             binding.textviewProductListRemainTimeEnd.text = getString(R.string.time_seconds, remainTime.second)
+        }
+        if (binding.textviewProductListRemainTimeStart.isVisible) {
+            setPartialText(binding.textviewProductListRemainTimeStart)
+        }
+        if (binding.textviewProductListRemainTimeMiddle.isVisible) {
+            setPartialText(binding.textviewProductListRemainTimeMiddle)
+        }
+        setPartialText(binding.textviewProductListRemainTimeEnd)
+    }
+
+    private fun setPartialText(textView: TextView) {
+        val lastPriceIndex = textView.text.indexOfLast { c -> c in '0'..'9' } + 1
+        textView.text = SpannableStringBuilder(textView.text).apply {
+            setSpan(
+                RelativeSizeSpan(0.75f),
+                lastPriceIndex,
+                textView.text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                lastPriceIndex,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
         }
     }
 
