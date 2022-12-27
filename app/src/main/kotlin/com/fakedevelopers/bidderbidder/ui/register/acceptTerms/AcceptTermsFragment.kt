@@ -87,9 +87,11 @@ class AcceptTermsFragment : Fragment() {
 
     private fun setAllTermsState(state: Boolean) {
         binding.run {
-            listOf(includeTerm1, includeTerm2, includeTerm3, includeTerm4, includeTerm5).forEach {
-                it.checkboxAccept.isChecked = state
-            }
+            linearLayout4.children
+                .map { it as ConstraintLayout }
+                .map { it.children.first { view -> view is CheckBox } }
+                .map { it as CheckBox }
+                .forEach { it.isChecked = state }
         }
     }
 
