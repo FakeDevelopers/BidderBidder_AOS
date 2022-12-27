@@ -107,7 +107,7 @@ class ProductDetailFragment : Fragment() {
             else -> getHourDiff(createdDate, now)
         }
         binding.textviewProductDetailCategoryAndTime.text =
-            getString(R.string.product_detail_category_and_time, "음반" , createdDiff)
+            getString(R.string.product_detail_category_and_time, "음반", createdDiff)
     }
 
     private fun getHourDiff(start: LocalDateTime, end: LocalDateTime): String {
@@ -118,7 +118,6 @@ class ProductDetailFragment : Fragment() {
             else -> getString(R.string.product_detail_before_now)
         }
     }
-
 
     private fun handleExpired(state: Boolean) {
         binding.textviewProductListRemainTimeDividerStart.isVisible = state.not()
