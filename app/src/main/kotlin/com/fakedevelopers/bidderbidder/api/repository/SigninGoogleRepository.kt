@@ -8,7 +8,7 @@ import javax.inject.Inject
 class SigninGoogleRepository @Inject constructor(
     private val service: SigninGoogleService
 ) {
-    suspend fun postSigninGoogle(authorization: String): Response<SigninGoogleDto> {
-        return service.postSigninGoogle(authorization)
+    suspend fun postSigninGoogle(): Response<SigninGoogleDto> {
+        return service.postSigninGoogle()
     }
 }

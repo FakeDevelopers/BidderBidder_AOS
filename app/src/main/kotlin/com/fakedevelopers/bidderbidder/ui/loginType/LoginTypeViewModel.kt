@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
-import com.fakedevelopers.bidderbidder.ui.util.HttpRequestExtensions.Companion.BEARER_TOKEN_PREFIX
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -25,9 +24,9 @@ class LoginTypeViewModel @Inject constructor(
 
     val signinGoogleResponse: SharedFlow<Response<SigninGoogleDto>> get() = _signinGoogleResponse
 
-    private fun signinGoogleRequest(token: String) {
+    private fun signinGoogleRequest() {
         viewModelScope.launch {
-            repository.postSigninGoogle(token).let {
+            repository.postSigninGoogle().let {
                 if (it.isSuccessful) {
                     _signinGoogleResponse.emit(it)
                 } else {
@@ -41,9 +40,7 @@ class LoginTypeViewModel @Inject constructor(
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         _auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                task.result.user!!.getIdToken(true).addOnSuccessListener {
-                    signinGoogleRequest(BEARER_TOKEN_PREFIX + it.token)
-                }
+                signinGoogleRequest()
             } else {
                 Logger.e(task.exception.toString())
             }
