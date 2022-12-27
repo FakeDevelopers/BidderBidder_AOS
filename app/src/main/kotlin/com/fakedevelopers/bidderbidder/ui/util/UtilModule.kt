@@ -25,4 +25,8 @@ object UtilModule {
     @Singleton
     @Provides
     fun provideDateUtil(@ApplicationContext context: Context) = DateUtil(context)
+
+    @Singleton
+    @Provides
+    fun provideTextUtil(@ApplicationContext context: Context) = TextUtil(context)
 }
