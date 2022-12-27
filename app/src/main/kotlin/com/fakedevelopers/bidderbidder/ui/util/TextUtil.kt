@@ -10,7 +10,7 @@ import android.text.style.StyleSpan
 class TextUtil(
     private val context: Context
 ) {
-    fun setPartialColor(text: CharSequence, colorId: Int, start: Int, end: Int) =
+    fun getPartialColor(text: CharSequence, colorId: Int, start: Int, end: Int) =
         SpannableStringBuilder(text).apply {
             setSpan(
                 ForegroundColorSpan(context.getColor(colorId)),
@@ -20,7 +20,7 @@ class TextUtil(
             )
         }
 
-    fun setPartialRelativeSize(text: CharSequence, increaseTime: Float, start: Int, end: Int) =
+    fun getPartialRelativeSize(text: CharSequence, increaseTime: Float, start: Int, end: Int) =
         SpannableStringBuilder(text).apply {
             setSpan(
                 RelativeSizeSpan(increaseTime),
@@ -30,7 +30,7 @@ class TextUtil(
             )
         }
 
-    fun setPartialStyle(text: CharSequence, style: Int, start: Int, end: Int) =
+    fun getPartialStyle(text: CharSequence, style: Int, start: Int, end: Int) =
         SpannableStringBuilder(text).apply {
             setSpan(
                 StyleSpan(style),
