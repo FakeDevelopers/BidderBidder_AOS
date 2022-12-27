@@ -24,17 +24,8 @@ class ProductDetailViewModel @Inject constructor(
     private val _productDetailDto = MutableStateFlow(ProductDetailDto())
     val productDetailDto: StateFlow<ProductDetailDto> get() = _productDetailDto
 
-    private val _productPictures = MutableStateFlow<List<String>>(emptyList())
-    val productPictures: StateFlow<List<String>> get() = _productPictures
-
-    private val _expiredEvent = MutableEventFlow<Boolean>()
-    val expiredEvent = _expiredEvent.asEventFlow()
-
-    private val _timerEvent = MutableEventFlow<RemainTime>()
-    val timerEvent = _timerEvent.asEventFlow()
-
-    private val _sendMessageEvent = MutableEventFlow<String>()
-    val sendMessageEvent = _sendMessageEvent.asEventFlow()
+    private val _eventFlow = MutableEventFlow<Event>()
+    val eventFlow = _eventFlow.asEventFlow()
 
     private val _biddingButtonVisibility = MutableStateFlow(true)
 
@@ -47,16 +38,20 @@ class ProductDetailViewModel @Inject constructor(
     fun productDetailRequest(productId: Long) {
         this.productId = productId
         viewModelScope.launch {
-            repository.getProductDetail(productId).let {
-                if (it.isSuccessful) {
-                    val detail = it.body() ?: ProductDetailDto()
-                    _productDetailDto.emit(detail)
-                    _productPictures.emit(detail.images)
-                    startTimerTask(detail.expirationDate)
-                    bidInfoAdapter.submitList(detail.bids)
+            val result = repository.getProductDetail(productId)
+            if (result.isSuccessful) {
+                val detail = result.body() ?: ProductDetailDto()
+                _productDetailDto.emit(detail)
+                if (detail.images.isEmpty()) {
+                    event(Event.ProductImages(listOf("")))
                 } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                    event(Event.ProductImages(detail.images))
                 }
+                event(Event.CreatedDate(detail.createdDate))
+                startTimerTask(detail.expirationDate)
+                bidInfoAdapter.submitList(detail.bids)
+            } else {
+                ApiErrorHandler.printErrorMessage(result.errorBody())
             }
         }
     }
@@ -66,16 +61,29 @@ class ProductDetailViewModel @Inject constructor(
             remainTime = dateUtil.getRemainTimeMillisecond(expirationDate) ?: 0L,
             tick = { remainTime ->
                 viewModelScope.launch {
-                    _timerEvent.emit(remainTime)
+                    event(Event.Timer(remainTime))
                 }
             },
             finish = {
                 viewModelScope.launch {
-                    _expiredEvent.emit(true)
+                    event(Event.Expired(true))
                     _biddingButtonVisibility.emit(false)
                 }
             }
         )
         timerTask.start()
+    }
+
+    private fun event(event: Event) {
+        viewModelScope.launch {
+            _eventFlow.emit(event)
+        }
+    }
+
+    sealed class Event {
+        data class ProductImages(val images: List<String>) : Event()
+        data class Expired(val state: Boolean) : Event()
+        data class Timer(val remainTime: RemainTime) : Event()
+        data class CreatedDate(val date: String) : Event()
     }
 }

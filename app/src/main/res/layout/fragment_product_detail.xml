@@ -186,7 +186,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="음반 • 5시간 전"
                         android:textSize="11sp"
                         app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
                         app:layout_constraintTop_toBottomOf="@id/textview_product_detail_title"

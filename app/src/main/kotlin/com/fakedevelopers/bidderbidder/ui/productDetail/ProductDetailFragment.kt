@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -21,8 +20,12 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.bidderbidder.model.RemainTime
 import com.fakedevelopers.bidderbidder.ui.util.repeatOnStarted
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.Period
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class ProductDetailFragment : Fragment() {
@@ -40,6 +43,8 @@ class ProductDetailFragment : Fragment() {
             setPagerCount(position)
         }
     }
+
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DataBindingUtil.inflate(
@@ -70,40 +75,60 @@ class ProductDetailFragment : Fragment() {
 
     private fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
-            viewModel.sendMessageEvent.collectLatest { msg ->
-                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.productPictures.collectLatest { uri ->
-                if (uri.isEmpty()) {
-                    productDetailAdapter.submitList(listOf(""))
-                } else {
-                    productDetailAdapter.submitList(uri)
-                }
-                setPagerCount(binding.viewpagerProductDetailPictures.currentItem)
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.timerEvent.collectLatest { remainTime ->
-                handleRemainTime(remainTime)
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.expiredEvent.collectLatest { state ->
-                binding.textviewProductListRemainTimeDividerStart.isVisible = state.not()
-                binding.textviewProductListRemainTimeDividerEnd.isVisible = state.not()
-                binding.textviewProductListRemainTimeStart.isVisible = state.not()
-                binding.textviewProductListRemainTimeMiddle.isVisible = state.not()
-                binding.textviewProductListRemainTimeEnd.isVisible = state.not()
-                binding.textViewProductDetailExpired.isVisible = state
+            viewModel.eventFlow.collect { event ->
+                handleEvent(event)
             }
         }
     }
 
-    private fun setPagerCount(position: Int) {
+    private fun setPagerCount(position: Int, totalCount: Int = productDetailAdapter.itemCount) {
+        Logger.i("$position $totalCount")
         binding.textviewProductDetailPictureCount.text =
-            getString(R.string.product_detail_picture_count, position + 1, productDetailAdapter.itemCount)
+            getString(R.string.product_detail_picture_count, position + 1, totalCount)
+    }
+
+    private fun handleEvent(event: ProductDetailViewModel.Event) {
+        when (event) {
+            is ProductDetailViewModel.Event.CreatedDate -> handleCreateTime(event.date)
+            is ProductDetailViewModel.Event.Expired -> handleExpired(event.state)
+            is ProductDetailViewModel.Event.Timer -> handleRemainTime(event.remainTime)
+            is ProductDetailViewModel.Event.ProductImages -> handleProductImages(event.images)
+        }
+    }
+
+    private fun handleCreateTime(date: String) {
+        val createdDate = LocalDateTime.parse(date, formatter)
+        val now = LocalDateTime.now()
+        val dateDiff = Period.between(createdDate.toLocalDate(), now.toLocalDate())
+        val createdDiff = when {
+            dateDiff.years > 0 -> getString(R.string.product_detail_before_years, dateDiff.years)
+            dateDiff.months > 0 -> getString(R.string.product_detail_before_months, dateDiff.months)
+            dateDiff.days > 1 -> getString(R.string.product_detail_before_days, dateDiff.days)
+            else -> getHourDiff(createdDate, now)
+        }
+        binding.textviewProductDetailCategoryAndTime.text =
+            getString(R.string.product_detail_category_and_time, "음반" , createdDiff)
+    }
+
+    private fun getHourDiff(start: LocalDateTime, end: LocalDateTime): String {
+        val hourDiff = (end.toEpochSecond(ZoneOffset.MIN) - start.toEpochSecond(ZoneOffset.MIN)) / 3600
+        return when {
+            hourDiff >= 24 -> getString(R.string.product_detail_before_days, hourDiff / 24)
+            hourDiff > 0 -> getString(R.string.product_detail_before_hours, hourDiff)
+            else -> getString(R.string.product_detail_before_now)
+        }
+    }
+
+
+    private fun handleExpired(state: Boolean) {
+        binding.textviewProductListRemainTimeDividerStart.isVisible = state.not()
+        binding.textviewProductListRemainTimeDividerEnd.isVisible = state.not()
+        binding.textviewProductListRemainTimeStart.isVisible = state.not()
+        binding.textviewProductListRemainTimeMiddle.isVisible = state.not()
+        binding.textviewProductListRemainTimeEnd.isVisible = state.not()
+        binding.textViewProductDetailExpired.isVisible = state
+        binding.buttonProductDetailBidding.isEnabled = state
+        binding.buttonProductDetailBuy.isEnabled = state
     }
 
     private fun handleRemainTime(remainTime: RemainTime) {
@@ -131,6 +156,11 @@ class ProductDetailFragment : Fragment() {
             setPartialText(binding.textviewProductListRemainTimeMiddle)
         }
         setPartialText(binding.textviewProductListRemainTimeEnd)
+    }
+
+    private fun handleProductImages(images: List<String>) {
+        productDetailAdapter.submitList(images)
+        setPagerCount(binding.viewpagerProductDetailPictures.currentItem, images.size)
     }
 
     private fun setPartialText(textView: TextView) {

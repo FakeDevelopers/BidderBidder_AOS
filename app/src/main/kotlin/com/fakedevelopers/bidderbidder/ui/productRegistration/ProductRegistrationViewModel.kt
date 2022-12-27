@@ -8,6 +8,7 @@ import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationReposit
 import com.fakedevelopers.bidderbidder.ui.productRegistration.albumList.SelectedImageInfo
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -94,6 +95,7 @@ class ProductRegistrationViewModel @Inject constructor(
             if (expiration.value == "0") {
                 expiration.emit("")
             }
+            Logger.i(_condition.value.toString())
             _condition.emit(
                 title.value.isNotEmpty() &&
                     (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
@@ -120,6 +122,7 @@ class ProductRegistrationViewModel @Inject constructor(
             map["representPicture"] = "0".toPlainRequestBody()
             map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
             map["category"] = categoryID.toString().toPlainRequestBody()
+            Logger.i("실행")
             _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
