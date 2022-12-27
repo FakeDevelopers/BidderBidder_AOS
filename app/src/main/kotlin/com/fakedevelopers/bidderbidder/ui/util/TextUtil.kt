@@ -10,7 +10,7 @@ import android.text.style.StyleSpan
 class TextUtil(
     private val context: Context
 ) {
-    fun setPartialTextColor(text: CharSequence, colorId: Int, start: Int, end: Int) =
+    fun setPartialColor(text: CharSequence, colorId: Int, start: Int, end: Int) =
         SpannableStringBuilder(text).apply {
             setSpan(
                 ForegroundColorSpan(context.getColor(colorId)),
