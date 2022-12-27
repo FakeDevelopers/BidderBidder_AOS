@@ -7,6 +7,7 @@ import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
+import com.fakedevelopers.bidderbidder.api.repository.RegistrationTermRepository
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
 import com.fakedevelopers.bidderbidder.api.service.ChatService
@@ -15,6 +16,7 @@ import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
+import com.fakedevelopers.bidderbidder.api.service.RegistrationTermService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.fakedevelopers.bidderbidder.api.util.LoginAuthInterceptor
@@ -215,4 +217,14 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
+
+    @Singleton
+    @Provides
+    fun provideTermsService(@NormalRetrofit retrofit: Retrofit): RegistrationTermService =
+        retrofit.create(RegistrationTermService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideTermsRepository(service: RegistrationTermService): RegistrationTermRepository =
+        RegistrationTermRepository(service)
 }
