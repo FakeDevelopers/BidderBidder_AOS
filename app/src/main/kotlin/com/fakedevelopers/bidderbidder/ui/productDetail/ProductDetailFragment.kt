@@ -1,36 +1,50 @@
 package com.fakedevelopers.bidderbidder.ui.productDetail
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.Toast
+import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
-import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher
-import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
-import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
+import com.fakedevelopers.bidderbidder.model.RemainTime
+import com.fakedevelopers.bidderbidder.ui.util.repeatOnStarted
+import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import okhttp3.internal.toLongOrDefault
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.Period
+import org.threeten.bp.ZoneOffset
+import org.threeten.bp.format.DateTimeFormatter
 
 @AndroidEntryPoint
 class ProductDetailFragment : Fragment() {
 
     private var _binding: FragmentProductDetailBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: ProductDetailViewModel by viewModels()
-    private val binding get() = _binding!!
+
+    private val productDetailAdapter by lazy { ProductDetailAdapter() }
+
+    private val onPageChanged = object : ViewPager2.OnPageChangeCallback() {
+        override fun onPageSelected(position: Int) {
+            super.onPageSelected(position)
+            setPagerCount(position)
+        }
+    }
+
+    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DataBindingUtil.inflate(
@@ -52,111 +66,127 @@ class ProductDetailFragment : Fragment() {
         if (args.productId != -1L) {
             viewModel.productDetailRequest(args.productId)
         }
-        initCollector()
-        // 입찰가 입력 필터 등록
-        PriceTextWatcher.addEditTextFilter(binding.includeProductDetailBidding.edittextBidPrice, MAX_PRICE_LENGTH) {
-            binding.includeProductDetailBidding.edittextBidPrice.apply {
-                viewModel.setCurrentBid(text.toString())
-            }
+        binding.viewpagerProductDetailPictures.run {
+            adapter = productDetailAdapter
+            registerOnPageChangeCallback(onPageChanged)
         }
+        initCollector()
     }
 
     private fun initCollector() {
-        // 상품 상세정보 api
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productDetailResponse.collectLatest {
-                    if (it.isSuccessful) {
-                        viewModel.initProductDetail(it.body())
-                    } else {
-                        ApiErrorHandler.printErrorMessage(it.errorBody())
-                    }
-                }
-            }
-        }
-        // 입찰 api
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productBidResponse.collectLatest {
-                    if (it.isSuccessful) {
-                        Toast.makeText(requireContext(), "입찰 성공", Toast.LENGTH_SHORT).show()
-                        // 새로고침
-                        findNavController().navigate(
-                            ProductDetailFragmentDirections.actionProductDetailFragmentSelf(viewModel.productId)
-                        )
-                    } else {
-                        // 실패했으면 입찰가 조작을 다시 활성화
-                        viewModel.setBiddingEnabled(true)
-                        ApiErrorHandler.printErrorMessage(it.errorBody())
-                    }
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.biddingVisibility.collectLatest { state ->
-                    setBiddingVisibility(state)
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.moveOneTickEvent.collectLatest { tick ->
-                    val currentBid = getCurrentBid()
-                    val updatedBid = setValidBid(currentBid + tick - (currentBid % tick))
-                    binding.includeProductDetailBidding.edittextBidPrice.setText(updatedBid.toString())
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.sendMessageEvent.collectLatest { msg ->
-                    Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-        // 입찰가 고정
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.ceilPriceEvent.collectLatest { price ->
-                    binding.includeProductDetailBidding.edittextBidPrice.setText(price)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.eventFlow.collect { event ->
+                handleEvent(event)
             }
         }
     }
 
-    private fun setBiddingVisibility(state: Boolean) {
-        // 등장하는 애니메이션이면 VISIBLE 한 다음 애니메이션 동작
-        // 사라지는 애니메이션이면 INVISIBLE 하기 전에 애니메이션 동작
-        binding.includeProductDetailBidding.root.apply {
-            if (!state && visibility == View.VISIBLE) {
-                startAnimation(getAnimation(R.anim.animation_translate_down))
-            }
-            visibility = if (state) {
-                startAnimation(getAnimation(R.anim.animation_translate_up))
-                View.VISIBLE
-            } else {
-                View.INVISIBLE
-            }
+    private fun setPagerCount(position: Int, totalCount: Int = productDetailAdapter.itemCount) {
+        Logger.i("$position $totalCount")
+        binding.textviewProductDetailPictureCount.text =
+            getString(R.string.product_detail_picture_count, position + 1, totalCount)
+    }
+
+    private fun handleEvent(event: ProductDetailViewModel.Event) {
+        when (event) {
+            is ProductDetailViewModel.Event.CreatedDate -> handleCreateTime(event.date)
+            is ProductDetailViewModel.Event.Expired -> handleExpired(event.state)
+            is ProductDetailViewModel.Event.Timer -> handleRemainTime(event.remainTime)
+            is ProductDetailViewModel.Event.ProductImages -> handleProductImages(event.images)
         }
     }
 
-    private fun getAnimation(id: Int) =
-        AnimationUtils.loadAnimation(requireContext(), id)
-
-    private fun getCurrentBid() =
-        binding.includeProductDetailBidding.edittextBidPrice.text.toString()
-            .replace(",", "").toLongOrDefault(0)
-
-    private fun setValidBid(bid: Long) =
-        when {
-            viewModel.hopePriceValue != -1L && viewModel.hopePriceValue < bid -> viewModel.hopePriceValue
-            viewModel.minimumBidValue > bid -> viewModel.minimumBidValue
-            else -> bid
+    private fun handleCreateTime(date: String) {
+        val createdDate = LocalDateTime.parse(date, formatter)
+        val now = LocalDateTime.now()
+        val dateDiff = Period.between(createdDate.toLocalDate(), now.toLocalDate())
+        val createdDiff = when {
+            dateDiff.years > 0 -> getString(R.string.product_detail_before_years, dateDiff.years)
+            dateDiff.months > 0 -> getString(R.string.product_detail_before_months, dateDiff.months)
+            dateDiff.days > 1 -> getString(R.string.product_detail_before_days, dateDiff.days)
+            else -> getHourDiff(createdDate, now)
         }
+        binding.textviewProductDetailCategoryAndTime.text =
+            getString(R.string.product_detail_category_and_time, "음반", createdDiff)
+    }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    private fun getHourDiff(start: LocalDateTime, end: LocalDateTime): String {
+        val hourDiff = (end.toEpochSecond(ZoneOffset.MIN) - start.toEpochSecond(ZoneOffset.MIN)) / 3600
+        return when {
+            hourDiff >= 24 -> getString(R.string.product_detail_before_days, hourDiff / 24)
+            hourDiff > 0 -> getString(R.string.product_detail_before_hours, hourDiff)
+            else -> getString(R.string.product_detail_before_now)
+        }
+    }
+
+    private fun handleExpired(state: Boolean) {
+        binding.textviewProductListRemainTimeDividerStart.isVisible = state.not()
+        binding.textviewProductListRemainTimeDividerEnd.isVisible = state.not()
+        binding.textviewProductListRemainTimeStart.isVisible = state.not()
+        binding.textviewProductListRemainTimeMiddle.isVisible = state.not()
+        binding.textviewProductListRemainTimeEnd.isVisible = state.not()
+        binding.textViewProductDetailExpired.isVisible = state
+        binding.buttonProductDetailBidding.isEnabled = state
+        binding.buttonProductDetailBuy.isEnabled = state
+    }
+
+    private fun handleRemainTime(remainTime: RemainTime) {
+        if (remainTime.day > 0) {
+            binding.textviewProductListRemainTimeStart.text = getString(R.string.time_days, remainTime.day)
+            binding.textviewProductListRemainTimeMiddle.text = getString(R.string.time_hours, remainTime.hour)
+            binding.textviewProductListRemainTimeEnd.text = getString(R.string.time_minutes, remainTime.minute)
+        } else {
+            binding.textviewProductListRemainTimeStart.run {
+                text = getString(R.string.time_hours, remainTime.hour)
+                isVisible = remainTime.hour > 0
+            }
+            binding.textviewProductListRemainTimeMiddle.run {
+                text = getString(R.string.time_minutes, remainTime.minute)
+                isVisible = remainTime.hour > 0 || remainTime.minute > 0
+            }
+            binding.textviewProductListRemainTimeDividerStart.isVisible = remainTime.hour > 0
+            binding.textviewProductListRemainTimeDividerEnd.isVisible = remainTime.hour > 0 || remainTime.minute > 0
+            binding.textviewProductListRemainTimeEnd.text = getString(R.string.time_seconds, remainTime.second)
+        }
+        if (binding.textviewProductListRemainTimeStart.isVisible) {
+            setPartialText(binding.textviewProductListRemainTimeStart)
+        }
+        if (binding.textviewProductListRemainTimeMiddle.isVisible) {
+            setPartialText(binding.textviewProductListRemainTimeMiddle)
+        }
+        setPartialText(binding.textviewProductListRemainTimeEnd)
+    }
+
+    private fun handleProductImages(images: List<String>) {
+        productDetailAdapter.submitList(images)
+        setPagerCount(binding.viewpagerProductDetailPictures.currentItem, images.size)
+    }
+
+    private fun setPartialText(textView: TextView) {
+        val lastPriceIndex = textView.text.indexOfLast { c -> c in '0'..'9' } + 1
+        textView.text = SpannableStringBuilder(textView.text).apply {
+            setSpan(
+                RelativeSizeSpan(REMAIN_TIME_RELATIVE_SIZE),
+                lastPriceIndex,
+                textView.text.length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+            setSpan(
+                StyleSpan(Typeface.BOLD),
+                0,
+                lastPriceIndex,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding.viewpagerProductDetailPictures.unregisterOnPageChangeCallback(onPageChanged)
         _binding = null
+    }
+
+    companion object {
+        private const val REMAIN_TIME_RELATIVE_SIZE = 0.75f
     }
 }

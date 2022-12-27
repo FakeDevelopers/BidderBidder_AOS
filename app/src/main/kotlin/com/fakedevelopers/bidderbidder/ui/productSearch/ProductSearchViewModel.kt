@@ -19,7 +19,6 @@ class ProductSearchViewModel @Inject constructor(
 
     private val _searchWord = MutableSharedFlow<String>()
     private val _historySet = MutableSharedFlow<Set<String>>()
-    private var popularList = listOf<String>()
 
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
@@ -86,12 +85,11 @@ class ProductSearchViewModel @Inject constructor(
         viewModelScope.launch {
             repository.getProductSearchRank(LIST_COUNT).let {
                 if (it.isSuccessful) {
-                    popularList = it.body() as MutableList<String>
+                    searchPopularAdapter.submitList(it.body() ?: listOf(""))
                 } else {
                     ApiErrorHandler.printErrorMessage(it.errorBody())
                 }
             }
-            searchPopularAdapter.submitList(popularList)
         }
     }
 
