@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_graph"
+    app:startDestination="@id/loginTypeFragment">
+
+    <fragment
+        android:id="@+id/loginTypeFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.loginType.LoginTypeFragment"
+        android:label="LoginTypeFragment" >
+        <action
+            android:id="@+id/action_loginTypeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_loginTypeFragment_to_userRegistrationFragment"
+            app:destination="@id/userRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.login.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_userRegistrationFragment"
+            app:destination="@id/userRegistrationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userRegistrationFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationFragment"
+        android:label="UserRegistrationFragment" />
+</navigation>
