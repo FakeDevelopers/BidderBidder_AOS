@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.login
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginBinding
+import com.fakedevelopers.bidderbidder.ui.MainActivity
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -68,10 +70,9 @@ class LoginFragment : Fragment() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginResponse.collect {
-                    if (it.isSuccessful) {
-                        if (it.body().toString() == LOGIN_SUCCESS) {
-                            findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-                        }
+                    if (it.isSuccessful && it.body().toString() == LOGIN_SUCCESS) {
+                        startActivity(Intent(requireContext(), MainActivity::class.java))
+                        requireActivity().finish()
                     } else {
                         Logger.e(it.errorBody().toString())
                     }

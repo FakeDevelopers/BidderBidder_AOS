@@ -16,7 +16,7 @@
         android:theme="@style/Theme.BidderBidder">
         <meta-data android:name="io.sentry.auto-init" android:value="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -25,5 +25,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ui.MainActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

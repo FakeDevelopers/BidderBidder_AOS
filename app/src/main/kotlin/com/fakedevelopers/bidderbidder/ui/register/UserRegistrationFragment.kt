@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.register
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,10 +16,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.MainActivity
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
@@ -159,7 +160,10 @@ class UserRegistrationFragment : Fragment() {
             INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
             INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)
             PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
-            CONGRATULATIONS -> findNavController().navigate(R.id.action_userRegistrationFragment_to_productListFragment)
+            CONGRATULATIONS -> {
+                startActivity(Intent(requireContext(), MainActivity::class.java))
+                requireActivity().finish()
+            }
             else -> {
                 // 여긴 아무것도 안해!
             }

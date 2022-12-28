@@ -10,17 +10,21 @@
         android:name="com.fakedevelopers.bidderbidder.ui.loginType.LoginTypeFragment"
         android:label="LoginTypeFragment" >
         <action
-            android:id="@+id/action_loginTypeFragment_to_loginFragment2"
+            android:id="@+id/action_loginTypeFragment_to_loginFragment"
             app:destination="@id/loginFragment" />
         <action
-            android:id="@+id/action_loginTypeFragment_to_userRegistrationFragment2"
+            android:id="@+id/action_loginTypeFragment_to_userRegistrationFragment"
             app:destination="@id/userRegistrationFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.login.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" />
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/action_loginFragment_to_userRegistrationFragment"
+            app:destination="@id/userRegistrationFragment" />
+    </fragment>
     <fragment
         android:id="@+id/userRegistrationFragment"
         android:name="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationFragment"

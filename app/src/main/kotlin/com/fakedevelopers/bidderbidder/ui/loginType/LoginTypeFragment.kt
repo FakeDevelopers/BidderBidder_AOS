@@ -1,6 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.loginType
 
 import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.WEB_CLIENT_ID
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
+import com.fakedevelopers.bidderbidder.ui.MainActivity
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -95,7 +97,8 @@ class LoginTypeFragment : Fragment() {
                 viewModel.signinGoogleResponse.collect {
                     if (it.isSuccessful) {
                         Toast.makeText(requireActivity(), "success", Toast.LENGTH_LONG).show()
-                        findNavController().navigate(R.id.action_loginTypeFragment_to_productListFragment)
+                        startActivity(Intent(requireContext(), MainActivity::class.java))
+                        requireActivity().finish()
                     } else {
                         Toast.makeText(requireActivity(), "failure", Toast.LENGTH_LONG).show()
                     }
