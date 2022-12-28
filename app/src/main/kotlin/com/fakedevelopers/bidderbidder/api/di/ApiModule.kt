@@ -138,7 +138,7 @@ object ApiModule {
     // 게시글 등록 요청
     @Singleton
     @Provides
-    fun provideUserProductRegistrationService(@NormalRetrofit retrofit: Retrofit): ProductRegistrationService =
+    fun provideUserProductRegistrationService(@AuthRetrofit retrofit: Retrofit): ProductRegistrationService =
         retrofit.create(ProductRegistrationService::class.java)
 
     @Singleton
