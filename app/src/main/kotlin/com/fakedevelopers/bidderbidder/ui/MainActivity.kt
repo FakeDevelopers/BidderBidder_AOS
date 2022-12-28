@@ -1,4 +1,4 @@
-package com.fakedevelopers.bidderbidder
+package com.fakedevelopers.bidderbidder.ui
 
 import android.os.Bundle
 import android.view.MotionEvent
@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
+import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
