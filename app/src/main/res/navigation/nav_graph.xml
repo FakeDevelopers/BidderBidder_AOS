@@ -49,6 +49,7 @@
             app:destination="@id/productSearchFragment" />
         <argument
             android:name="searchWord"
+            android:defaultValue=""
             app:argType="string" />
         <action
             android:id="@+id/action_productListFragment_self"
