@@ -293,8 +293,8 @@ class ProductRegistrationFragment : Fragment() {
     // 희망가 <= 최소 입찰가 인지 검사
     private fun checkPriceCondition(): Boolean {
         val openingBid = viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
-        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
-        if (openingBid >= hopePrice) {
+        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull()
+        if (hopePrice != null && openingBid >= hopePrice) {
             Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
             return false
         }
