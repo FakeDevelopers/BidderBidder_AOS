@@ -85,6 +85,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
+        initResultLauncher()
         initListener()
         initCollector()
     }
@@ -202,7 +203,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                 if (isGranted) {
                     toPictureSelectFragment()
                 } else {
-                    Toast.makeText(requireContext(), R.string.read_external_storage, Toast.LENGTH_SHORT).show()
+                    sendSnackBar(getString(R.string.read_external_storage))
                 }
             }
     }
