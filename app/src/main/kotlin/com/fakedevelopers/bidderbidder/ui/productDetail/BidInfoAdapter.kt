@@ -15,19 +15,17 @@ class BidInfoAdapter : ListAdapter<BidInfo, BidInfoAdapter.ViewHolder>(diffUtil)
         private val binding: RecyclerBidInfoBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BidInfo) {
-            binding.run {
-                binding.textviewRank.text = binding.root.context.getString(R.string.product_detail_rank, item.index)
-                if (item.index == 1) {
-                    binding.textviewRank.setTextColor(binding.root.context.getColor(R.color.bidderbidder_primary))
-                }
-                binding.textviewNickname.text = item.userNickname
-                binding.textviewBid.text =
-                    if (item.bid == -1L) {
-                        binding.root.context.getString(R.string.product_detail_secret_price)
-                    } else {
-                        dec.format(item.bid)
-                    }
+            binding.textviewRank.text = binding.root.context.getString(R.string.product_detail_rank, item.index)
+            if (item.index == 1) {
+                binding.textviewRank.setTextColor(binding.root.context.getColor(R.color.bidderbidder_primary))
             }
+            binding.textviewNickname.text = item.userNickname
+            binding.textviewBid.text =
+                if (item.bid == -1L) {
+                    binding.root.context.getString(R.string.product_detail_secret_price)
+                } else {
+                    dec.format(item.bid)
+                }
         }
     }
 
@@ -46,7 +44,7 @@ class BidInfoAdapter : ListAdapter<BidInfo, BidInfoAdapter.ViewHolder>(diffUtil)
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<BidInfo>() {
             override fun areItemsTheSame(oldItem: BidInfo, newItem: BidInfo) =
-                oldItem == newItem
+                oldItem.userNickname == newItem.userNickname
 
             override fun areContentsTheSame(oldItem: BidInfo, newItem: BidInfo) =
                 oldItem == newItem
