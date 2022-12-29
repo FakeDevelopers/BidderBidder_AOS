@@ -3,12 +3,11 @@ package com.fakedevelopers.bidderbidder
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
+import com.fakedevelopers.bidderbidder.ui.util.safeNavigate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -60,13 +59,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun NavController.safeNavigate(direction: NavDirections) {
-        currentDestination?.getAction(direction.actionId)?.run { navigate(direction) }
-    }
-
-    private fun NavController.safeNavigate(@IdRes resId: Int, args: Bundle? = null) {
-        currentDestination?.getAction(resId)?.destinationId.run { navigate(resId, args) }
     }
 }
