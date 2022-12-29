@@ -2,15 +2,11 @@ package com.fakedevelopers.bidderbidder.ui.productSearch
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import androidx.databinding.DataBindingUtil
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +17,7 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.SEARCH_HISTORY
 import com.fakedevelopers.bidderbidder.api.datastore.DatastoreSetting.Companion.datastore
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductSearchBinding
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
@@ -30,18 +27,16 @@ import kotlinx.coroutines.launch
 import java.io.IOException
 
 @AndroidEntryPoint
-class ProductSearchFragment : Fragment() {
-
-    private var _binding: FragmentProductSearchBinding? = null
-
+class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
+    R.layout.fragment_product_list
+) {
     private val viewModel: ProductSearchViewModel by viewModels()
-    private val binding get() = _binding!!
     private val args: ProductSearchFragmentArgs by navArgs()
+
     private val imm by lazy {
         requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
-    // datastore
     private val searchHistory by lazy {
         requireContext().datastore.data
             .catch { exception ->
@@ -56,22 +51,9 @@ class ProductSearchFragment : Fragment() {
             }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_product_search,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         initCollector()
         initListener()
     }
@@ -142,11 +124,6 @@ class ProductSearchFragment : Fragment() {
         binding.textviewProductSearchEraseAll.setOnClickListener {
             viewModel.clearHistory()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 
     companion object {

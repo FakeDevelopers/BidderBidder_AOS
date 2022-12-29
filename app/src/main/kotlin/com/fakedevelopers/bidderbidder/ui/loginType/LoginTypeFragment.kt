@@ -1,15 +1,9 @@
 package com.fakedevelopers.bidderbidder.ui.loginType
 
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,19 +14,22 @@ import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.WEB_CLIENT_ID
 import com.fakedevelopers.bidderbidder.databinding.FragmentLoginTypeBinding
 import com.fakedevelopers.bidderbidder.ui.MainActivity
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+
 @AndroidEntryPoint
-class LoginTypeFragment : Fragment() {
+class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
+    R.layout.fragment_login_type
+) {
     private lateinit var googleSignInClient: GoogleSignInClient
-    private var _binding: FragmentLoginTypeBinding? = null
 
     private val viewModel: LoginTypeViewModel by viewModels()
-    private val binding get() = _binding!!
+
     private val requestActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == RESULT_OK) {
             val result = it.data?.let { data -> Auth.GoogleSignInApi.getSignInResultFromIntent(data) }
@@ -43,20 +40,6 @@ class LoginTypeFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_login_type,
-            container,
-            false
-        )
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -96,20 +79,14 @@ class LoginTypeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.signinGoogleResponse.collect {
                     if (it.isSuccessful) {
-                        Toast.makeText(requireActivity(), "success", Toast.LENGTH_LONG).show()
-                        startActivity(Intent(requireContext(), MainActivity::class.java))
-                        requireActivity().finish()
+                        sendSnackBar("success")
+                        navigateActivity(MainActivity::class.java)
                     } else {
-                        Toast.makeText(requireActivity(), "failure", Toast.LENGTH_LONG).show()
+                        sendSnackBar(it.errorBody().toString())
                     }
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     private fun googleLogin() {

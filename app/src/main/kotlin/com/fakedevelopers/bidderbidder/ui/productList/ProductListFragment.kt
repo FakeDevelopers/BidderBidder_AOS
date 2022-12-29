@@ -1,11 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.productList
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -16,19 +12,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductListBinding
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ProductListFragment : Fragment() {
-
-    private var _binding: FragmentProductListBinding? = null
-    private val binding get() = _binding!!
+class ProductListFragment : BaseFragment<FragmentProductListBinding>(
+    R.layout.fragment_product_list
+) {
 
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
+
     private val infinityScroll by lazy {
         object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -42,6 +39,7 @@ class ProductListFragment : Fragment() {
             }
         }
     }
+
     private val linearLayoutManager by lazy {
         object : LinearLayoutManager(requireContext()) {
             override fun onLayoutCompleted(state: RecyclerView.State?) {
@@ -56,26 +54,9 @@ class ProductListFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_product_list,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         val args: ProductListFragmentArgs by navArgs()
         if (viewModel.isInitialize) {
             viewModel.setSearchWord(args.searchWord)
@@ -129,7 +110,6 @@ class ProductListFragment : Fragment() {
             layoutManager = null
             removeOnScrollListener(infinityScroll)
         }
-        _binding = null
     }
 
     companion object {

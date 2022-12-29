@@ -1,11 +1,7 @@
 package com.fakedevelopers.bidderbidder.ui.chat.channel
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +11,7 @@ import androidx.navigation.navGraphViewModels
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.STREAM_KEY
 import com.fakedevelopers.bidderbidder.databinding.FragmentChannelListBinding
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.chat.android.client.ChatClient
@@ -29,30 +26,17 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ChannelListFragment : Fragment() {
+class ChannelListFragment : BaseFragment<FragmentChannelListBinding>(
+    R.layout.fragment_channel_list
+) {
 
-    private var _binding: FragmentChannelListBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: CLViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_channel_list,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         initCollector()
         initListener()
     }
@@ -143,10 +127,5 @@ class ChannelListFragment : Fragment() {
                 }
             }
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
