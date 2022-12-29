@@ -1,6 +1,5 @@
 package com.fakedevelopers.bidderbidder.ui.login
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -47,8 +46,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginResponse.collect {
                     if (it.isSuccessful && it.body().toString() == LOGIN_SUCCESS) {
-                        startActivity(Intent(requireContext(), MainActivity::class.java))
-                        requireActivity().finish()
+                        navigateActivity(MainActivity::class.java)
                     } else {
                         sendSnackBar(it.errorBody().toString())
                     }

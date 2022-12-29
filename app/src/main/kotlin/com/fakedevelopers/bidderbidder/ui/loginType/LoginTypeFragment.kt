@@ -1,7 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.loginType
 
 import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
@@ -81,8 +80,7 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
                 viewModel.signinGoogleResponse.collect {
                     if (it.isSuccessful) {
                         sendSnackBar("success")
-                        startActivity(Intent(requireContext(), MainActivity::class.java))
-                        requireActivity().finish()
+                        navigateActivity(MainActivity::class.java)
                     } else {
                         sendSnackBar(it.errorBody().toString())
                     }

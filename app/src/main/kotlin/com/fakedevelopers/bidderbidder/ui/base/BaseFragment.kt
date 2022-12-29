@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.base
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,6 +44,11 @@ abstract class BaseFragment<VB : ViewDataBinding>(
                 this.anchorView = anchorView
             }
         }.show()
+    }
+
+    fun navigateActivity(activity: Class<*>) {
+        startActivity(Intent(requireContext(), activity))
+        requireActivity().finish()
     }
 
     override fun onDestroyView() {
