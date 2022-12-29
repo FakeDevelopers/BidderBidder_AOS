@@ -9,9 +9,7 @@ import android.provider.OpenableColumns
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
@@ -21,8 +19,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -32,6 +28,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.IS_NOT_NUMBER
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
 import com.fakedevelopers.bidderbidder.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
@@ -54,7 +51,9 @@ import okio.BufferedSink
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ProductRegistrationFragment : Fragment() {
+class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBinding>(
+    R.layout.fragment_product_registration
+) {
 
     @Inject
     lateinit var contentResolverUtil: ContentResolverUtil
@@ -65,9 +64,8 @@ class ProductRegistrationFragment : Fragment() {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
-    private var _binding: FragmentProductRegistrationBinding? = null
-    private val binding get() = _binding!!
     private val viewModel: ProductRegistrationViewModel by viewModels()
+
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -76,23 +74,9 @@ class ProductRegistrationFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        initResultLauncher()
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_product_registration,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         val args: ProductRegistrationFragmentArgs by navArgs()
         args.productRegistrationDto?.let {
             viewModel.initState(it)
@@ -363,7 +347,6 @@ class ProductRegistrationFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
         backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
     }

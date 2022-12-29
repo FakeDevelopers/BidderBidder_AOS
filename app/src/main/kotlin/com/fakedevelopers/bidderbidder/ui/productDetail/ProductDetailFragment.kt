@@ -6,19 +6,16 @@ import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.RelativeSizeSpan
 import android.text.style.StyleSpan
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.bidderbidder.model.RemainTime
+import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
 import com.fakedevelopers.bidderbidder.ui.util.repeatOnStarted
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,10 +25,9 @@ import org.threeten.bp.ZoneOffset
 import org.threeten.bp.format.DateTimeFormatter
 
 @AndroidEntryPoint
-class ProductDetailFragment : Fragment() {
-
-    private var _binding: FragmentProductDetailBinding? = null
-    private val binding get() = _binding!!
+class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
+    R.layout.fragment_product_detail
+) {
 
     private val viewModel: ProductDetailViewModel by viewModels()
 
@@ -46,22 +42,9 @@ class ProductDetailFragment : Fragment() {
 
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_product_detail,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         val args: ProductDetailFragmentArgs by navArgs()
         if (args.productId != -1L) {
             viewModel.productDetailRequest(args.productId)
@@ -183,7 +166,6 @@ class ProductDetailFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding.viewpagerProductDetailPictures.unregisterOnPageChangeCallback(onPageChanged)
-        _binding = null
     }
 
     companion object {
