@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="toolbarActionButtonStyle" parent="Widget.AppCompat.Light.ActionButton">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:minWidth">0dp</item>
+    </style>
+
+    <style name="MyDatePicker" parent="android:Widget.Material.Light.DatePicker">
+        <item name="android:datePickerMode">spinner</item>
+    </style>
+
+    <style name="productRegistrationButtonDisable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/grey</item>
+    </style>
+
+    <style name="productRegistrationButtonEnable" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="actionMenuTextColor">@color/black</item>
+    </style>
+
+    <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="materialThemeOverlay">@style/CustomTextInputLayoutThemeOverlay</item>
+        <item name="shapeAppearanceOverlay">@style/CustomTextInputLayoutShapeAppearanceOverlay</item>
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+        <item name="hintTextColor">@color/edit_text_hint</item>
+        <item name="hintEnabled">false</item>
+    </style>
+
+    <style name="CustomTextInputLayoutThemeOverlay" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="editTextStyle">@style/CustomTextInputLayoutEditTextStyle</item>
+    </style>
+
+    <style name="CustomTextInputLayoutEditTextStyle" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+        <item name="android:paddingTop">24dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="TextViewRemainTime" parent="Widget.MaterialComponents.TextView">
+        <item name="android:background">@drawable/shape_remain_time_background</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="CustomTextInputLayoutShapeAppearanceOverlay" parent="">
+        <item name="cornerSizeBottomLeft">4dp</item>
+        <item name="cornerSizeBottomRight">4dp</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+</resources>
