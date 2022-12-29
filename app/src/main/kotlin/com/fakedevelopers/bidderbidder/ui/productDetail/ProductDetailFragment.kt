@@ -164,8 +164,8 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         binding.viewpagerProductDetailPictures.unregisterOnPageChangeCallback(onPageChanged)
+        super.onDestroyView()
     }
 
     companion object {
