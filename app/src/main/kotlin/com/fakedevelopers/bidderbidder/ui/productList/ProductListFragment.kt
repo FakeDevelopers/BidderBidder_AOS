@@ -105,11 +105,11 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         binding.recyclerProductList.run {
             layoutManager = null
             removeOnScrollListener(infinityScroll)
         }
+        super.onDestroyView()
     }
 
     companion object {
