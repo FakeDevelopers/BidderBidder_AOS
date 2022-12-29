@@ -78,11 +78,7 @@ class ProductListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val args: ProductListFragmentArgs by navArgs()
         if (viewModel.isInitialize) {
-            kotlin.runCatching {
-                args.searchWord
-            }.onSuccess {
-                viewModel.setSearchWord(it)
-            }
+            viewModel.setSearchWord(args.searchWord)
             viewModel.requestProductList(true)
         }
         initListener()
