@@ -217,7 +217,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                         findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
                     } else {
                         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
-                        Toast.makeText(requireContext(), "글쓰기에 실패했어요~", Toast.LENGTH_SHORT).show()
+                        sendSnackBar("글쓰기에 실패했어요~")
                     }
                 }
             }
@@ -278,9 +278,9 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     // 희망가 <= 최소 입찰가 인지 검사
     private fun checkPriceCondition(): Boolean {
         val openingBid = viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
-        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
-        if (openingBid >= hopePrice) {
-            Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
+        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull()
+        if (hopePrice != null && hopePrice <= openingBid) {
+            sendSnackBar(getString(R.string.product_registration_error_minimum_bid))
             return false
         }
         return true
