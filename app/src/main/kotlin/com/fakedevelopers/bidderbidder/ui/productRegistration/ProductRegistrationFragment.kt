@@ -360,6 +360,6 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     }
 
     companion object {
-        private const val COMPRESS_QUALITY = 80
+        private const val COMPRESS_QUALITY = 70
     }
 }
