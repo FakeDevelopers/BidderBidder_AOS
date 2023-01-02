@@ -137,6 +137,10 @@ class UserRegistrationFragment : Fragment() {
         viewModel.setNextStepEnabled(false)
         setProgressBar(state)
 
+        if (state.checkCancelStep()) {
+            findNavController().popBackStack()
+        }
+
         if (state.checkLastStep()) {
             findNavController().safeNavigate(R.id.action_userRegistrationFragment_to_productListFragment)
         }

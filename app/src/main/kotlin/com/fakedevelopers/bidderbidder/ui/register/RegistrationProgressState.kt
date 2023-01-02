@@ -5,6 +5,7 @@ import com.fakedevelopers.bidderbidder.R
 
 enum class RegistrationProgressState(val navigationId: Int?, private val progressStep: Int?) {
     EMPTY_STATE(null, null),
+    CANCEL_REGISTRATION(null, null),
     ACCEPT_TERMS(R.id.acceptTermsFragment, null),
     ACCEPT_TERMS_CONTENTS(R.id.acceptTermsFragmentContents, null),
     INPUT_ID(R.id.userRegistrationIdFragment, 1),
@@ -29,5 +30,9 @@ enum class RegistrationProgressState(val navigationId: Int?, private val progres
 
     fun checkLastStep(): Boolean {
         return this == CONGRATULATIONS
+    }
+
+    fun checkCancelStep(): Boolean {
+        return this == CANCEL_REGISTRATION
     }
 }
