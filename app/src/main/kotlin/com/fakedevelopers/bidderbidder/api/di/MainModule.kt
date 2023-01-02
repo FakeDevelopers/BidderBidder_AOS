@@ -25,7 +25,7 @@ class MainModule {
     // 게시글 등록 요청
     @ActivityRetainedScoped
     @Provides
-    fun provideUserProductRegistrationService(@NormalRetrofit retrofit: Retrofit): ProductRegistrationService =
+    fun provideUserProductRegistrationService(@AuthRetrofit retrofit: Retrofit): ProductRegistrationService =
         retrofit.create(ProductRegistrationService::class.java)
 
     @ActivityRetainedScoped
