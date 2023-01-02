@@ -4,6 +4,7 @@ import android.Manifest
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.OpenableColumns
 import android.text.Editable
@@ -13,7 +14,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -100,16 +100,23 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         }
     }
 
-    private fun toPictureSelectFragment() {
-        // 미디어 접근 권한이 없으면 안됩니다
-        val permissionCheck = checkCallingOrSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+    private fun checkStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            toPictureSelectFragment(Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            toPictureSelectFragment(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    private fun toPictureSelectFragment(permission: String) {
+        val permissionCheck = checkCallingOrSelfPermission(requireContext(), permission)
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
             findNavController().navigate(
                 ProductRegistrationFragmentDirections
                     .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductRegistrationDto())
             )
         } else {
-            permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            permissionLauncher.launch(permission)
         }
     }
 
@@ -148,12 +155,12 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         }
         // 사진 가져오기
         binding.imageviewSelectPicture.setOnClickListener {
-            toPictureSelectFragment()
+            checkStoragePermission()
         }
         // 게시글 작성 요청
         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
-                Toast.makeText(requireContext(), "게시글 등록 요청", Toast.LENGTH_SHORT).show()
+                sendSnackBar("게시글 등록 요청")
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
                     viewModel.requestProductRegistration(getMultipartList())
@@ -201,7 +208,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         permissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    toPictureSelectFragment()
+                    checkStoragePermission()
                 } else {
                     sendSnackBar(getString(R.string.read_external_storage))
                 }
@@ -217,7 +224,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                         findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
                     } else {
                         binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
-                        Toast.makeText(requireContext(), "글쓰기에 실패했어요~", Toast.LENGTH_SHORT).show()
+                        sendSnackBar("글쓰기에 실패했어요~")
                     }
                 }
             }
@@ -279,8 +286,8 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     private fun checkPriceCondition(): Boolean {
         val openingBid = viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
         val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull()
-        if (hopePrice != null && openingBid >= hopePrice) {
-            Toast.makeText(requireContext(), "최소 입찰가는 희망 가격보다 작아야 합니다.", Toast.LENGTH_SHORT).show()
+        if (hopePrice != null && hopePrice <= openingBid) {
+            sendSnackBar(getString(R.string.product_registration_error_minimum_bid))
             return false
         }
         return true
@@ -322,7 +329,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                         return mimeType.toMediaType()
                     }
                     override fun writeTo(sink: BufferedSink) {
-                        bitmap.compress(Bitmap.CompressFormat.valueOf(extension), 100, sink.outputStream())
+                        bitmap.compress(Bitmap.CompressFormat.valueOf(extension), COMPRESS_QUALITY, sink.outputStream())
                     }
                 }
                 it.close()
@@ -350,5 +357,9 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         super.onDestroyView()
         backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
+    }
+
+    companion object {
+        private const val COMPRESS_QUALITY = 70
     }
 }
