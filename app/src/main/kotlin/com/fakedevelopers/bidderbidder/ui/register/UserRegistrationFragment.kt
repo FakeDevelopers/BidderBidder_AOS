@@ -19,12 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
+import com.fakedevelopers.bidderbidder.ui.util.safeNavigate
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -130,22 +125,9 @@ class UserRegistrationFragment : Fragment() {
     }
 
     private fun setProgressBar(state: RegistrationProgressState) {
-        binding.includeUserRegistrationNavigation.let {
-            if (state == ACCEPT_TERMS) {
-                binding.includeUserRegistrationNavigation.root.visibility = View.GONE
-            } else {
-                binding.includeUserRegistrationNavigation.root.visibility = View.VISIBLE
-            }
-            when (state) {
-                INPUT_ID -> 1
-                INPUT_PASSWORD -> 2
-                PHONE_AUTH_BEFORE_SENDING -> 3
-                PHONE_AUTH_CHECK_AUTH_CODE -> 3
-                CONGRATULATIONS -> 3
-                else -> null
-            }?.let { step ->
-                it.registrationProgressbar.progress = (step * 100.0 / 3).toInt()
-            }
+        binding.includeUserRegistrationNavigation.run {
+            root.visibility = state.getVisibleState()
+            registrationProgressbar.progress = state.getProgressPercentage() ?: 0
         }
     }
 
@@ -154,15 +136,13 @@ class UserRegistrationFragment : Fragment() {
         NavOptions.Builder().setLaunchSingleTop(true)
         viewModel.setNextStepEnabled(false)
         setProgressBar(state)
-        when (state) {
-            ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
-            INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
-            INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
-            CONGRATULATIONS -> findNavController().navigate(R.id.action_userRegistrationFragment_to_productListFragment)
-            else -> {
-                // 여긴 아무것도 안해!
-            }
+
+        if (state.checkLastStep()) {
+            findNavController().safeNavigate(R.id.action_userRegistrationFragment_to_productListFragment)
+        }
+
+        state.navigationId?.let { navId ->
+            navigate(navId)
         }
     }
 
