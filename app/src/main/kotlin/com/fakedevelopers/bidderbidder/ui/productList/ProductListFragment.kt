@@ -2,20 +2,16 @@ package com.fakedevelopers.bidderbidder.ui.productList
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentProductListBinding
 import com.fakedevelopers.bidderbidder.ui.base.BaseFragment
+import com.fakedevelopers.bidderbidder.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ProductListFragment : BaseFragment<FragmentProductListBinding>(
@@ -57,30 +53,21 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        val args: ProductListFragmentArgs by navArgs()
-        if (viewModel.isInitialize) {
-            viewModel.setSearchWord(args.searchWord)
-            viewModel.requestProductList(true)
-        }
         initListener()
         initCollector()
     }
 
     private fun initCollector() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isRefreshing.collectLatest { state ->
-                    binding.swipeProductList.isRefreshing = state
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.isRefreshing.collectLatest { state ->
+                binding.swipeProductList.isRefreshing = state
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.toProductDetail.collectLatest { productId ->
-                    findNavController().navigate(
-                        ProductListFragmentDirections.actionProductListFragmentToProductDetailFragment(productId)
-                    )
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.toProductDetail.collectLatest { productId ->
+                findNavController().navigate(
+                    ProductListFragmentDirections.actionProductListFragmentToProductDetailFragment(productId)
+                )
             }
         }
     }

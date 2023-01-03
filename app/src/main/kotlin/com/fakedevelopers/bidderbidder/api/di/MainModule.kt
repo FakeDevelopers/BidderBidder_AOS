@@ -3,13 +3,11 @@ package com.fakedevelopers.bidderbidder.api.di
 import com.fakedevelopers.bidderbidder.api.repository.ChatRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
 import com.fakedevelopers.bidderbidder.api.service.ChatService
 import com.fakedevelopers.bidderbidder.api.service.ProductCategoryService
 import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
-import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import dagger.Module
@@ -43,17 +41,6 @@ class MainModule {
     @Provides
     fun provideProductCategoryRepository(service: ProductCategoryService): ProductCategoryRepository =
         ProductCategoryRepository(service)
-
-    // 상품 리스트 요청
-    @ActivityRetainedScoped
-    @Provides
-    fun provideProductListService(@NormalRetrofit retrofit: Retrofit): ProductListService =
-        retrofit.create(ProductListService::class.java)
-
-    @ActivityRetainedScoped
-    @Provides
-    fun provideProductListRepository(service: ProductListService): ProductListRepository =
-        ProductListRepository(service)
 
     // 상품 상세 정보, 입찰
     @ActivityRetainedScoped

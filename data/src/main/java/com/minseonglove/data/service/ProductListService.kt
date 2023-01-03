@@ -1,7 +1,6 @@
-package com.fakedevelopers.bidderbidder.api.service
+package com.minseonglove.data.service
 
-import com.fakedevelopers.bidderbidder.ui.productList.ProductItem
-import retrofit2.Response
+import com.minseonglove.domain.model.ProductItem
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,5 +11,5 @@ interface ProductListService {
         @Query("searchType") searchType: Int?,
         @Query("listCount") listCount: Int,
         @Query("startNumber") startNumber: Long
-    ): Response<List<ProductItem>>
+    ): List<ProductItem>
 }

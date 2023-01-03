@@ -1,4 +1,4 @@
-package com.fakedevelopers.bidderbidder.ui.productList
+package com.minseonglove.domain.model
 
 sealed interface ProductListType {
     fun isItemTheSame(item: ProductListType): Boolean

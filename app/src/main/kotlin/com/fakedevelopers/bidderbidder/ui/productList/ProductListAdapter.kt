@@ -15,6 +15,9 @@ import com.fakedevelopers.bidderbidder.databinding.RecyclerProductListFooterBind
 import com.fakedevelopers.bidderbidder.ui.util.DateUtil
 import com.fakedevelopers.bidderbidder.ui.util.ExpirationTimerTask
 import com.fakedevelopers.bidderbidder.ui.util.PriceUtil
+import com.minseonglove.domain.model.ProductItem
+import com.minseonglove.domain.model.ProductListType
+import com.minseonglove.domain.model.ProductReadMore
 
 class ProductListAdapter(
     private val dateUtil: DateUtil,

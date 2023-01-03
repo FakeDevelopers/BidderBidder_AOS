@@ -1,12 +1,13 @@
 package com.fakedevelopers.bidderbidder.ui.productList
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
-import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
 import com.fakedevelopers.bidderbidder.ui.util.DateUtil
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
+import com.minseonglove.domain.usecase.GetProductListUseCase
+import com.minseonglove.domain.usecase.IsLoadingAvailableUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,10 +17,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     dateUtil: DateUtil,
-    private val repository: ProductListRepository
+    args: SavedStateHandle,
+    private val getProductListUseCase: GetProductListUseCase,
+    private val isLoadingAvailableUseCase: IsLoadingAvailableUseCase
 ) : ViewModel() {
-
-    private val productItems = mutableListOf<ProductListType>()
 
     private val _toProductDetail = MutableEventFlow<Long>()
     val toProductDetail = _toProductDetail.asEventFlow()
@@ -39,21 +40,24 @@ class ProductListViewModel @Inject constructor(
     var isInitialize = true
         private set
 
-    private var isReadMoreVisible = true
-    private var isLastProduct = false
-    private var startNumber = -1L
-
     val adapter = ProductListAdapter(
         dateUtil = dateUtil,
-        clickLoadMore = { clickLoadMore() },
+        clickLoadMore = { getNextProductList() },
         showProductDetail = { productId -> showProductDetail(productId) }
     )
+
+    init {
+        viewModelScope.launch {
+            _searchWord.emit(args.get<String>("searchWord") ?: "")
+        }
+        requestProductList(true)
+    }
 
     fun getNextProductList() {
         // 이미 로딩 중일 때
         // 더보기가 활성화 중일 때
         // 마지막 상품까지 불러왔을 때
-        if (isLoading.value || isReadMoreVisible || isLastProduct) {
+        if (isLoadingAvailableUseCase()) {
             return
         }
 
@@ -64,53 +68,15 @@ class ProductListViewModel @Inject constructor(
         isInitialize = state
     }
 
-    fun setSearchWord(word: String) {
-        viewModelScope.launch {
-            _searchWord.emit(word)
-        }
-    }
-
     fun requestProductList(isInitialize: Boolean) {
-        if (isInitialize) {
-            isLastProduct = false
-            startNumber = LATEST_PRODUCT_ID
-            productItems.clear()
-        }
         this.isInitialize = isInitialize
         viewModelScope.launch {
             setLoadingState(true, isInitialize)
-            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).run {
-                if (isSuccessful) {
-                    val resultItems = body() ?: return@run
-                    handleResultItems(resultItems)
-                } else {
-                    ApiErrorHandler.printErrorMessage(errorBody())
-                }
-            }
+            val productItems = getProductListUseCase(searchWord.value, 0, isInitialize)
+            adapter.submitList(productItems)
+            _isEmptyResult.emit(productItems.isEmpty())
             setLoadingState(false, isInitialize)
         }
-    }
-
-    private fun handleResultItems(resultItems: List<ProductItem>) {
-        productItems.addAll(resultItems)
-        startNumber = resultItems.lastOrNull()?.productId ?: LATEST_PRODUCT_ID
-        if (resultItems.size < LIST_COUNT) {
-            isReadMoreVisible = false
-            isLastProduct = true
-        }
-        if (isReadMoreVisible) {
-            productItems.add(ProductReadMore)
-        }
-        adapter.submitList(productItems.toList())
-        viewModelScope.launch {
-            _isEmptyResult.emit(resultItems.isEmpty())
-        }
-    }
-
-    private fun clickLoadMore() {
-        isReadMoreVisible = false
-        productItems.remove(ProductReadMore)
-        getNextProductList()
     }
 
     private fun showProductDetail(productId: Long) {
@@ -125,10 +91,5 @@ class ProductListViewModel @Inject constructor(
         } else {
             _isLoading.emit(state)
         }
-    }
-
-    companion object {
-        private const val LATEST_PRODUCT_ID = -1L
-        private const val LIST_COUNT = 20
     }
 }
