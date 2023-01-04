@@ -119,6 +119,7 @@ class UserRegistrationFragment : Fragment() {
         binding.includeUserRegistrationToolbar.textviewTitle.apply {
             when (destinationId) {
                 R.id.acceptTermsFragment -> setText(R.string.registration_toolbar_accept_terms)
+                R.id.acceptTermsFragmentContents -> setText(R.string.registration_toolbar_accept_term_detail)
                 else -> setText(R.string.registration_toolbar_user_registration)
             }
         }
