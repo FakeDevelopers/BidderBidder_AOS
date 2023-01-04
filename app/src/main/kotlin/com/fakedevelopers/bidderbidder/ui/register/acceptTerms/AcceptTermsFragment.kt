@@ -18,6 +18,7 @@ import com.fakedevelopers.bidderbidder.HiltApplication
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentAcceptTermsBinding
 import com.fakedevelopers.bidderbidder.databinding.IncludeTermCheckboxBinding
+import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS_CONTENTS
 import com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -88,7 +89,8 @@ class AcceptTermsFragment : Fragment() {
                 acceptTermViewModel.termContentsEvent.collectLatest {
                     if (it.isSuccessful) {
                         it.body()?.let { _ ->
-                            // TODO
+                            viewModel.acceptTermDetail = it.body().toString()
+                            viewModel.setCurrentStep(ACCEPT_TERMS_CONTENTS)
                         }
                     }
                 }

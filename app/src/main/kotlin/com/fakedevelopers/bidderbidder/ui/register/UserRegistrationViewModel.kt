@@ -23,6 +23,7 @@ class UserRegistrationViewModel : ViewModel() {
     private var essentialTerms = MutableList(NUMBER_OF_ESSENTIAL_TERM) { false }
     private var optionalTerms = MutableList(NUMBER_OF_OPTIONAL_TERM) { false }
     val acceptAllState = _acceptAllState.asEventFlow()
+    var acceptTermDetail: String = ""
 
     /* PhoneAuthFragment */
     private var phoneAuthToken = ""

@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/acceptTermsFragmentContents"
-        android:name="com.fakedevelopers.bidderbidder.ui.register.acceptTerms.AcceptTermsFragment"
+        android:name="com.fakedevelopers.bidderbidder.ui.register.acceptTermDetail.AcceptTermDetailFragment"
         android:label="AcceptTermsFragment"
         tools:layout="@layout/fragment_accept_term_detail">
         <action
