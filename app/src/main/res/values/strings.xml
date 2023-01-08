@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">BidderBidder</string>
+    <string name="price_format">%,2d 원</string>
     <!-- Strings related to permission-->
     <string name="read_external_storage">미디어를 첨부하시려면, 앱 접근 권한을 허용해 주세요.</string>
     <!-- Strings related to loginType -->
@@ -63,9 +64,14 @@
     <string name="registration_button_to_next">다음</string>
     <!-- Strings related to ProductList -->
     <string name="productlist_load_more">더보기</string>
+    <string name="productlist_expired">마감</string>
+    <string name="productlist_remain_time">남은 시간: %1s</string>
     <!-- Strings related to Bottom Navigation -->
     <string name="bottom_home">홈</string>
+    <string name="bottom_search">검색</string>
     <string name="bottom_writing">글쓰기</string>
+    <string name="bottom_chatting">채팅</string>
+    <string name="bottom_mypage">MY</string>
     <!-- Strings related to Toolbar -->
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
@@ -83,6 +89,7 @@
     <string name="product_registration_album_image">앨범 이미지</string>
     <string name="product_registration_selected_image">선택한 이미지</string>
     <string name="product_registration_represent_image">대 표</string>
+    <string name="product_registration_error_minimum_bid">"최소 입찰가는 희망 가격보다 작아야 합니다."</string>
     <!-- Strings related to album list -->
     <string name="album_selected_button_complete">완료</string>
     <string name="album_selected_error_image">불러올 수 없는 이미지 입니다.</string>
@@ -90,4 +97,28 @@
     <string name="alert_dialog_with_accpet">네</string>
     <string name="alert_dialog_with_decline">아니오</string>
     <string name="alert_dialog_with_check">확인</string>
+    <!-- Strings related to Product Detail -->
+    <string name="product_detail_picture_count">%1d / %2d</string>
+    <string name="product_detail_category_and_time">%1s • %2s</string>
+    <string name="product_detail_remain_time_divider">:</string>
+    <string name="product_detail_expired">경매 마감</string>
+    <string name="product_detail_before_now">방금 전</string>
+    <string name="product_detail_before_hours">%1d시간 전</string>
+    <string name="product_detail_before_days">%1d일 전</string>
+    <string name="product_detail_before_months">%1d달 전</string>
+    <string name="product_detail_before_years">%1d년 전</string>
+    <string name="product_detail_minimum_bid">최소입찰가</string>
+    <string name="product_detail_hope_price">즉시구매가</string>
+    <string name="product_detail_btn_buy">즉시 구매하기</string>
+    <string name="product_detail_btn_bid">입찰하기</string>
+    <string name="product_detail_bidder_count">입찰 현황 %1d</string>
+    <string name="product_detail_tick">입찰 단위 %,2d원</string>
+    <string name="product_detail_rank">%1d등</string>
+    <string name="product_detail_secret_rank">*1–3등은 비공개 처리됩니다</string>
+    <string name="product_detail_secret_price">비공개</string>
+    <!-- Strings related to time -->
+    <string name="time_days">%1d일</string>
+    <string name="time_hours">%1d시간</string>
+    <string name="time_minutes">%1d분</string>
+    <string name="time_seconds">%1d초</string>
 </resources>

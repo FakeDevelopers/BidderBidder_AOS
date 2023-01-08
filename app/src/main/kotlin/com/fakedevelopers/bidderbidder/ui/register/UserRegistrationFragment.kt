@@ -149,7 +149,9 @@ class UserRegistrationFragment : Fragment() {
         setProgressBar(state)
 
         if (state.checkCancelStep()) {
-            findNavController().popBackStack()
+            //findNavController().popBackStack()
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
         }
 
         if (state.checkLastStep()) {

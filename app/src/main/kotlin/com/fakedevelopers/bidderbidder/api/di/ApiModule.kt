@@ -1,24 +1,8 @@
 package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
-import com.fakedevelopers.bidderbidder.api.repository.ChatRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductCategoryRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
-import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
 import com.fakedevelopers.bidderbidder.api.repository.RegistrationTermRepository
-import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
-import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
-import com.fakedevelopers.bidderbidder.api.service.ChatService
-import com.fakedevelopers.bidderbidder.api.service.ProductCategoryService
-import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
-import com.fakedevelopers.bidderbidder.api.service.ProductListService
-import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
-import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
 import com.fakedevelopers.bidderbidder.api.service.RegistrationTermService
-import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
-import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import com.fakedevelopers.bidderbidder.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -125,94 +109,6 @@ object ApiModule {
             setLanguageCode(Locale.getDefault().language)
         }
     }
-
-    // 로그인 요청
-    @Singleton
-    @Provides
-    fun provideUserLoginService(@NormalRetrofit retrofit: Retrofit): UserLoginService = retrofit.create(
-        UserLoginService::class.java
-    )
-
-    @Singleton
-    @Provides
-    fun provideUserLoginRepository(service: UserLoginService): UserLoginRepository = UserLoginRepository(service)
-
-    // 게시글 등록 요청
-    @Singleton
-    @Provides
-    fun provideUserProductRegistrationService(@NormalRetrofit retrofit: Retrofit): ProductRegistrationService =
-        retrofit.create(ProductRegistrationService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideUserProductRegistrationRepository(service: ProductRegistrationService): ProductRegistrationRepository =
-        ProductRegistrationRepository(service)
-
-    // 상품 카테고리 요청
-    @Singleton
-    @Provides
-    fun provideProductCategoryService(@NormalRetrofit retrofit: Retrofit): ProductCategoryService =
-        retrofit.create(ProductCategoryService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideProductCategoryRepository(service: ProductCategoryService): ProductCategoryRepository =
-        ProductCategoryRepository(service)
-
-    // 상품 리스트 요청
-    @Singleton
-    @Provides
-    fun provideProductListService(@NormalRetrofit retrofit: Retrofit): ProductListService =
-        retrofit.create(ProductListService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideProductListRepository(service: ProductListService): ProductListRepository =
-        ProductListRepository(service)
-
-    // 구글 로그인 요청
-    @Singleton
-    @Provides
-    fun provideSigninGoogleService(@AuthRetrofit retrofit: Retrofit): SigninGoogleService =
-        retrofit.create(SigninGoogleService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
-        SigninGoogleRepository(service)
-
-    // 상품 상세 정보, 입찰
-    @Singleton
-    @Provides
-    fun provideProductDetailService(@NormalRetrofit retrofit: Retrofit): ProductDetailService =
-        retrofit.create(ProductDetailService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
-        ProductDetailRepository(service)
-
-    // 스트림 유저 토큰
-    @Singleton
-    @Provides
-    fun provideChatService(@NormalRetrofit retrofit: Retrofit): ChatService =
-        retrofit.create(ChatService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideChatRepository(service: ChatService): ChatRepository =
-        ChatRepository(service)
-
-    // 인기 검색어 요청
-    @Singleton
-    @Provides
-    fun provideProductSearchService(@NormalRetrofit retrofit: Retrofit): ProductSearchService =
-        retrofit.create(ProductSearchService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
-        ProductSearchRepository(service)
 
     @Singleton
     @Provides

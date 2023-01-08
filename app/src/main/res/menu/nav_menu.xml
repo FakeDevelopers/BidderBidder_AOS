@@ -3,12 +3,12 @@
 
     <item
         android:id="@+id/menu_product_list"
-        android:icon="@drawable/ic_launcher_foreground"
+        android:icon="@drawable/vector_home"
         android:title="@string/bottom_home"
         android:enabled="true"/>
     <item
         android:icon="@drawable/vector_search"
-        android:title="Item"
+        android:title="@string/bottom_search"
         android:enabled="true"/>
     <item
         android:id="@+id/menu_product_registration"
@@ -18,10 +18,10 @@
     <item
         android:id="@+id/menu_chat"
         android:icon="@drawable/vector_menu_chat"
-        android:title="채팅"
+        android:title="@string/bottom_chatting"
         android:enabled="true"/>
     <item
-        android:icon="@drawable/ic_launcher_foreground"
-        android:title="Item"
+        android:icon="@drawable/vector_my"
+        android:title="@string/bottom_mypage"
         android:enabled="true"/>
 </menu>

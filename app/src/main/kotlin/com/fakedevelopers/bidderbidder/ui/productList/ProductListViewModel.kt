@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.ui.util.ApiErrorHandler
+import com.fakedevelopers.bidderbidder.ui.util.DateUtil
 import com.fakedevelopers.bidderbidder.ui.util.MutableEventFlow
 import com.fakedevelopers.bidderbidder.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
+    dateUtil: DateUtil,
     private val repository: ProductListRepository
 ) : ViewModel() {
 
@@ -42,6 +44,7 @@ class ProductListViewModel @Inject constructor(
     private var startNumber = -1L
 
     val adapter = ProductListAdapter(
+        dateUtil = dateUtil,
         clickLoadMore = { clickLoadMore() },
         showProductDetail = { productId -> showProductDetail(productId) }
     )
@@ -76,12 +79,12 @@ class ProductListViewModel @Inject constructor(
         this.isInitialize = isInitialize
         viewModelScope.launch {
             setLoadingState(true, isInitialize)
-            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).let {
-                if (it.isSuccessful) {
-                    val resultItems = it.body() ?: return@let
+            repository.getProductList(searchWord.value, 0, LIST_COUNT, startNumber).run {
+                if (isSuccessful) {
+                    val resultItems = body() ?: return@run
                     handleResultItems(resultItems)
                 } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
+                    ApiErrorHandler.printErrorMessage(errorBody())
                 }
             }
             setLoadingState(false, isInitialize)

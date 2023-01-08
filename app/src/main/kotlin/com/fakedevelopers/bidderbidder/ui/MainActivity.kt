@@ -3,29 +3,24 @@ package com.fakedevelopers.bidderbidder
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
+import androidx.annotation.IdRes
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
+import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
+import com.fakedevelopers.bidderbidder.ui.base.BaseActivity
 import com.fakedevelopers.bidderbidder.ui.util.safeNavigate
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::inflate) {
 
     private lateinit var navController: NavController
-    private var _binding: ActivityMainBinding? = null
-    private val binding get() = _binding!!
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        AndroidThreeTen.init(this)
-        navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
-
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+    private val destinationChangeListener by lazy {
+        NavController.OnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.productListFragment -> {
                     binding.bottomNavigationMain.run {
@@ -37,6 +32,13 @@ class MainActivity : AppCompatActivity() {
                 else -> binding.bottomNavigationMain.visibility = View.GONE
             }
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
+        navController = (supportFragmentManager.findFragmentById(R.id.navigation_main) as NavHostFragment).navController
+        navController.addOnDestinationChangedListener(destinationChangeListener)
         binding.bottomNavigationMain.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.menu_product_registration -> navController.safeNavigate(R.id.productRegistrationFragment)
@@ -58,6 +60,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        _binding = null
+        navController.removeOnDestinationChangedListener(destinationChangeListener)
     }
 }
