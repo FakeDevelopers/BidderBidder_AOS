@@ -75,6 +75,7 @@ class UserRegistrationFragment : Fragment() {
     private fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
+            setNextByDestination(destination.id)
         }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
@@ -116,11 +117,20 @@ class UserRegistrationFragment : Fragment() {
     }
 
     private fun setToolbarTitleByDestination(destinationId: Int) {
-        binding.includeUserRegistrationToolbar.textviewTitle.apply {
+        binding.includeUserRegistrationToolbar.textviewTitle.run {
             when (destinationId) {
                 R.id.acceptTermsFragment -> setText(R.string.registration_toolbar_accept_terms)
                 R.id.acceptTermsFragmentContents -> setText(R.string.registration_toolbar_accept_term_detail)
                 else -> setText(R.string.registration_toolbar_user_registration)
+            }
+        }
+    }
+
+    private fun setNextByDestination(destinationId: Int) {
+        binding.buttonUserRegistrationNext.run {
+            visibility = when (destinationId) {
+                R.id.acceptTermsFragmentContents -> View.INVISIBLE
+                else -> View.VISIBLE
             }
         }
     }
