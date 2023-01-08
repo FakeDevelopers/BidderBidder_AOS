@@ -1,5 +1,6 @@
 package com.fakedevelopers.bidderbidder.ui.register
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +20,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
-import com.fakedevelopers.bidderbidder.ui.util.safeNavigate
+import com.fakedevelopers.bidderbidder.ui.MainActivity
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -149,13 +150,12 @@ class UserRegistrationFragment : Fragment() {
         setProgressBar(state)
 
         if (state.checkCancelStep()) {
-            //findNavController().popBackStack()
-            startActivity(Intent(requireContext(), MainActivity::class.java))
-            requireActivity().finish()
+            findNavController().popBackStack()
         }
 
         if (state.checkLastStep()) {
-            findNavController().safeNavigate(R.id.action_userRegistrationFragment_to_productListFragment)
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
         }
 
         state.navigationId?.let { navId ->

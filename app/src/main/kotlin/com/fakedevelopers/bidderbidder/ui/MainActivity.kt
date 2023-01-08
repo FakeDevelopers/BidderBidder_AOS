@@ -1,11 +1,9 @@
-package com.fakedevelopers.bidderbidder
+package com.fakedevelopers.bidderbidder.ui
 
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import androidx.annotation.IdRes
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.fragment.NavHostFragment
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.ActivityMainBinding
