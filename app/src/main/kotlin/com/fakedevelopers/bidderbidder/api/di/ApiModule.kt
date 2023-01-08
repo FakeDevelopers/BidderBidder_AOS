@@ -1,8 +1,6 @@
 package com.fakedevelopers.bidderbidder.api.di
 
 import com.fakedevelopers.bidderbidder.api.data.Constants.Companion.BASE_URL
-import com.fakedevelopers.bidderbidder.api.repository.RegistrationTermRepository
-import com.fakedevelopers.bidderbidder.api.service.RegistrationTermService
 import com.fakedevelopers.bidderbidder.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -113,14 +111,4 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
-
-    @Singleton
-    @Provides
-    fun provideTermsService(@NormalRetrofit retrofit: Retrofit): RegistrationTermService =
-        retrofit.create(RegistrationTermService::class.java)
-
-    @Singleton
-    @Provides
-    fun provideTermsRepository(service: RegistrationTermService): RegistrationTermRepository =
-        RegistrationTermRepository(service)
 }
