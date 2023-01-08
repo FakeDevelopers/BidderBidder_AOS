@@ -3,7 +3,6 @@ package com.fakedevelopers.bidderbidder.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS_CONTENTS
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CANCEL_REGISTRATION
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.EMPTY_STATE
 import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
@@ -69,6 +68,10 @@ class UserRegistrationViewModel : ViewModel() {
     // 실패 토스트 메세지
     private val _failureMessage = MutableEventFlow<String>()
     val failureMessage = _failureMessage.asEventFlow()
+
+    fun setInitialStep() {
+        currentStep = ACCEPT_TERMS
+    }
 
     /* AcceptTermsFragment */
     // 모든 약관 동의
@@ -244,6 +247,7 @@ class UserRegistrationViewModel : ViewModel() {
     // 현재 단계 조건 충족시 다음 단계로 이동
     fun moveNextStep() {
         when (currentStep) {
+            CANCEL_REGISTRATION -> ACCEPT_TERMS
             ACCEPT_TERMS -> getNextStepOfAccetTerms()
             INPUT_ID -> getNextStepOfInputId()
             INPUT_PASSWORD -> getNextStepOfInputPassword()
@@ -273,14 +277,11 @@ class UserRegistrationViewModel : ViewModel() {
 
     // 이전 단계로 돌아가자
     fun toPreviousStep() {
-        when (currentStep) {
-            ACCEPT_TERMS -> setCurrentStep(CANCEL_REGISTRATION)
-            ACCEPT_TERMS_CONTENTS -> setCurrentStep(ACCEPT_TERMS)
-            INPUT_ID -> setCurrentStep(ACCEPT_TERMS)
-            INPUT_PASSWORD -> setCurrentStep(INPUT_ID)
-            PHONE_AUTH_BEFORE_SENDING -> setCurrentStep(INPUT_PASSWORD)
-            PHONE_AUTH_CHECK_AUTH_CODE -> setCurrentStep(INPUT_PASSWORD)
-            else -> sendFailureMessage(NOT_GO_BACKWARDS)
+        currentStep.previousStep.let {
+            when (it) {
+                null -> sendFailureMessage(NOT_GO_BACKWARDS)
+                else -> setCurrentStep(it)
+            }
         }
     }
 

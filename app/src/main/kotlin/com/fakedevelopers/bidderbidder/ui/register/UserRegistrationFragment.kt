@@ -53,6 +53,9 @@ class UserRegistrationFragment : Fragment() {
             container,
             false
         )
+
+        viewModel.setInitialStep()
+
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
