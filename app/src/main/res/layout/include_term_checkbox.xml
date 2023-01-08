@@ -18,6 +18,10 @@
             type="int" />
 
         <variable
+            name="termId"
+            type="long" />
+
+        <variable
             name="vm"
             type="com.fakedevelopers.bidderbidder.ui.register.UserRegistrationViewModel" />
     </data>

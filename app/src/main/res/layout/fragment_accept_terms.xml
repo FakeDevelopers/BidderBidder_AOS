@@ -65,55 +65,55 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider_accept_terms">
 
-            <include
-                android:id="@+id/include_term1"
-                layout="@layout/include_term_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:termIdx="@{0}"
-                app:termTitle="@{@string/accept_terms_essential}"
-                app:termType="@{0}"
-                app:vm="@{vm}" />
+<!--            <include-->
+<!--                android:id="@+id/include_term1"-->
+<!--                layout="@layout/include_term_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:termIdx="@{0}"-->
+<!--                app:termTitle="@{@string/accept_terms_essential}"-->
+<!--                app:termType="@{0}"-->
+<!--                app:vm="@{vm}" />-->
 
-            <include
-                android:id="@+id/include_term2"
-                layout="@layout/include_term_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:termIdx="@{1}"
-                app:termTitle="@{@string/accept_terms_essential}"
-                app:termType="@{0}"
-                app:vm="@{vm}" />
+<!--            <include-->
+<!--                android:id="@+id/include_term2"-->
+<!--                layout="@layout/include_term_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:termIdx="@{1}"-->
+<!--                app:termTitle="@{@string/accept_terms_essential}"-->
+<!--                app:termType="@{0}"-->
+<!--                app:vm="@{vm}" />-->
 
-            <include
-                android:id="@+id/include_term3"
-                layout="@layout/include_term_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:termIdx="@{2}"
-                app:termTitle="@{@string/accept_terms_essential}"
-                app:termType="@{0}"
-                app:vm="@{vm}" />
+<!--            <include-->
+<!--                android:id="@+id/include_term3"-->
+<!--                layout="@layout/include_term_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:termIdx="@{2}"-->
+<!--                app:termTitle="@{@string/accept_terms_essential}"-->
+<!--                app:termType="@{0}"-->
+<!--                app:vm="@{vm}" />-->
 
-            <include
-                android:id="@+id/include_term4"
-                layout="@layout/include_term_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:termIdx="@{3}"
-                app:termTitle="@{@string/accept_terms_essential}"
-                app:termType="@{0}"
-                app:vm="@{vm}" />
+<!--            <include-->
+<!--                android:id="@+id/include_term4"-->
+<!--                layout="@layout/include_term_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:termIdx="@{3}"-->
+<!--                app:termTitle="@{@string/accept_terms_essential}"-->
+<!--                app:termType="@{0}"-->
+<!--                app:vm="@{vm}" />-->
 
-            <include
-                android:id="@+id/include_term5"
-                layout="@layout/include_term_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:termIdx="@{0}"
-                app:termTitle="@{@string/accept_terms_optional}"
-                app:termType="@{1}"
-                app:vm="@{vm}" />
+<!--            <include-->
+<!--                android:id="@+id/include_term5"-->
+<!--                layout="@layout/include_term_checkbox"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:termIdx="@{0}"-->
+<!--                app:termTitle="@{@string/accept_terms_optional}"-->
+<!--                app:termType="@{1}"-->
+<!--                app:vm="@{vm}" />-->
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
