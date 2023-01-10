@@ -100,11 +100,15 @@ class AcceptTermsFragment : Fragment() {
 
     private fun setAllTermsState(state: Boolean) {
         binding.run {
-            linearLayout4.children
-                .map { it as ConstraintLayout }
-                .map { it.children.first { view -> view is CheckBox } }
-                .map { it as CheckBox }
-                .forEach { it.isChecked = state }
+            acceptTermList.children
+                .forEach {
+                    val constraintLayout = it as? ConstraintLayout ?: return@forEach
+                    val checkBox: CheckBox = constraintLayout.children.first { view ->
+                        view is CheckBox
+                    } as? CheckBox ?: return@forEach
+
+                    checkBox.isChecked = state
+                }
         }
     }
 
@@ -114,7 +118,7 @@ class AcceptTermsFragment : Fragment() {
     }
 
     private fun setTermView(termList: TermListDto) {
-        binding.linearLayout4.removeAllViews()
+        binding.acceptTermList.removeAllViews()
         termList.run {
             viewModel.setTermSize(required.size, optional.size)
 
@@ -128,10 +132,10 @@ class AcceptTermsFragment : Fragment() {
     }
 
     private fun addTermView(term: TermItemDto, type: Int, idx: Int) {
-        binding.linearLayout4.addView(
+        binding.acceptTermList.addView(
             IncludeTermCheckboxBinding.inflate(
                 layoutInflater,
-                binding.linearLayout4,
+                binding.acceptTermList,
                 false
             ).apply {
                 termTitle = term.name

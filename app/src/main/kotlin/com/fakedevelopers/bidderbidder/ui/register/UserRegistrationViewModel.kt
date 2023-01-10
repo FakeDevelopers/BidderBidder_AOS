@@ -18,8 +18,8 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private var essentialTerms = MutableList(NUMBER_OF_ESSENTIAL_TERM) { false }
-    private var optionalTerms = MutableList(NUMBER_OF_OPTIONAL_TERM) { false }
+    private var essentialTerms = MutableList(0) { false }
+    private var optionalTerms = MutableList(0) { false }
     val acceptAllState = _acceptAllState.asEventFlow()
     var acceptTermDetail: String = ""
 
@@ -275,12 +275,9 @@ class UserRegistrationViewModel : ViewModel() {
 
     // 이전 단계로 돌아가자
     fun toPreviousStep() {
-        currentStep.previousStep.let {
-            when (it) {
-                null -> sendFailureMessage(NOT_GO_BACKWARDS)
-                else -> setCurrentStep(it)
-            }
-        }
+        currentStep.previousStep?.let {
+            setCurrentStep(it)
+        } ?: sendFailureMessage(NOT_GO_BACKWARDS)
     }
 
     // 실패 토스트 메세지
@@ -291,9 +288,6 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     companion object {
-        private const val NUMBER_OF_ESSENTIAL_TERM = 2
-        private const val NUMBER_OF_OPTIONAL_TERM = 1
-
         // 약관 타입
         private const val TYPE_ESSENTIAL = 0
         private const val TYPE_OPTIONAL = 1

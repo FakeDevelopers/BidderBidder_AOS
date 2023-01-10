@@ -142,7 +142,7 @@ class UserRegistrationFragment : Fragment() {
     private fun setProgressBar(state: RegistrationProgressState) {
         binding.includeUserRegistrationNavigation.run {
             root.visibility = state.getVisibleState()
-            registrationProgressbar.progress = state.getProgressPercentage() ?: 0
+            registrationProgressbar.progress = state.getProgressPercentage()
         }
     }
 

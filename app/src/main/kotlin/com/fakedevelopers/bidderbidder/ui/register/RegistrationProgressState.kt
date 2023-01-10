@@ -25,11 +25,8 @@ enum class RegistrationProgressState(
         }
     }
 
-    fun getProgressPercentage(): Int? {
-        progressStep?.let {
-            return (it * 100.0 / 3).toInt()
-        }
-        return null
+    fun getProgressPercentage(): Int {
+        return ((progressStep ?: 0) * 100.0 / MAX_PROGRESS_STEP).toInt()
     }
 
     fun checkLastStep(): Boolean {
@@ -38,5 +35,9 @@ enum class RegistrationProgressState(
 
     fun checkCancelStep(): Boolean {
         return this == CANCEL_REGISTRATION
+    }
+
+    companion object {
+        private const val MAX_PROGRESS_STEP = 3
     }
 }

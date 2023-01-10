@@ -55,7 +55,7 @@
             app:layout_constraintTop_toTopOf="@+id/include_accept_terms_title" />
 
         <LinearLayout
-            android:id="@+id/linearLayout4"
+            android:id="@+id/acceptTermList"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/registration_term_checkbox_border_margin_bottom"
