@@ -18,8 +18,8 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private var essentialTerms = MutableList(0) { false }
-    private var optionalTerms = MutableList(0) { false }
+    private var essentialTerms = mutableListOf<Boolean>()
+    private var optionalTerms = mutableListOf<Boolean>()
     val acceptAllState = _acceptAllState.asEventFlow()
     var acceptTermDetail: String = ""
 
