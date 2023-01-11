@@ -1,7 +1,9 @@
 package com.fakedevelopers.bidderbidder.api.di
 
+import com.fakedevelopers.bidderbidder.api.repository.RegistrationTermRepository
 import com.fakedevelopers.bidderbidder.api.repository.SigninGoogleRepository
 import com.fakedevelopers.bidderbidder.api.repository.UserLoginRepository
+import com.fakedevelopers.bidderbidder.api.service.RegistrationTermService
 import com.fakedevelopers.bidderbidder.api.service.SigninGoogleService
 import com.fakedevelopers.bidderbidder.api.service.UserLoginService
 import dagger.Module
@@ -35,4 +37,15 @@ class LoginModule {
     @Provides
     fun provideSigninGoogleRepository(service: SigninGoogleService): SigninGoogleRepository =
         SigninGoogleRepository(service)
+
+    // 약관 종류 요청
+    @ViewModelScoped
+    @Provides
+    fun provideTermsService(@NormalRetrofit retrofit: Retrofit): RegistrationTermService =
+        retrofit.create(RegistrationTermService::class.java)
+
+    @ViewModelScoped
+    @Provides
+    fun provideTermsRepository(service: RegistrationTermService): RegistrationTermRepository =
+        RegistrationTermRepository(service)
 }

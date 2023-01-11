@@ -6,14 +6,12 @@ import com.fakedevelopers.bidderbidder.api.repository.ProductDetailRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductListRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.bidderbidder.api.repository.ProductSearchRepository
-import com.fakedevelopers.bidderbidder.api.repository.RegistrationTermRepository
 import com.fakedevelopers.bidderbidder.api.service.ChatService
 import com.fakedevelopers.bidderbidder.api.service.ProductCategoryService
 import com.fakedevelopers.bidderbidder.api.service.ProductDetailService
 import com.fakedevelopers.bidderbidder.api.service.ProductListService
 import com.fakedevelopers.bidderbidder.api.service.ProductRegistrationService
 import com.fakedevelopers.bidderbidder.api.service.ProductSearchService
-import com.fakedevelopers.bidderbidder.api.service.RegistrationTermService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -89,15 +87,4 @@ class MainModule {
     @Provides
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepository(service)
-
-    // 약관 종류 요청
-    @ActivityRetainedScoped
-    @Provides
-    fun provideTermsService(@NormalRetrofit retrofit: Retrofit): RegistrationTermService =
-        retrofit.create(RegistrationTermService::class.java)
-
-    @ActivityRetainedScoped
-    @Provides
-    fun provideTermsRepository(service: RegistrationTermService): RegistrationTermRepository =
-        RegistrationTermRepository(service)
 }

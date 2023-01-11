@@ -131,11 +131,9 @@ class UserRegistrationFragment : Fragment() {
     }
 
     private fun setNextByDestination(destinationId: Int) {
-        binding.buttonUserRegistrationNext.run {
-            visibility = when (destinationId) {
-                R.id.acceptTermsFragmentContents -> View.INVISIBLE
-                else -> View.VISIBLE
-            }
+        binding.buttonUserRegistrationNext.visibility = when (destinationId) {
+            R.id.acceptTermsFragmentContents -> View.INVISIBLE
+            else -> View.VISIBLE
         }
     }
 
