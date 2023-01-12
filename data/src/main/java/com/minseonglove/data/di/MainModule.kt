@@ -16,7 +16,7 @@ object MainModule {
 
     @Singleton
     @Provides
-    fun provideProductListService(retrofit: Retrofit): ProductListService =
+    fun provideProductListService(@DataObject retrofit: Retrofit): ProductListService =
         retrofit.create(ProductListService::class.java)
 
     @Singleton

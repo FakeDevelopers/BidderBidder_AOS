@@ -12,15 +12,22 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class DataObject
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
+    @DataObject
     @Provides
     fun provideBaseUrl() = "http://bidderbidderapi.kro.kr:8080"
 
+    @DataObject
     @Singleton
     @Provides
     fun provideNormalOkHttpClient() = if (BuildConfig.DEBUG) {
@@ -33,13 +40,19 @@ object ApiModule {
         OkHttpClient.Builder().build()
     }
 
+    @DataObject
     @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().setLenient().create()
 
+    @DataObject
     @Singleton
     @Provides
-    fun provideNormalRetrofit(okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
+    fun provideNormalRetrofit(
+        @DataObject okHttpClient: OkHttpClient,
+        @DataObject gson: Gson,
+        @DataObject baseUrl: String
+    ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
             .baseUrl(baseUrl)
