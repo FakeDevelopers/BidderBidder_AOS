@@ -59,6 +59,7 @@
     <string name="registration_password_is_same">비밀번호가 일치해요!</string>
     <!-- Strings related to Register -->
     <string name="registration_toolbar_accept_terms">약관동의</string>
+    <string name="registration_toolbar_accept_term_detail">비더비더 이용약관</string>
     <string name="registration_toolbar_user_registration">회원가입</string>
     <string name="registration_button_to_next">다음</string>
     <!-- Strings related to ProductList -->

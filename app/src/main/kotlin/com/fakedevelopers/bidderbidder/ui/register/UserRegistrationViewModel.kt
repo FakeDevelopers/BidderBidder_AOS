@@ -18,9 +18,10 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private val essentialTerms = Array(NUMBER_OF_ESSENTIAL_TERM) { false }
-    private val optionalTerms = Array(NUMBER_OF_OPTIONAL_TERM) { false }
+    private var essentialTerms = mutableListOf<Boolean>()
+    private var optionalTerms = mutableListOf<Boolean>()
     val acceptAllState = _acceptAllState.asEventFlow()
+    var acceptTermDetail: String = ""
 
     /* PhoneAuthFragment */
     private var phoneAuthToken = ""
@@ -67,12 +68,21 @@ class UserRegistrationViewModel : ViewModel() {
     private val _failureMessage = MutableEventFlow<String>()
     val failureMessage = _failureMessage.asEventFlow()
 
+    fun setInitialStep() {
+        currentStep = ACCEPT_TERMS
+    }
+
     /* AcceptTermsFragment */
     // 모든 약관 동의
     fun setAcceptAllState(isChecked: Boolean) {
         viewModelScope.launch {
             _acceptAllState.emit(isChecked)
         }
+    }
+
+    fun setTermSize(essentialSize: Int, optionalSize: Int) {
+        essentialTerms = MutableList(essentialSize) { false }
+        optionalTerms = MutableList(optionalSize) { false }
     }
 
     // 약관 선택 상태 변경
@@ -265,12 +275,9 @@ class UserRegistrationViewModel : ViewModel() {
 
     // 이전 단계로 돌아가자
     fun toPreviousStep() {
-        when (currentStep) {
-            INPUT_PASSWORD -> setCurrentStep(INPUT_ID)
-            PHONE_AUTH_BEFORE_SENDING -> setCurrentStep(INPUT_PASSWORD)
-            PHONE_AUTH_CHECK_AUTH_CODE -> setCurrentStep(INPUT_PASSWORD)
-            else -> sendFailureMessage(NOT_GO_BACKWARDS)
-        }
+        currentStep.previousStep?.let {
+            setCurrentStep(it)
+        } ?: sendFailureMessage(NOT_GO_BACKWARDS)
     }
 
     // 실패 토스트 메세지
@@ -281,9 +288,6 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     companion object {
-        private const val NUMBER_OF_ESSENTIAL_TERM = 4
-        private const val NUMBER_OF_OPTIONAL_TERM = 1
-
         // 약관 타입
         private const val TYPE_ESSENTIAL = 0
         private const val TYPE_OPTIONAL = 1

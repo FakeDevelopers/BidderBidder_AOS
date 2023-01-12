@@ -16,16 +16,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.fakedevelopers.bidderbidder.R
 import com.fakedevelopers.bidderbidder.databinding.FragmentUserRegistrationBinding
 import com.fakedevelopers.bidderbidder.ui.MainActivity
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.ACCEPT_TERMS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.CONGRATULATIONS
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_ID
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.INPUT_PASSWORD
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_BEFORE_SENDING
-import com.fakedevelopers.bidderbidder.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -58,6 +53,9 @@ class UserRegistrationFragment : Fragment() {
             container,
             false
         )
+
+        viewModel.setInitialStep()
+
         return binding.run {
             vm = viewModel
             lifecycleOwner = viewLifecycleOwner
@@ -81,6 +79,7 @@ class UserRegistrationFragment : Fragment() {
     private fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
+            setNextByDestination(destination.id)
         }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
@@ -122,31 +121,26 @@ class UserRegistrationFragment : Fragment() {
     }
 
     private fun setToolbarTitleByDestination(destinationId: Int) {
-        binding.includeUserRegistrationToolbar.textviewTitle.apply {
+        binding.includeUserRegistrationToolbar.textviewTitle.run {
             when (destinationId) {
                 R.id.acceptTermsFragment -> setText(R.string.registration_toolbar_accept_terms)
+                R.id.acceptTermsFragmentContents -> setText(R.string.registration_toolbar_accept_term_detail)
                 else -> setText(R.string.registration_toolbar_user_registration)
             }
         }
     }
 
+    private fun setNextByDestination(destinationId: Int) {
+        binding.buttonUserRegistrationNext.visibility = when (destinationId) {
+            R.id.acceptTermsFragmentContents -> View.INVISIBLE
+            else -> View.VISIBLE
+        }
+    }
+
     private fun setProgressBar(state: RegistrationProgressState) {
-        binding.includeUserRegistrationNavigation.let {
-            if (state == ACCEPT_TERMS) {
-                binding.includeUserRegistrationNavigation.root.visibility = View.GONE
-            } else {
-                binding.includeUserRegistrationNavigation.root.visibility = View.VISIBLE
-            }
-            when (state) {
-                INPUT_ID -> 1
-                INPUT_PASSWORD -> 2
-                PHONE_AUTH_BEFORE_SENDING -> 3
-                PHONE_AUTH_CHECK_AUTH_CODE -> 3
-                CONGRATULATIONS -> 3
-                else -> null
-            }?.let { step ->
-                it.registrationProgressbar.progress = (step * 100.0 / 3).toInt()
-            }
+        binding.includeUserRegistrationNavigation.run {
+            root.visibility = state.getVisibleState()
+            registrationProgressbar.progress = state.getProgressPercentage()
         }
     }
 
@@ -155,18 +149,18 @@ class UserRegistrationFragment : Fragment() {
         NavOptions.Builder().setLaunchSingleTop(true)
         viewModel.setNextStepEnabled(false)
         setProgressBar(state)
-        when (state) {
-            ACCEPT_TERMS -> navigate(R.id.acceptTermsFragment)
-            INPUT_ID -> navigate(R.id.userRegistrationIdFragment)
-            INPUT_PASSWORD -> navigate(R.id.userRegistrationPasswordFragment)
-            PHONE_AUTH_BEFORE_SENDING -> navigate(R.id.phoneAuthFragment)
-            CONGRATULATIONS -> {
-                startActivity(Intent(requireContext(), MainActivity::class.java))
-                requireActivity().finish()
-            }
-            else -> {
-                // 여긴 아무것도 안해!
-            }
+
+        if (state.checkCancelStep()) {
+            findNavController().popBackStack()
+        }
+
+        if (state.checkLastStep()) {
+            startActivity(Intent(requireContext(), MainActivity::class.java))
+            requireActivity().finish()
+        }
+
+        state.navigationId?.let { navId ->
+            navigate(navId)
         }
     }
 
