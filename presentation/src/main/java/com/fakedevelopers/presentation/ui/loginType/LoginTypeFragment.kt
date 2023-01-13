@@ -84,7 +84,6 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.signinGoogleResponse.collect {
                     if (it.isSuccessful) {
-                        sendSnackBar("success")
                         navigateActivity(MainActivity::class.java)
                     } else {
                         sendSnackBar(it.errorBody().toString())
