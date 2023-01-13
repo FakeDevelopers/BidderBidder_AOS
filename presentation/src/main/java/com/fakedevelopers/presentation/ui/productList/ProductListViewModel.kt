@@ -9,7 +9,6 @@ import com.fakedevelopers.presentation.ui.util.asEventFlow
 import com.minseonglove.domain.model.ProductItem
 import com.minseonglove.domain.model.ProductReadMore
 import com.minseonglove.domain.usecase.GetProductListUseCase
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,7 +56,7 @@ class ProductListViewModel @Inject constructor(
     }
 
     fun getNextProductList() {
-        if (isLoadMoreVisible) {
+        if (isLoadMoreVisible || isLoading.value) {
             return
         }
         requestProductList(false)
@@ -71,10 +70,17 @@ class ProductListViewModel @Inject constructor(
         this.isInitialize = isInitialize
         viewModelScope.launch {
             setLoadingState(true, isInitialize)
-            handleResult(
-                getProductListUseCase(searchWord.value, 0, isInitialize, LIST_COUNT),
-                isInitialize
-            )
+            val result = getProductListUseCase(searchWord.value, 0, isInitialize, LIST_COUNT)
+            if (result.isSuccess) {
+                val currentList = if (isInitialize) emptyList() else adapter.currentList
+                val productItems = result.getOrThrow()
+                if (isLoadMoreVisible) {
+                    adapter.submitList(currentList.plus(productItems).plus(ProductReadMore))
+                } else {
+                    adapter.submitList(currentList.plus(productItems))
+                }
+                _isEmptyResult.emit(productItems.isEmpty())
+            }
             setLoadingState(false, isInitialize)
         }
     }
@@ -83,19 +89,6 @@ class ProductListViewModel @Inject constructor(
         isLoadMoreVisible = false
         adapter.submitList(adapter.currentList.filterIsInstance<ProductItem>())
         requestProductList(false)
-    }
-
-    private suspend fun handleResult(result: Result<List<ProductItem>>, isInitialize: Boolean) {
-        if (result.isSuccess) {
-            val currentList = if (isInitialize) emptyList() else adapter.currentList
-            val productItems = result.getOrThrow()
-            if (currentList.isEmpty() && productItems.size == LIST_COUNT) {
-                adapter.submitList(currentList.plus(productItems).plus(ProductReadMore))
-            } else {
-                adapter.submitList(currentList.plus(productItems))
-            }
-            _isEmptyResult.emit(productItems.isEmpty())
-        }
     }
 
     private fun showProductDetail(productId: Long) {
@@ -108,7 +101,6 @@ class ProductListViewModel @Inject constructor(
         if (isInitialize) {
             _isRefreshing.emit(state)
         } else {
-            Logger.t("list").i("로딩~ $state ${System.currentTimeMillis()}")
             _isLoading.emit(state)
         }
     }
