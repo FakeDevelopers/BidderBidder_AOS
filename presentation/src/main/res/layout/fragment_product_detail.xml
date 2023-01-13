@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="vm"
+            type="com.fakedevelopers.presentation.ui.productDetail.ProductDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/divider_product_detail_bottom">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline_product_detail_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintGuide_begin="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline_product_detail_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintGuide_end="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/viewpager_product_detail_pictures"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="true"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout_height="300dp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_picture_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        tools:text="1 / 2" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_end"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        tools:text="24분" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_divider_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:text="@string/product_detail_remain_time_divider"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_end"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_end" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_middle"
+                        style="@style/TextViewRemainTime"
+                        android:layout_marginEnd="2dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_divider_end"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_divider_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_divider_end"
+                        tools:text="3시간"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_divider_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        android:text="@string/product_detail_remain_time_divider"
+                        android:textSize="18sp"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_middle"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_middle"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_middle" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_list_remain_time_start"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="2dp"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_list_remain_time_divider_start"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_list_remain_time_divider_start"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_list_remain_time_divider_start"
+                        tools:text="1일"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textView_product_detail_expired"
+                        style="@style/TextViewRemainTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/product_detail_expired"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/viewpager_product_detail_pictures"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end" />
+
+                    <include
+                        android:id="@+id/include_product_detail_seller"
+                        layout="@layout/include_product_detail_seller"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/viewpager_product_detail_pictures" />
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:id="@+id/divider_product_detail_level0"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/include_product_detail_seller" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="@{vm.productDetailDto.productTitle}"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/divider_product_detail_level0"
+                        tools:text="더퀸 The Queen - Greatest Hits" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_category_and_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="11sp"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/textview_product_detail_title"
+                        tools:text="음반 • 5시간 전" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_views"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:drawableLeft="@drawable/vector_eye"
+                        android:drawablePadding="2dp"
+                        android:text="7"
+                        android:textSize="11sp"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_category_and_time"
+                        app:layout_constraintEnd_toStartOf="@id/textview_product_detail_hearts"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_detail_category_and_time"
+                        tools:text="7" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_hearts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/vector_heart"
+                        android:drawablePadding="2dp"
+                        android:text="3"
+                        android:textSize="11sp"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_views"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_detail_views"
+                        tools:text="3" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_label_minumum_bid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/product_detail_minimum_bid"
+                        android:textColor="@color/black"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/textview_product_detail_category_and_time" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_minumum_bid"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@{@string/price_format(vm.productDetailDto.openingBid)}"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/textview_product_detail_label_minumum_bid"
+                        tools:text="150,000원" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_label_hope_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/product_detail_hope_price"
+                        android:textColor="@color/bidderbidder_primary"
+                        android:textSize="12sp"
+                        android:visibility="@{vm.productDetailDto.hopePrice == 0 ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintBottom_toBottomOf="@+id/textview_product_detail_label_minumum_bid"
+                        app:layout_constraintStart_toStartOf="@id/textview_product_detail_hope_price"
+                        app:layout_constraintTop_toTopOf="@+id/textview_product_detail_label_minumum_bid" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_hope_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{@string/price_format(vm.productDetailDto.hopePrice)}"
+                        android:textColor="@color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="@{vm.productDetailDto.hopePrice == 0 ? View.GONE : View.VISIBLE}"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_minumum_bid"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintHorizontal_bias="0.3"
+                        app:layout_constraintStart_toEndOf="@id/textview_product_detail_minumum_bid"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_detail_minumum_bid"
+                        tools:text="179,000원" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_contents"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24sp"
+                        android:lineSpacingExtra="8dp"
+                        android:text="@{vm.productDetailDto.productContent}"
+                        android:textColor="@color/black"
+                        android:textSize="13sp"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/textview_product_detail_minumum_bid"
+                        tools:text="한정판 더퀸 히트곡 바이닐 LP입니다!\n2009년도에 구매하였고\n상태는 매우 좋습니다:)" />
+
+                    <com.google.android.material.divider.MaterialDivider
+                        android:id="@+id/divider_product_detail_level1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/textview_product_detail_contents" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_current_bidding"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16sp"
+                        android:text="@{@string/product_detail_bidder_count(vm.productDetailDto.bidderCount)}"
+                        android:textColor="@color/black"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="@id/guideline_product_detail_start"
+                        app:layout_constraintTop_toBottomOf="@id/divider_product_detail_level1"
+                        tools:text="입찰 현황 5" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textview_product_detail_tick"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:text="@{@string/product_detail_tick(vm.productDetailDto.tick)}"
+                        app:layout_constraintBottom_toBottomOf="@id/textview_product_detail_current_bidding"
+                        app:layout_constraintEnd_toEndOf="@id/guideline_product_detail_end"
+                        app:layout_constraintTop_toTopOf="@id/textview_product_detail_current_bidding"
+                        tools:text="입찰단위 1,000원" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_product_detail_bid_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="24dp"
+                    android:adapter="@{vm.bidInfoAdapter}"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/recycler_bid_info"/>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/textview_product_detail_secret_rank"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/product_detail_secret_rank"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </ScrollView>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_product_detail_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toTopOf="@id/button_product_detail_bidding"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <ToggleButton
+            android:id="@+id/button_product_detail_like"
+            android:layout_width="24dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/selector_button_favorite"
+            android:checked="false"
+            android:text=""
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="@id/button_product_detail_bidding"
+            app:layout_constraintEnd_toStartOf="@id/button_product_detail_buy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_product_detail_buy"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:backgroundTint="#3321CEFF"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/product_detail_btn_buy"
+            android:textColor="@color/bidderbidder_primary"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="5dp"
+            app:layout_constraintBottom_toBottomOf="@id/button_product_detail_bidding"
+            app:layout_constraintEnd_toStartOf="@id/button_product_detail_bidding"
+            app:layout_constraintStart_toEndOf="@id/button_product_detail_like"
+            app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_product_detail_bidding"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:backgroundTint="@color/bidderbidder_primary"
+            android:text="@string/product_detail_btn_bid"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:cornerRadius="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/button_product_detail_buy" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

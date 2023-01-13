@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/user_registration_graph"
+    app:startDestination="@id/acceptTermsFragment">
+    <fragment
+        android:id="@+id/acceptTermsFragment"
+        android:name="com.fakedevelopers.presentation.ui.register.acceptTerms.AcceptTermsFragment"
+        android:label="AcceptTermsFragment"
+        tools:layout="@layout/fragment_accept_terms">
+        <action
+            android:id="@+id/action_acceptTermsFragment_to_userRegistrationIdFragment"
+            app:destination="@id/userRegistrationIdFragment" />
+        <action
+            android:id="@+id/action_acceptTermsFragment_to_acceptTermsFragmentContents"
+            app:destination="@id/acceptTermsFragmentContents" />
+    </fragment>
+    <fragment
+        android:id="@+id/acceptTermsFragmentContents"
+        android:name="com.fakedevelopers.presentation.ui.register.acceptTermDetail.AcceptTermDetailFragment"
+        android:label="AcceptTermsFragment"
+        tools:layout="@layout/fragment_accept_term_detail">
+        <action
+            android:id="@+id/action_acceptTermsFragmentContents_to_acceptTermsFragment"
+            app:destination="@id/acceptTermsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneAuthFragment"
+        android:name="com.fakedevelopers.presentation.ui.register.phoneAuth.PhoneAuthFragment"
+        android:label="fragment_phone_auth"
+        tools:layout="@layout/fragment_phone_auth" >
+        <action
+            android:id="@+id/action_phoneAuthFragment_to_userRegistrationPasswordFragment"
+            app:destination="@id/userRegistrationPasswordFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userRegistrationIdFragment"
+        android:name="com.fakedevelopers.presentation.ui.register.id.UserRegistrationIdFragment"
+        android:label="UserRegistrationIdFragment"
+        tools:layout="@layout/fragment_user_registration_id">
+        <action
+            android:id="@+id/action_userRegistrationIdFragment_to_userRegistrationPasswordFragment"
+            app:destination="@id/userRegistrationPasswordFragment" />
+        <action
+            android:id="@+id/action_userRegistrationIdFragment_to_acceptTermsFragment"
+            app:destination="@id/acceptTermsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userRegistrationPasswordFragment"
+        android:name="com.fakedevelopers.presentation.ui.register.password.UserRegistrationPasswordFragment"
+        android:label="UserRegistrationPasswordFragment"
+        tools:layout="@layout/fragment_user_registration_password">
+        <action
+            android:id="@+id/action_userRegistrationPasswordFragment_to_phoneAuthFragment"
+            app:destination="@id/phoneAuthFragment" />
+        <action
+            android:id="@+id/action_userRegistrationPasswordFragment_to_userRegistrationIdFragment2"
+            app:destination="@id/userRegistrationIdFragment" />
+    </fragment>
+</navigation>

@@ -2,17 +2,42 @@
 buildscript {
     dependencies {
         classpath 'com.google.gms:google-services:4.3.14'
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.38.1'
-        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.5.2'
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.44'
+        classpath 'androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3'
     }
 }
 
 plugins {
     id 'com.android.application' version '7.3.0' apply false
     id 'com.android.library' version '7.3.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.6.20' apply false
+    id 'org.jetbrains.kotlin.android' version '1.7.20' apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.7.20' apply false
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+subprojects {
+    configurations {
+        ktlint
+    }
+
+    dependencies {
+        ktlint 'com.pinterest:ktlint:0.47.1'
+    }
+
+    task ktlint(type: JavaExec, group: "verification") {
+        description = "Check Kotlin code style."
+        mainClass.set("com.pinterest.ktlint.Main")
+        classpath = configurations.ktlint
+        args "src/**/*.kt"
+    }
+
+    task ktlintFormat(type: JavaExec, group: "formatting") {
+        description = "Fix Kotlin code style deviations."
+        mainClass.set("com.pinterest.ktlint.Main")
+        classpath = configurations.ktlint
+        args "-F", "src/**/*.kt"
+    }
 }
