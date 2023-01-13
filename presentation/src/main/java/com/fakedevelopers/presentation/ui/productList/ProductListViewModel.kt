@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.productList
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.presentation.ui.util.DateUtil
@@ -18,7 +17,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     dateUtil: DateUtil,
-    args: SavedStateHandle,
     private val getProductListUseCase: GetProductListUseCase
 ) : ViewModel() {
 
@@ -48,9 +46,12 @@ class ProductListViewModel @Inject constructor(
         showProductDetail = { productId -> showProductDetail(productId) }
     )
 
-    init {
+    fun initSearchWord(word: String) {
+        if (!isInitialize) {
+            return
+        }
         viewModelScope.launch {
-            _searchWord.emit(args.get<String>("searchWord") ?: "")
+            _searchWord.emit(word)
         }
         requestProductList(true)
     }
@@ -74,7 +75,7 @@ class ProductListViewModel @Inject constructor(
             if (result.isSuccess) {
                 val currentList = if (isInitialize) emptyList() else adapter.currentList
                 val productItems = result.getOrThrow()
-                if (isLoadMoreVisible) {
+                if (isLoadMoreVisible && productItems.size == LIST_COUNT) {
                     adapter.submitList(currentList.plus(productItems).plus(ProductReadMore))
                 } else {
                     adapter.submitList(currentList.plus(productItems))

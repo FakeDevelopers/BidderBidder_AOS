@@ -3,6 +3,7 @@ package com.fakedevelopers.presentation.ui.productList
 import android.os.Bundle
 import android.view.View
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,6 +22,8 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
     private val viewModel: ProductListViewModel by navGraphViewModels(R.id.nav_graph) {
         defaultViewModelProviderFactory
     }
+
+    private val args: ProductListFragmentArgs by navArgs()
 
     private val infinityScroll by lazy {
         object : RecyclerView.OnScrollListener() {
@@ -55,6 +58,7 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
         binding.vm = viewModel
         initListener()
         initCollector()
+        viewModel.initSearchWord(args.searchWord)
     }
 
     private fun initCollector() {
