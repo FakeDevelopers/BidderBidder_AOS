@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center"
-            android:text="검색결과가 없습니다.\n다른 검색어를 입력해보세요!"
+            android:text="@string/productlist_no_item"
             android:textColor="@color/black"
             android:textSize="12sp"
             android:visibility="@{vm.isEmptyResult ? View.VISIBLE : View.GONE}"

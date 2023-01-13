@@ -66,6 +66,7 @@
     <string name="productlist_load_more">더보기</string>
     <string name="productlist_expired">마감</string>
     <string name="productlist_remain_time">남은 시간: %1s</string>
+    <string name="productlist_no_item">검색결과가 없습니다.\n다른 검색어를 입력해보세요!</string>
     <!-- Strings related to Bottom Navigation -->
     <string name="bottom_home">홈</string>
     <string name="bottom_search">검색</string>
