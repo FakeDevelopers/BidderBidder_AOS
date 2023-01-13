@@ -1,6 +1,6 @@
 package com.minseonglove.domain.usecase
 
-import com.minseonglove.domain.model.ProductListType
+import com.minseonglove.domain.model.ProductItem
 import com.minseonglove.domain.repository.ProductListRepository
 import javax.inject.Inject
 
@@ -10,7 +10,8 @@ class GetProductListUseCase @Inject constructor(
     suspend operator fun invoke(
         searchWord: String,
         searchType: Int,
-        isInitialize: Boolean
-    ): List<ProductListType> =
-        repository.getProductList(searchWord, searchType, isInitialize)
+        isInitialize: Boolean,
+        count: Int
+    ): Result<List<ProductItem>> =
+        repository.getProductList(searchWord, searchType, isInitialize, count)
 }

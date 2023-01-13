@@ -1,13 +1,12 @@
 package com.minseonglove.domain.repository
 
-import com.minseonglove.domain.model.ProductListType
+import com.minseonglove.domain.model.ProductItem
 
 interface ProductListRepository {
     suspend fun getProductList(
         searchWord: String,
         searchType: Int,
-        isInitialize: Boolean
-    ): List<ProductListType>
-
-    fun isLoadingAvailable(): Boolean
+        isInitialize: Boolean,
+        count: Int
+    ): Result<List<ProductItem>>
 }
