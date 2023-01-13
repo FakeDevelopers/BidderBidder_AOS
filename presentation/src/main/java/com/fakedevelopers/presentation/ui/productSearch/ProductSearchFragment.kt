@@ -28,7 +28,7 @@ import java.io.IOException
 
 @AndroidEntryPoint
 class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
-    R.layout.fragment_product_list
+    R.layout.fragment_product_search
 ) {
     private val viewModel: ProductSearchViewModel by viewModels()
     private val args: ProductSearchFragmentArgs by navArgs()
