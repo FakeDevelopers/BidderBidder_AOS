@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.fakedevelopers.presentation.R
 import com.fakedevelopers.domain.secret.Constants.Companion.BASE_URL
+import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerProductDetailPictureBinding
 
 class ProductDetailAdapter : ListAdapter<String, ProductDetailAdapter.ViewHolder>(diffUtil) {

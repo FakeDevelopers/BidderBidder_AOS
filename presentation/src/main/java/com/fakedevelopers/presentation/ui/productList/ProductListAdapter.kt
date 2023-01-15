@@ -8,16 +8,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.fakedevelopers.presentation.R
+import com.fakedevelopers.domain.model.ProductItem
+import com.fakedevelopers.domain.model.ProductListType
+import com.fakedevelopers.domain.model.ProductReadMore
 import com.fakedevelopers.domain.secret.Constants.Companion.BASE_URL
+import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerProductListBinding
 import com.fakedevelopers.presentation.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.presentation.ui.util.DateUtil
 import com.fakedevelopers.presentation.ui.util.ExpirationTimerTask
 import com.fakedevelopers.presentation.ui.util.PriceUtil
-import com.fakedevelopers.domain.model.ProductItem
-import com.fakedevelopers.domain.model.ProductListType
-import com.fakedevelopers.domain.model.ProductReadMore
 
 class ProductListAdapter(
     private val dateUtil: DateUtil,

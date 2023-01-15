@@ -7,8 +7,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.fakedevelopers.presentation.R
 import com.fakedevelopers.domain.secret.Constants.Companion.LOGIN_SUCCESS
+import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentLoginBinding
 import com.fakedevelopers.presentation.ui.MainActivity
 import com.fakedevelopers.presentation.ui.base.BaseFragment
