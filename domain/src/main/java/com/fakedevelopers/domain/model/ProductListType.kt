@@ -1,4 +1,4 @@
-package com.minseonglove.domain.model
+package com.fakedevelopers.domain.model
 
 sealed interface ProductListType {
     fun isItemTheSame(item: ProductListType): Boolean

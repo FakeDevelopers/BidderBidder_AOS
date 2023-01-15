@@ -1,8 +1,8 @@
-package com.minseonglove.data.di
+package com.fakedevelopers.data.di
 
-import com.minseonglove.data.repository.ProductListRepositoryImpl
-import com.minseonglove.data.service.ProductListService
-import com.minseonglove.domain.repository.ProductListRepository
+import com.fakedevelopers.data.repository.ProductListRepositoryImpl
+import com.fakedevelopers.data.service.ProductListService
+import com.fakedevelopers.domain.repository.ProductListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

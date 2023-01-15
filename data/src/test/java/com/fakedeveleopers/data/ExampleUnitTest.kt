@@ -1,4 +1,4 @@
-package com.minseonglove.data
+package com.fakedeveleopers.data
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

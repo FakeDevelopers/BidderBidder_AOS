@@ -1,8 +1,8 @@
-package com.minseonglove.data.di
+package com.fakedevelopers.data.di
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.minseonglove.data.BuildConfig
+import com.orhanobut.logger.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

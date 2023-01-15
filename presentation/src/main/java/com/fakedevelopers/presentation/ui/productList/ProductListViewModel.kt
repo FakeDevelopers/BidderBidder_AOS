@@ -2,12 +2,12 @@ package com.fakedevelopers.presentation.ui.productList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.model.ProductItem
+import com.fakedevelopers.domain.model.ProductReadMore
+import com.fakedevelopers.domain.usecase.GetProductListUseCase
 import com.fakedevelopers.presentation.ui.util.DateUtil
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
-import com.minseonglove.domain.model.ProductItem
-import com.minseonglove.domain.model.ProductReadMore
-import com.minseonglove.domain.usecase.GetProductListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

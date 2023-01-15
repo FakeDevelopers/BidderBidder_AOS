@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace 'com.minseonglove.data'
+    namespace 'com.fakedevelopers.data'
     compileSdk 33
 
     defaultConfig {

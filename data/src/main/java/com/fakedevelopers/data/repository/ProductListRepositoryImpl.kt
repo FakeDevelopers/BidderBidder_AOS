@@ -1,10 +1,10 @@
-package com.minseonglove.data.repository
+package com.fakedevelopers.data.repository
 
-import com.minseonglove.data.service.ProductListService
-import com.minseonglove.domain.model.LastProductException
-import com.minseonglove.domain.model.NotCompletedException
-import com.minseonglove.domain.model.ProductItem
-import com.minseonglove.domain.repository.ProductListRepository
+import com.fakedevelopers.data.service.ProductListService
+import com.fakedevelopers.domain.model.LastProductException
+import com.fakedevelopers.domain.model.NotCompletedException
+import com.fakedevelopers.domain.model.ProductItem
+import com.fakedevelopers.domain.repository.ProductListRepository
 import javax.inject.Inject
 
 class ProductListRepositoryImpl @Inject constructor(

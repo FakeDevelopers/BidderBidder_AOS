@@ -15,9 +15,9 @@ import com.fakedevelopers.presentation.databinding.RecyclerProductListFooterBind
 import com.fakedevelopers.presentation.ui.util.DateUtil
 import com.fakedevelopers.presentation.ui.util.ExpirationTimerTask
 import com.fakedevelopers.presentation.ui.util.PriceUtil
-import com.minseonglove.domain.model.ProductItem
-import com.minseonglove.domain.model.ProductListType
-import com.minseonglove.domain.model.ProductReadMore
+import com.fakedevelopers.domain.model.ProductItem
+import com.fakedevelopers.domain.model.ProductListType
+import com.fakedevelopers.domain.model.ProductReadMore
 
 class ProductListAdapter(
     private val dateUtil: DateUtil,

@@ -1,4 +1,4 @@
-package com.minseonglove.domain.model
+package com.fakedevelopers.domain.model
 
 class NotCompletedException : Exception()
 class LastProductException : Exception()
