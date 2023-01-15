@@ -6,7 +6,7 @@ import android.text.Selection
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.widget.EditText
-import com.fakedevelopers.presentation.api.data.Constants.Companion.dec
+import com.fakedevelopers.domain.secret.Constants.Companion.dec
 
 class PriceTextWatcher(
     private val editText: EditText,

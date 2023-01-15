@@ -9,7 +9,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navGraphViewModels
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.api.data.Constants.Companion.STREAM_KEY
+import com.fakedevelopers.domain.secret.Constants.Companion.STREAM_KEY
 import com.fakedevelopers.presentation.databinding.FragmentChannelListBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler

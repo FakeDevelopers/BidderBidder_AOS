@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.api.data.Constants.Companion.WEB_CLIENT_ID
+import com.fakedevelopers.domain.secret.Constants.Companion.WEB_CLIENT_ID
 import com.fakedevelopers.presentation.databinding.FragmentLoginTypeBinding
 import com.fakedevelopers.presentation.ui.MainActivity
 import com.fakedevelopers.presentation.ui.base.BaseFragment
