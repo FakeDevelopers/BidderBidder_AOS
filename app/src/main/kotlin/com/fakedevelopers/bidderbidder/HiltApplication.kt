@@ -1,7 +1,7 @@
 package com.fakedevelopers.bidderbidder
 
 import android.app.Application
-import com.fakedevelopers.presentation.api.data.Constants.Companion.SENTRY_DSN
+import com.fakedevelopers.domain.secret.Constants.Companion.SENTRY_DSN
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.HiltAndroidApp

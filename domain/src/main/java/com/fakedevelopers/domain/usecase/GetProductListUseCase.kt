@@ -1,7 +1,7 @@
-package com.minseonglove.domain.usecase
+package com.fakedevelopers.domain.usecase
 
-import com.minseonglove.domain.model.ProductItem
-import com.minseonglove.domain.repository.ProductListRepository
+import com.fakedevelopers.domain.model.ProductItem
+import com.fakedevelopers.domain.repository.ProductListRepository
 import javax.inject.Inject
 
 class GetProductListUseCase @Inject constructor(

@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fakedevelopers.domain.secret.Constants.Companion.dec
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.api.data.Constants.Companion.dec
 import com.fakedevelopers.presentation.databinding.RecyclerBidInfoBinding
 
 class BidInfoAdapter : ListAdapter<BidInfo, BidInfoAdapter.ViewHolder>(diffUtil) {

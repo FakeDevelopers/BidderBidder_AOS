@@ -2,7 +2,6 @@ package com.fakedevelopers.presentation.ui.productRegistration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.presentation.api.data.Constants.Companion.dateFormatter
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
@@ -19,6 +18,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 import retrofit2.Response
 import java.util.Collections
 import javax.inject.Inject
@@ -28,6 +28,8 @@ class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
     private val categoryRepository: ProductCategoryRepository
 ) : ViewModel() {
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
     val adapter = SelectedPictureListAdapter(
         deleteSelectedImage = { deleteSelectedImage(it) },

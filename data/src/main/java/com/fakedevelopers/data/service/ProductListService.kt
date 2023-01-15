@@ -1,6 +1,6 @@
-package com.minseonglove.data.service
+package com.fakedevelopers.data.service
 
-import com.minseonglove.domain.model.ProductItem
+import com.fakedevelopers.domain.model.ProductItem
 import retrofit2.http.GET
 import retrofit2.http.Query
 

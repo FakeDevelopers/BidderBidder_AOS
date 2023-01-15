@@ -1,6 +1,6 @@
 package com.fakedevelopers.presentation.api.di
 
-import com.fakedevelopers.presentation.api.data.Constants.Companion.BASE_URL
+import com.fakedevelopers.domain.secret.Constants.Companion.BASE_URL
 import com.fakedevelopers.presentation.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson

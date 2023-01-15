@@ -1,6 +1,6 @@
-package com.minseonglove.domain.repository
+package com.fakedevelopers.domain.repository
 
-import com.minseonglove.domain.model.ProductItem
+import com.fakedevelopers.domain.model.ProductItem
 
 interface ProductListRepository {
     suspend fun getProductList(
