@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IntRange
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -32,7 +33,7 @@ abstract class BaseFragment<VB : ViewDataBinding>(
 
     fun sendSnackBar(
         message: String,
-        @androidx.annotation.IntRange(from = -2) length: Int = Snackbar.LENGTH_SHORT,
+        @IntRange(from = -2) length: Int = Snackbar.LENGTH_SHORT,
         anchorView: View? = null
     ) {
         Snackbar.make(
