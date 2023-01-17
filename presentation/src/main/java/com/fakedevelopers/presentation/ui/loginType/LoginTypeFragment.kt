@@ -8,21 +8,19 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.domain.secret.Constants.Companion.WEB_CLIENT_ID
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentLoginTypeBinding
 import com.fakedevelopers.presentation.ui.MainActivity
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
@@ -36,8 +34,8 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
         if (it.resultCode == RESULT_OK) {
             val result = it.data?.let { data -> Auth.GoogleSignInApi.getSignInResultFromIntent(data) }
             if (result != null && result.isSuccess) {
-                result.signInAccount?.let { account ->
-                    viewModel.firebaseAuthWithGoogle(account)
+                result.signInAccount?.idToken?.let { idToken ->
+                    viewModel.loginWithGoogle(idToken)
                 }
             }
         }
@@ -80,14 +78,12 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
     }
 
     private fun initCollector() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.signinGoogleResponse.collect {
-                    if (it.isSuccessful) {
-                        navigateActivity(MainActivity::class.java)
-                    } else {
-                        sendSnackBar(it.errorBody().toString())
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.loginWithGoogleEvent.collect { result ->
+                if (result.isSuccess) {
+                    navigateActivity(MainActivity::class.java)
+                } else {
+                    ApiErrorHandler.printMessage(result.exceptionOrNull()?.message)
                 }
             }
         }
