@@ -2,35 +2,28 @@ package com.fakedevelopers.presentation.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.presentation.api.repository.UserLoginRepository
-import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
+import com.fakedevelopers.domain.usecase.LoginWithEmailUseCase
+import com.fakedevelopers.presentation.ui.util.MutableEventFlow
+import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val repository: UserLoginRepository) : ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val loginWithEmailUseCase: LoginWithEmailUseCase
+) : ViewModel() {
 
     val email = MutableStateFlow("")
     val passwd = MutableStateFlow("")
 
-    private val _loginResponse = MutableSharedFlow<Response<String>>()
-
-    val loginResponse: SharedFlow<Response<String>> get() = _loginResponse
+    private val _loginEvent = MutableEventFlow<Result<String>>()
+    val loginEvent = _loginEvent.asEventFlow()
 
     fun loginRequest() {
         viewModelScope.launch {
-            repository.postLogin(email.value, passwd.value).let {
-                if (it.isSuccessful) {
-                    _loginResponse.emit(it)
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
-            }
+            _loginEvent.emit(loginWithEmailUseCase(email.value, passwd.value))
         }
     }
 }
