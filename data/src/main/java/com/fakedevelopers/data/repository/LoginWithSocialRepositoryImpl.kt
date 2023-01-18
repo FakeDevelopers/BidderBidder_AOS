@@ -21,16 +21,13 @@ class LoginWithSocialRepositoryImpl @Inject constructor(
     override suspend fun loginWithGoogle(idToken: String): Result<LoginInfo> {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         val result = signInWithCredential(credential).first()
-        if (result.isSuccessful) {
+        return if (result.isSuccessful) {
             runCatching {
                 service.loginWithGoogle()
-            }.onSuccess {
-                return Result.success(it)
-            }.onFailure {
-                return Result.failure(it)
             }
+        } else {
+            Result.failure(result.exception ?: Exception())
         }
-        return Result.failure(result.exception ?: Exception())
     }
 
     private fun signInWithCredential(
