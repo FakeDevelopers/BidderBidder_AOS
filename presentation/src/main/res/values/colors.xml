@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bidderbidder_primary">#FF21CEFF</color>
-    <color name="bidderbidder_secondary">#FF5D5FEF</color>
+    <color name="bidderbidder_primary">#33CCFF</color>
+    <color name="bidderbidder_secondary">#CBEDF9</color>
     <color name="bidderbidder_gray">#D6D6D6</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="alert_red">#F93D5D</color>
-    <color name="black">#F000</color>
+    <color name="alert_red">#FF3366</color>
+    <color name="black">#010101</color>
     <color name="white">#FFFF</color>
     <color name="grey">#E1E3E5</color>
     <color name="kakao_background">#FDE348</color>
@@ -25,4 +25,10 @@
     <color name="button_warn_background">#12F93D5D</color>
     <color name="text_input_hint_color_normal">#979797</color>
     <color name="progressbar_disabled">#DBDBDB</color>
+
+    <color name="milk_pink">#FCD9ED</color>
+    <color name="dark_gray">#6B6B6B</color>
+    <color name="medium_gray">#959595</color>
+    <color name="light_gray">#DBDBDB</color>
+    <color name="milk_gray">#EEEEEE</color>
 </resources>
