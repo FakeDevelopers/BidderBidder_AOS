@@ -8,6 +8,8 @@ import com.fakedevelopers.presentation.api.repository.ProductRegistrationReposit
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
+import com.fakedevelopers.presentation.ui.util.priceToInt
+import com.fakedevelopers.presentation.ui.util.priceToLong
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -100,9 +102,9 @@ class ProductRegistrationViewModel @Inject constructor(
             }
             _condition.emit(
                 title.value.isNotEmpty() &&
-                    (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
-                    openingBid.value.replace(",", "").toLongOrNull() != null &&
-                    tick.value.replace(",", "").toIntOrNull() != null &&
+                    (hopePrice.value.isEmpty() || hopePrice.value.priceToLong() != null) &&
+                    openingBid.value.priceToLong() != null &&
+                    tick.value.priceToInt() != null &&
                     expiration.value.toIntOrNull() != null &&
                     content.value.isNotEmpty()
             )
