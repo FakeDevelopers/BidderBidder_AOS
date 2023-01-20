@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.productRegistration.albumList
 
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,13 +8,13 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.signature.ObjectKey
+import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerPictureSelectBinding
-import com.fakedevelopers.presentation.ui.util.ContentResolverUtil
 import com.fakedevelopers.presentation.ui.util.GlideRequestListener
 
 class AlbumListAdapter(
-    private val contentResolverUtil: ContentResolverUtil,
+    private val isValidUri: (String) -> Boolean,
     private val findSelectedImageIndex: (String) -> Int,
     private val sendErrorToast: () -> Unit,
     private val showViewPager: (String) -> Unit,
@@ -39,7 +38,7 @@ class AlbumListAdapter(
                 .load(item.uri)
                 .placeholder(R.drawable.the_cat)
                 .error(R.drawable.error_cat)
-                .signature(ObjectKey(item.modifiedTime))
+                .signature(ObjectKey(item.modified))
                 .listener(
                     GlideRequestListener(
                         loadFailed = { isErrorImage = true },
@@ -85,7 +84,7 @@ class AlbumListAdapter(
             }
         }
 
-        private fun isValidImage(item: String) = !isErrorImage && contentResolverUtil.isExist(Uri.parse(item))
+        private fun isValidImage(item: String) = !isErrorImage && isValidUri(item)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

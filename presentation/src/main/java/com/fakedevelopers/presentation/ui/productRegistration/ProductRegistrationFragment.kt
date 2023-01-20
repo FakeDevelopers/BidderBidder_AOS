@@ -37,7 +37,6 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.util.AlbumImageUtils
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
-import com.fakedevelopers.presentation.ui.util.ContentResolverUtil
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
@@ -54,10 +53,6 @@ import javax.inject.Inject
 class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBinding>(
     R.layout.fragment_product_registration
 ) {
-
-    @Inject
-    lateinit var contentResolverUtil: ContentResolverUtil
-
     @Inject
     lateinit var albumImageUtils: AlbumImageUtils
 
@@ -93,11 +88,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     override fun onStart() {
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
-        // 선택 이미지 리스트가 존재한다면 유효한지 검사
-        if (viewModel.selectedImageInfo.uris.isNotEmpty()) {
-            // 유효한 선택 이미지 리스트로 갱신
-            viewModel.setUrlList(contentResolverUtil.getValidList(viewModel.selectedImageInfo.uris))
-        }
+        viewModel.refreshImages()
     }
 
     private fun checkStoragePermission() {
@@ -317,7 +308,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
 
     private fun getMultipart(uri: String, bitmap: Bitmap): MultipartBody.Part? {
         val (mimeType, extension) = albumImageUtils.getMimeTypeAndExtension(uri)
-        return requireContext().contentResolver.query(Uri.parse(uri), null, null, null, null)?.let {
+        return requireContext().contentResolver.query(Uri.parse(uri), null, null, null, null)?.use {
             if (it.moveToNext()) {
                 val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
                 if (idx < 0) {
@@ -332,10 +323,8 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                         bitmap.compress(Bitmap.CompressFormat.valueOf(extension), COMPRESS_QUALITY, sink.outputStream())
                     }
                 }
-                it.close()
                 MultipartBody.Part.createFormData("files", displayName, requestBody)
             } else {
-                it.close()
                 null
             }
         }

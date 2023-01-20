@@ -2,6 +2,7 @@ package com.fakedevelopers.presentation.ui.productRegistration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
@@ -26,7 +27,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
-    private val categoryRepository: ProductCategoryRepository
+    private val categoryRepository: ProductCategoryRepository,
+    private val getValidUrisUseCase: GetValidUrisUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
@@ -157,7 +159,7 @@ class ProductRegistrationViewModel @Inject constructor(
         categoryID
     )
 
-    fun setUrlList(list: List<String>) {
+    private fun setUrlList(list: List<String>) {
         viewModelScope.launch {
             adapter.submitList(list.toMutableList())
         }
@@ -176,6 +178,14 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun setCategoryID(index: Long) {
         categoryID = category[index.toInt()].categoryId
+    }
+
+    fun refreshImages() {
+        if (selectedImageInfo.uris.isNotEmpty()) {
+            // 유효한 선택 이미지 리스트로 갱신
+            getValidUrisUseCase(selectedImageInfo.uris)
+            setUrlList(getValidUrisUseCase(selectedImageInfo.uris))
+        }
     }
 
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())

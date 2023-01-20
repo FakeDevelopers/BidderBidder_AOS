@@ -2,9 +2,12 @@ package com.fakedevelopers.presentation.ui.productRegistration.albumList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.model.AlbumItem
+import com.fakedevelopers.domain.usecase.GetDateModifiedFromUriUseCase
+import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
+import com.fakedevelopers.domain.usecase.IsValidUriUseCase
 import com.fakedevelopers.presentation.ui.productRegistration.SelectedPictureListAdapter
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListFragment.Companion.ALL_PICTURES
-import com.fakedevelopers.presentation.ui.util.ContentResolverUtil
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
-    contentResolverUtil: ContentResolverUtil
+    isValidUriUseCase: IsValidUriUseCase,
+    private val getDateModifiedFromUriUseCase: GetDateModifiedFromUriUseCase,
+    private val getValidUrisUseCase: GetValidUrisUseCase
 ) : ViewModel() {
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
@@ -24,20 +29,19 @@ class AlbumListViewModel @Inject constructor(
     private val _onListChange = MutableEventFlow<Boolean>()
     val onListChange = _onListChange.asEventFlow()
 
-    private val _pagerSelectedState = MutableEventFlow<Boolean>()
-    val pagerSelectedState = _pagerSelectedState.asEventFlow()
-
     private val _selectErrorImage = MutableEventFlow<Boolean>()
     val selectErrorImage = _selectErrorImage.asEventFlow()
 
     private val _startViewPagerIndex = MutableEventFlow<Int>()
     val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
 
+    private val _imageCountEvent = MutableEventFlow<Int>()
+    val imageCountEvent = _imageCountEvent.asEventFlow()
+
     private val _editButtonEnableState = MutableStateFlow(false)
     val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
 
-    private val _updatedImageList = hashSetOf<String>()
-    val updatedImageList: Set<String> get() = _updatedImageList
+    private val updatedImageList = hashSetOf<String>()
 
     private var currentAlbum = ""
     private var totalPictureCount = 0
@@ -54,7 +58,7 @@ class AlbumListViewModel @Inject constructor(
 
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
-        contentResolverUtil,
+        isValidUri = { uri -> isValidUriUseCase(uri) },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
         showViewPager = { uri -> showViewPager(uri) }
@@ -64,7 +68,7 @@ class AlbumListViewModel @Inject constructor(
 
     // 뷰 페이저 앨범 리스트 어뎁터
     val albumPagerAdapter = AlbumPagerAdapter(
-        contentResolverUtil,
+        isValidUri = { uri -> isValidUriUseCase(uri) },
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
         getEditedImage = { uri -> getEditedBitmapInfo(uri) }
     ) { uri ->
@@ -114,6 +118,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun setCurrentViewPagerIdx(idx: Int) {
         currentViewPagerIdx = idx
+        setImageSelectCount(findSelectedImageIndex(getCurrentUri()))
     }
 
     fun setAlbumViewMode(state: AlbumViewState) {
@@ -160,9 +165,13 @@ class AlbumListViewModel @Inject constructor(
                 selectedPictureAdapter.notifyItemChanged(1)
             }
         }
-        // 현재 보기 모드가 페이저라면 선택 상태를 변경해준다.
+        // 선택 상태를 변경해준다.
         viewModelScope.launch {
-            _pagerSelectedState.emit(state)
+            if (state) {
+                setImageSelectCount(selectedImageInfo.uris.lastIndex)
+            } else {
+                setImageSelectCount(-1)
+            }
         }
         // 선택 이미지가 남아 있으면 편집 버튼 활성화
         viewModelScope.launch {
@@ -187,8 +196,8 @@ class AlbumListViewModel @Inject constructor(
     fun isAlbumListChanged() =
         albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
 
-    fun onAlbumListChanged(uri: String) {
-        _updatedImageList.add(uri)
+    fun onAlbumListUpdated(uri: String) {
+        updatedImageList.add(uri)
     }
 
     // 편집 버튼 클릭
@@ -197,9 +206,9 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun updateAlbumList(
-        updatedAlbumItems: List<UpdatedAlbumItem>,
-        albumName: String?
+        albumName: String? = null
     ) {
+        val updatedAlbumItems = getValidUpdatedImageList()
         updatedImageList.forEach { uri ->
             removeImage(uri)
         }
@@ -212,11 +221,24 @@ class AlbumListViewModel @Inject constructor(
         // 수정된 날짜 기준으로 소팅
         if (updatedAlbumItems.isNotEmpty()) {
             for (key in allImages.keys) {
-                allImages[key]?.sortByDescending { it.modifiedTime }
+                allImages[key]?.sortByDescending { it.modified }
             }
         }
-        _updatedImageList.clear()
+        updatedImageList.clear()
         setAdapterList(albumName ?: currentAlbum)
+    }
+
+    fun checkSelectedImages(idx: Int? = null) {
+        // 선택 이미지 리스트가 존재한다면 유효한지 검사
+        if (selectedImageInfo.uris.isNotEmpty()) {
+            // 유효한 선택 이미지 리스트로 갱신
+            setSelectedImage(getValidUrisUseCase(selectedImageInfo.uris))
+            if (albumViewMode.value == AlbumViewState.PAGER && idx != null) {
+                setImageSelectCount(
+                    findSelectedImageIndex(getPictureUri(position = idx))
+                )
+            }
+        }
     }
 
     private fun removeImage(uri: String) {
@@ -264,5 +286,14 @@ class AlbumListViewModel @Inject constructor(
         Collections.swap(selectedImageInfo.uris, fromPosition, toPosition)
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
         albumListAdapter.refreshSelectedOrder()
+    }
+
+    private fun getValidUpdatedImageList() =
+        updatedImageList.mapNotNull { getDateModifiedFromUriUseCase(it) }
+
+    private fun setImageSelectCount(idx: Int) {
+        viewModelScope.launch {
+            _imageCountEvent.emit(idx)
+        }
     }
 }
