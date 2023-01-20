@@ -7,15 +7,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -26,22 +22,22 @@ import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
+import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productRegistration.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
 import com.fakedevelopers.presentation.ui.util.AlbumImageUtils.Companion.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.collections.set
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class AlbumListFragment : Fragment() {
+class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
+    R.layout.fragment_album_list
+) {
 
-    private var _binding: FragmentAlbumListBinding? = null
     private val viewModel: AlbumListViewModel by viewModels()
-    private val binding get() = _binding!!
     private val args: AlbumListFragmentArgs by navArgs()
 
     private val backPressedCallback by lazy {
@@ -77,22 +73,9 @@ class AlbumListFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_album_list,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         if (args.productRegistrationDto.selectedImageInfo.uris.isNotEmpty()) {
             viewModel.initSelectedImageList(args.productRegistrationDto.selectedImageInfo)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
@@ -162,9 +145,6 @@ class AlbumListFragment : Fragment() {
                     }
                     albums[url]?.add(albumItem)
                 }
-            }
-            albums.keys.forEach {
-                Logger.t("bidder").i("$it ${albums[it]?.size}")
             }
             viewModel.initAlbumInfo(albums)
             initSpinner(albumNameSummary)
@@ -293,11 +273,10 @@ class AlbumListFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
         requireActivity().contentResolver.unregisterContentObserver(contentObserver)
-        _binding = null
         backPressedCallback.remove()
+        super.onDestroyView()
     }
 
     companion object {
