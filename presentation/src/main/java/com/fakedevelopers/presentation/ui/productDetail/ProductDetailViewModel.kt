@@ -33,7 +33,7 @@ class ProductDetailViewModel @Inject constructor(
 
     val bidInfoAdapter = BidInfoAdapter()
 
-    private var productId = -1L
+    var productId = -1L
 
     fun productDetailRequest(productId: Long) {
         this.productId = productId

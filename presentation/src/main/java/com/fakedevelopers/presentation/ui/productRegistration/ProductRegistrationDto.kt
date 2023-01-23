@@ -1,6 +1,7 @@
 package com.fakedevelopers.presentation.ui.productRegistration
 
 import android.os.Parcelable
+import com.fakedevelopers.presentation.ui.productDetail.ProductDetailDto
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
 import kotlinx.parcelize.Parcelize
 
@@ -14,7 +15,18 @@ data class ProductRegistrationDto(
     val expiration: String,
     val content: String,
     val categoryId: Long
-) : Parcelable
+) : Parcelable {
+    constructor(categoryId: Long, productDetailDto: ProductDetailDto) : this(
+        selectedImageInfo = SelectedImageInfo(),
+        title = productDetailDto.productTitle,
+        hopePrice = productDetailDto.hopePrice.toString(),
+        openingBid = productDetailDto.openingBid.toString(),
+        tick = productDetailDto.tick.toString(),
+        expiration = productDetailDto.expirationDate,
+        content = productDetailDto.productContent,
+        categoryId = categoryId
+    )
+}
 
 data class ProductCategoryDto(
     val categoryId: Long,

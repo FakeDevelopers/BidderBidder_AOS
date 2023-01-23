@@ -10,12 +10,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -62,6 +64,16 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
                 handleEvent(event)
             }
         }
+    }
+
+    private fun navigateEditProduct(productDetailDto: ProductDetailDto) {
+        if (productDetailDto.productTitle.isBlank() || viewModel.productId == -1L) return
+
+        findNavController().navigate(
+            ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
+                ProductRegistrationDto(viewModel.productId, productDetailDto)
+            )
+        )
     }
 
     private fun setPagerCount(position: Int, totalCount: Int = productDetailAdapter.itemCount) {
