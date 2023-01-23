@@ -3,6 +3,7 @@ package com.fakedevelopers.presentation.ui.productRegistration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
+import com.fakedevelopers.presentation.api.repository.ProductEditRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
@@ -26,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
+    private val EditRepository: ProductEditRepository,
     private val categoryRepository: ProductCategoryRepository
 ) : ViewModel() {
 
@@ -109,20 +111,13 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun requestProductRegistration(imageList: List<MultipartBody.Part>) {
         viewModelScope.launch {
-            val date = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
-                ZoneId.of("Asia/Seoul")
-            )
-            val map = hashMapOf<String, RequestBody>()
-            map["productContent"] = content.value.toPlainRequestBody()
-            map["productTitle"] = title.value.toPlainRequestBody()
-            map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
-            map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
-            map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
-            map["representPicture"] = "0".toPlainRequestBody()
-            map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
-            map["category"] = categoryID.toString().toPlainRequestBody()
-            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
+            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, getHashMap()))
+        }
+    }
+
+    fun requestProductModification(imageList: List<MultipartBody.Part>) {
+        viewModelScope.launch {
+            _productRegistrationResponse.emit(EditRepository.postProductEdit(categoryID, imageList, getHashMap()))
         }
     }
 
@@ -136,6 +131,7 @@ class ProductRegistrationViewModel @Inject constructor(
         selectedImageInfo.uris = state.selectedImageInfo.uris
         selectedImageInfo.changeBitmaps.putAll(state.selectedImageInfo.changeBitmaps)
         viewModelScope.launch {
+            categoryID = state.categoryId
             adapter.submitList(selectedImageInfo.uris.toMutableList())
             title.emit(state.title)
             hopePrice.emit(state.hopePrice)
@@ -144,6 +140,24 @@ class ProductRegistrationViewModel @Inject constructor(
             expiration.emit(state.expiration)
             content.emit(state.content)
         }
+    }
+
+    private fun getHashMap(): HashMap<String, RequestBody> {
+        println(categoryID)
+        val date = LocalDateTime.ofInstant(
+            Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
+            ZoneId.of("Asia/Seoul")
+        )
+        val map = hashMapOf<String, RequestBody>()
+        map["productContent"] = content.value.toPlainRequestBody()
+        map["productTitle"] = title.value.toPlainRequestBody()
+        map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
+        map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
+        map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
+        map["representPicture"] = "0".toPlainRequestBody()
+        map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
+        map["category"] = categoryID.toString().toPlainRequestBody()
+        return map
     }
 
     fun getProductRegistrationDto() = ProductRegistrationDto(
