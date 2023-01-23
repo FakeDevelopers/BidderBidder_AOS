@@ -20,9 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -39,6 +37,7 @@ import com.fakedevelopers.presentation.ui.util.AlbumImageUtils
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.ContentResolverUtil
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -217,57 +216,47 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
 
     private fun initCollector() {
         // 등록 요청 api
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.productRegistrationResponse.collectLatest {
-                    if (it.isSuccessful) {
-                        findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
-                    } else {
-                        binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
-                        sendSnackBar("글쓰기에 실패했어요~")
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.productRegistrationResponse.collectLatest {
+                if (it.isSuccessful) {
+                    findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+                } else {
+                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
+                    sendSnackBar("글쓰기에 실패했어요~")
                 }
             }
         }
         // 본문
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.content.collectLatest {
-                    binding.textviewProductRegistrationContentLength.apply {
-                        text = "${it.length} / $MAX_CONTENT_LENGTH"
-                        val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
-                        setTextColor(color)
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.content.collectLatest {
+                binding.textviewProductRegistrationContentLength.apply {
+                    text = "${it.length} / $MAX_CONTENT_LENGTH"
+                    val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
+                    setTextColor(color)
                 }
             }
         }
         // 홈 화면 이동 시 글자 수 textView의 visible 처리
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.contentLengthVisible.collect {
-                    if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
-                        viewModel.setContentLengthVisibility(true)
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.contentLengthVisible.collect {
+                if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
+                    viewModel.setContentLengthVisibility(true)
                 }
             }
         }
         // 등록 버튼
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.condition.collectLatest {
-                    val color = if (it) Color.BLACK else Color.GRAY
-                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(color)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.condition.collectLatest {
+                val color = if (it) Color.BLACK else Color.GRAY
+                binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(color)
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.categoryEvent.collectLatest { result ->
-                    if (result.isSuccessful) {
-                        handleCategoryResult(result.body())
-                    } else {
-                        ApiErrorHandler.printErrorMessage(result.errorBody())
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.categoryEvent.collectLatest { result ->
+                if (result.isSuccessful) {
+                    handleCategoryResult(result.body())
+                } else {
+                    ApiErrorHandler.printErrorMessage(result.errorBody())
                 }
             }
         }
