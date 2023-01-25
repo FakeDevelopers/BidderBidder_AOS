@@ -31,5 +31,8 @@ fun Bitmap.getMultipart(mediaInfo: MediaInfo): MultipartBody.Part {
             )
         }
     }
-    return MultipartBody.Part.createFormData("files", System.currentTimeMillis().toString(), requestBody)
+    return MultipartBody.Part.createFormData("files", createFileName(mediaInfo.extension), requestBody)
 }
+
+private fun createFileName(extension: String) =
+    "${System.currentTimeMillis()}.${extension.lowercase()}"
