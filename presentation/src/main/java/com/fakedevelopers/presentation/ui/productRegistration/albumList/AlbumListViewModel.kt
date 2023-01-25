@@ -3,7 +3,7 @@ package com.fakedevelopers.presentation.ui.productRegistration.albumList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.model.AlbumItem
-import com.fakedevelopers.domain.usecase.GetDateModifiedFromUriUseCase
+import com.fakedevelopers.domain.usecase.GetDateModifiedByUriUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.IsValidUriUseCase
 import com.fakedevelopers.presentation.ui.productRegistration.SelectedPictureListAdapter
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
     isValidUriUseCase: IsValidUriUseCase,
-    private val getDateModifiedFromUriUseCase: GetDateModifiedFromUriUseCase,
+    private val getDateModifiedFromUriUseCase: GetDateModifiedByUriUseCase,
     private val getValidUrisUseCase: GetValidUrisUseCase
 ) : ViewModel() {
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
