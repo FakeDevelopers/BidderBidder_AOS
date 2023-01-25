@@ -11,17 +11,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object UtilModule {
-
-    @Singleton
-    @Provides
-    fun provideContentResolverUtil(@ApplicationContext context: Context) =
-        ContentResolverUtil(context.contentResolver)
-
-    @Singleton
-    @Provides
-    fun provideAlbumImageUtil(@ApplicationContext context: Context) =
-        AlbumImageUtils(context.contentResolver)
-
     @Singleton
     @Provides
     fun provideDateUtil(@ApplicationContext context: Context) = DateUtil(context)

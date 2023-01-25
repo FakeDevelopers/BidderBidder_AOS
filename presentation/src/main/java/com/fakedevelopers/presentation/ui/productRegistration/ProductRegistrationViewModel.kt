@@ -1,12 +1,23 @@
 package com.fakedevelopers.presentation.ui.productRegistration
 
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
+import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
+import com.fakedevelopers.domain.usecase.GetRotateUseCase
+import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
+import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
+import com.fakedevelopers.presentation.ui.util.getMultipart
+import com.fakedevelopers.presentation.ui.util.getRotatedBitmap
+import com.fakedevelopers.presentation.ui.util.priceToInt
+import com.fakedevelopers.presentation.ui.util.priceToLong
+import com.fakedevelopers.presentation.ui.util.toBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,10 +37,14 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
-    private val categoryRepository: ProductCategoryRepository
+    private val categoryRepository: ProductCategoryRepository,
+    private val getValidUrisUseCase: GetValidUrisUseCase,
+    private val getBytesByUriUseCase: GetBytesByUriUseCase,
+    private val getMediaInfoUseCase: GetMediaInfoUseCase,
+    private val getRotateUseCase: GetRotateUseCase
 ) : ViewModel() {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    private val dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
 
     val adapter = SelectedPictureListAdapter(
         deleteSelectedImage = { deleteSelectedImage(it) },
@@ -52,7 +67,7 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private var category = listOf<ProductCategoryDto>()
     private var categoryID = 0L
-    val selectedImageInfo = SelectedImageInfo()
+    private val selectedImageInfo = SelectedImageInfo()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
     val hopePrice = MutableStateFlow("")
@@ -98,17 +113,18 @@ class ProductRegistrationViewModel @Inject constructor(
             }
             _condition.emit(
                 title.value.isNotEmpty() &&
-                    (hopePrice.value.isEmpty() || hopePrice.value.replace(",", "").toLongOrNull() != null) &&
-                    openingBid.value.replace(",", "").toLongOrNull() != null &&
-                    tick.value.replace(",", "").toIntOrNull() != null &&
+                    (hopePrice.value.isEmpty() || hopePrice.value.priceToLong() != null) &&
+                    openingBid.value.priceToLong() != null &&
+                    tick.value.priceToInt() != null &&
                     expiration.value.toIntOrNull() != null &&
                     content.value.isNotEmpty()
             )
         }
     }
 
-    fun requestProductRegistration(imageList: List<MultipartBody.Part>) {
+    fun requestProductRegistration() {
         viewModelScope.launch {
+            val imageList = getMultipartList()
             val date = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
                 ZoneId.of("Asia/Seoul")
@@ -125,6 +141,15 @@ class ProductRegistrationViewModel @Inject constructor(
             _productRegistrationResponse.emit(repository.postProductRegistration(imageList, map))
         }
     }
+
+    private suspend fun getMultipartList(): List<MultipartBody.Part> =
+        selectedImageInfo.uris.mapNotNull { uri ->
+            getBytesByUriUseCase(uri)
+                ?.toBitmap()
+                ?.getRotatedBitmap(getRotateUseCase(uri))
+                ?.getEditedBitmap(uri)
+                ?.getMultipart(getMediaInfoUseCase(uri))
+        }
 
     private fun requestProductCategory() {
         viewModelScope.launch {
@@ -157,13 +182,6 @@ class ProductRegistrationViewModel @Inject constructor(
         categoryID
     )
 
-    fun setUrlList(list: List<String>) {
-        viewModelScope.launch {
-            adapter.submitList(list.toMutableList())
-        }
-        selectedImageInfo.uris = list.toMutableList()
-    }
-
     fun setContentLengthVisibility(state: Boolean) {
         viewModelScope.launch {
             _contentLengthVisible.emit(state)
@@ -178,5 +196,24 @@ class ProductRegistrationViewModel @Inject constructor(
         categoryID = category[index.toInt()].categoryId
     }
 
+    fun refreshImages() {
+        if (selectedImageInfo.uris.isNotEmpty()) {
+            // 유효한 선택 이미지 리스트로 갱신
+            val validUris = getValidUrisUseCase(selectedImageInfo.uris)
+            viewModelScope.launch {
+                adapter.submitList(validUris)
+            }
+            if (validUris.isNotEmpty() && validUris.first() != selectedImageInfo.uris.first()) {
+                adapter.notifyItemChanged(findSelectedImageIndex(validUris.first()))
+            }
+            selectedImageInfo.uris = validUris.toMutableList()
+        }
+    }
+
     private fun String?.toPlainRequestBody() = requireNotNull(this).toRequestBody("text/plain".toMediaTypeOrNull())
+
+    private fun Bitmap.getEditedBitmap(uri: String) =
+        selectedImageInfo.changeBitmaps[uri]?.let { bitmapInfo ->
+            getRotatedBitmap(bitmapInfo.degree)
+        } ?: this
 }

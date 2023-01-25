@@ -17,7 +17,6 @@ import com.fakedevelopers.presentation.databinding.RecyclerProductListBinding
 import com.fakedevelopers.presentation.databinding.RecyclerProductListFooterBinding
 import com.fakedevelopers.presentation.ui.util.DateUtil
 import com.fakedevelopers.presentation.ui.util.ExpirationTimerTask
-import com.fakedevelopers.presentation.ui.util.PriceUtil
 
 class ProductListAdapter(
     private val dateUtil: DateUtil,
@@ -55,9 +54,11 @@ class ProductListAdapter(
                 hopePrice.isVisible = productItem.hopePrice != 0L
                 textviewProductListHopePrice.isVisible = productItem.hopePrice != 0L
                 if (productItem.hopePrice != 0L) {
-                    textviewProductListHopePrice.text = PriceUtil.numberToPrice(productItem.hopePrice)
+                    textviewProductListHopePrice.text =
+                        binding.root.context.getString(R.string.price_format, productItem.hopePrice)
                 }
-                textviewProductListOpeningBid.text = PriceUtil.numberToPrice(productItem.openingBid)
+                textviewProductListOpeningBid.text =
+                    binding.root.context.getString(R.string.price_format, productItem.openingBid)
                 textviewProductListParticipant.text =
                     if (productItem.bidderCount > 0) "${productItem.bidderCount}명 입찰" else ""
                 // 상품 상세 정보로 넘어가기
