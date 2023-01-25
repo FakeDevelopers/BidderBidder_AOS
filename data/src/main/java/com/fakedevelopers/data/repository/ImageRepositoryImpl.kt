@@ -3,10 +3,13 @@ package com.fakedevelopers.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import com.fakedevelopers.domain.model.AlbumItem
+import com.fakedevelopers.domain.model.MediaInfo
 import com.fakedevelopers.domain.repository.ImageRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
+import java.util.Locale
 import javax.inject.Inject
 
 class ImageRepositoryImpl @Inject constructor(
@@ -36,6 +39,15 @@ class ImageRepositoryImpl @Inject constructor(
             }
             result
         }
+
+    override fun getMediaInfo(uri: String): MediaInfo {
+        val mimeType = contentResolver.getType(Uri.parse(uri)).toString()
+        var extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType).toString()
+        if (extension == "jpg") {
+            extension = "jpeg"
+        }
+        return MediaInfo(mimeType, extension.uppercase(Locale.getDefault()))
+    }
 
     override fun getDateModifiedByUri(uri: String): AlbumItem? =
         contentResolver.query(

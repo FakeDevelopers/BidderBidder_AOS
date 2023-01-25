@@ -27,6 +27,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
+import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductRegistrationBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
@@ -36,7 +37,6 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
-import com.fakedevelopers.presentation.ui.util.AlbumImageUtils
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import com.fakedevelopers.presentation.ui.util.getRotated
@@ -57,10 +57,10 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     R.layout.fragment_product_registration
 ) {
     @Inject
-    lateinit var albumImageUtils: AlbumImageUtils
+    lateinit var getBytesByUriUseCase: GetBytesByUriUseCase
 
     @Inject
-    lateinit var getBytesByUriUseCase: GetBytesByUriUseCase
+    lateinit var getMediaInfoUseCase: GetMediaInfoUseCase
 
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
@@ -312,7 +312,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     }
 
     private fun getMultipart(uri: String, bitmap: Bitmap): MultipartBody.Part? {
-        val (mimeType, extension) = albumImageUtils.getMimeTypeAndExtension(uri)
+        val (mimeType, extension) = getMediaInfoUseCase(uri)
         return requireContext().contentResolver.query(Uri.parse(uri), null, null, null, null)?.use {
             if (it.moveToNext()) {
                 val idx = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)

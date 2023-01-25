@@ -1,6 +1,7 @@
 package com.fakedevelopers.domain.repository
 
 import com.fakedevelopers.domain.model.AlbumItem
+import com.fakedevelopers.domain.model.MediaInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 
@@ -9,4 +10,5 @@ interface ImageRepository {
     fun getValidUris(uris: List<String>): List<String>
     fun getDateModifiedByUri(uri: String): AlbumItem?
     suspend fun getBytesByUri(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): ByteArray?
+    fun getMediaInfo(uri: String): MediaInfo
 }
