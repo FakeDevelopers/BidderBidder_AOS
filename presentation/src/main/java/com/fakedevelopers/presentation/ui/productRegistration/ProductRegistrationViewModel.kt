@@ -176,13 +176,6 @@ class ProductRegistrationViewModel @Inject constructor(
         categoryID
     )
 
-    private fun setUrlList(list: List<String>) {
-        viewModelScope.launch {
-            adapter.submitList(list.toMutableList())
-        }
-        selectedImageInfo.uris = list.toMutableList()
-    }
-
     fun setContentLengthVisibility(state: Boolean) {
         viewModelScope.launch {
             _contentLengthVisible.emit(state)
@@ -200,8 +193,14 @@ class ProductRegistrationViewModel @Inject constructor(
     fun refreshImages() {
         if (selectedImageInfo.uris.isNotEmpty()) {
             // 유효한 선택 이미지 리스트로 갱신
-            getValidUrisUseCase(selectedImageInfo.uris)
-            setUrlList(getValidUrisUseCase(selectedImageInfo.uris))
+            val validUris = getValidUrisUseCase(selectedImageInfo.uris)
+            viewModelScope.launch {
+                adapter.submitList(validUris)
+            }
+            if (validUris.isNotEmpty() && validUris.first() != selectedImageInfo.uris.first()) {
+                adapter.notifyItemChanged(findSelectedImageIndex(validUris.first()))
+            }
+            selectedImageInfo.uris = validUris.toMutableList()
         }
     }
 
