@@ -9,6 +9,7 @@ import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
+import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import com.fakedevelopers.presentation.ui.util.getMultipart
@@ -41,7 +42,7 @@ class ProductRegistrationViewModel @Inject constructor(
     private val getMediaInfoUseCase: GetMediaInfoUseCase
 ) : ViewModel() {
 
-    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    private val dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
 
     val adapter = SelectedPictureListAdapter(
         deleteSelectedImage = { deleteSelectedImage(it) },
