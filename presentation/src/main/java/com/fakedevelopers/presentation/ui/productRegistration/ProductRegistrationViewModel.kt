@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
 import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
+import com.fakedevelopers.domain.usecase.GetRotateUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
@@ -13,7 +14,7 @@ import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import com.fakedevelopers.presentation.ui.util.getMultipart
-import com.fakedevelopers.presentation.ui.util.getRotated
+import com.fakedevelopers.presentation.ui.util.getRotatedBitmap
 import com.fakedevelopers.presentation.ui.util.priceToInt
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.toBitmap
@@ -39,7 +40,8 @@ class ProductRegistrationViewModel @Inject constructor(
     private val categoryRepository: ProductCategoryRepository,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getBytesByUriUseCase: GetBytesByUriUseCase,
-    private val getMediaInfoUseCase: GetMediaInfoUseCase
+    private val getMediaInfoUseCase: GetMediaInfoUseCase,
+    private val getRotateUseCase: GetRotateUseCase
 ) : ViewModel() {
 
     private val dateFormatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
@@ -142,7 +144,11 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private suspend fun getMultipartList(): List<MultipartBody.Part> =
         selectedImageInfo.uris.mapNotNull { uri ->
-            getBytesByUriUseCase(uri)?.toBitmap()?.getEditedBitmap(uri)?.getMultipart(getMediaInfoUseCase(uri))
+            getBytesByUriUseCase(uri)
+                ?.toBitmap()
+                ?.getRotatedBitmap(getRotateUseCase(uri))
+                ?.getEditedBitmap(uri)
+                ?.getMultipart(getMediaInfoUseCase(uri))
         }
 
     private fun requestProductCategory() {
@@ -208,6 +214,6 @@ class ProductRegistrationViewModel @Inject constructor(
 
     private fun Bitmap.getEditedBitmap(uri: String) =
         selectedImageInfo.changeBitmaps[uri]?.let { bitmapInfo ->
-            getRotated(bitmapInfo.degree)
+            getRotatedBitmap(bitmapInfo.degree)
         } ?: this
 }

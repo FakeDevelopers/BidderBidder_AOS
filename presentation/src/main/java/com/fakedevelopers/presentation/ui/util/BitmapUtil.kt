@@ -14,7 +14,7 @@ private const val COMPRESS_QUALITY = 70
 const val ROTATE_DEGREE = 90f
 
 fun ByteArray.toBitmap(): Bitmap = BitmapFactory.decodeByteArray(this, 0, size)
-fun Bitmap.getRotated(degree: Float): Bitmap {
+fun Bitmap.getRotatedBitmap(degree: Float): Bitmap {
     val matrix = Matrix().apply { postRotate(degree) }
     return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true) ?: this
 }

@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
+import androidx.exifinterface.media.ExifInterface
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.model.MediaInfo
 import com.fakedevelopers.domain.repository.ImageRepository
@@ -48,6 +49,32 @@ class ImageRepositoryImpl @Inject constructor(
         }
         return MediaInfo(mimeType, extension.uppercase(Locale.getDefault()))
     }
+
+    override fun getRotate(uri: String): Float {
+        runCatching {
+            ExifInterface(uri.getPath()!!).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        }.onSuccess { attr ->
+            return when (attr) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                else -> 0f
+            }
+        }
+        return 0f
+    }
+
+    private fun String.getPath() =
+        contentResolver.query(
+            Uri.parse(this),
+            arrayOf(MediaStore.Images.Media.DATA),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            cursor.moveToNext()
+            cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+        }
 
     override fun getDateModifiedByUri(uri: String): AlbumItem? =
         contentResolver.query(

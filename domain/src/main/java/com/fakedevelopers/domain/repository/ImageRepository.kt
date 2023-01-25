@@ -11,4 +11,5 @@ interface ImageRepository {
     fun getDateModifiedByUri(uri: String): AlbumItem?
     suspend fun getBytesByUri(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): ByteArray?
     fun getMediaInfo(uri: String): MediaInfo
+    fun getRotate(uri: String): Float
 }
