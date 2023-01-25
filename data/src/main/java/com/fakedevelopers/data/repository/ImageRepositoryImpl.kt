@@ -3,7 +3,6 @@ package com.fakedevelopers.data.repository
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
-import android.webkit.MimeTypeMap
 import androidx.exifinterface.media.ExifInterface
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.model.MediaInfo
@@ -43,7 +42,7 @@ class ImageRepositoryImpl @Inject constructor(
 
     override fun getMediaInfo(uri: String): MediaInfo {
         val mimeType = contentResolver.getType(Uri.parse(uri)).toString()
-        var extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType).toString()
+        var extension = mimeType.substringAfter('/')
         if (extension == "jpg") {
             extension = "jpeg"
         }
