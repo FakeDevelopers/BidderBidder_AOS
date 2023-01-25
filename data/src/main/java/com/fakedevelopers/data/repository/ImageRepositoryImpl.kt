@@ -5,6 +5,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.repository.ImageRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class ImageRepositoryImpl @Inject constructor(
@@ -22,7 +24,20 @@ class ImageRepositoryImpl @Inject constructor(
     override fun getValidUris(uris: List<String>): List<String> =
         uris.filter { uri -> isValid(uri) }
 
-    override fun getDateModifiedFromUri(uri: String): AlbumItem? =
+    override suspend fun getBytesByUri(uri: String, dispatcher: CoroutineDispatcher): ByteArray? =
+        withContext(dispatcher) {
+            var result: ByteArray? = null
+            runCatching {
+                contentResolver.openInputStream(Uri.parse(uri))
+            }.onSuccess { inputStream ->
+                inputStream?.use {
+                    result = it.readBytes()
+                }
+            }
+            result
+        }
+
+    override fun getDateModifiedByUri(uri: String): AlbumItem? =
         contentResolver.query(
             Uri.parse(uri),
             arrayOf(

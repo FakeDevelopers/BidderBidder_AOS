@@ -25,7 +25,7 @@ import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productRegistration.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
-import com.fakedevelopers.presentation.ui.util.AlbumImageUtils.Companion.ROTATE_DEGREE
+import com.fakedevelopers.presentation.ui.util.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest

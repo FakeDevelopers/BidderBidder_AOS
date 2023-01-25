@@ -26,6 +26,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductRegistrationBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
@@ -38,6 +39,8 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.util.AlbumImageUtils
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
+import com.fakedevelopers.presentation.ui.util.getRotated
+import com.fakedevelopers.presentation.ui.util.toBitmap
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -55,6 +58,9 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
 ) {
     @Inject
     lateinit var albumImageUtils: AlbumImageUtils
+
+    @Inject
+    lateinit var getBytesByUriUseCase: GetBytesByUriUseCase
 
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
@@ -288,7 +294,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         val result = lifecycleScope.async {
             val list = mutableListOf<MultipartBody.Part>()
             viewModel.selectedImageInfo.uris.forEach { uri ->
-                albumImageUtils.getBitmapByURI(uri)?.let { bitmap ->
+                getBytesByUriUseCase(uri)?.toBitmap()?.let { bitmap ->
                     val editedBitmap = getEditedBitmap(uri, bitmap)
                     getMultipart(uri, editedBitmap)?.let { multiPart -> list.add(multiPart) }
                 }
@@ -301,8 +307,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     private fun getEditedBitmap(uri: String, bitmap: Bitmap): Bitmap {
         // 맵에 없다면 변경 사항이 없는 것이므로 쌩 비트맵 반환
         return viewModel.selectedImageInfo.changeBitmaps[uri]?.let { bitmapInfo ->
-            // 회전. 나중엔 이미지 자르는 작업도 들어가겠죠
-            albumImageUtils.getRotateBitmap(bitmap, bitmapInfo.degree)
+            bitmap.getRotated(bitmapInfo.degree)
         } ?: bitmap
     }
 

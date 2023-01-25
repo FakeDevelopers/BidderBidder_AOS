@@ -7,5 +7,5 @@ import javax.inject.Inject
 class GetDateModifiedFromUriUseCase @Inject constructor(
     private val repository: ImageRepository
 ) {
-    operator fun invoke(uri: String): AlbumItem? = repository.getDateModifiedFromUri(uri)
+    operator fun invoke(uri: String): AlbumItem? = repository.getDateModifiedByUri(uri)
 }
