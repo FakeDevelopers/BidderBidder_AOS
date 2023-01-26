@@ -367,6 +367,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding"
             tools:ignore="TouchTargetSizeCheck" />
+<!--        button for edit-->
+        <ToggleButton
+            android:id="@+id/button_product_detail_edit"
+            android:layout_width="24dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/selector_button_favorite"
+            android:checked="false"
+            android:text=""
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="@id/button_product_detail_bidding"
+            app:layout_constraintEnd_toStartOf="@id/button_product_detail_buy"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_product_detail_buy"

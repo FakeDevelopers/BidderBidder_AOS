@@ -55,6 +55,9 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             adapter = productDetailAdapter
             registerOnPageChangeCallback(onPageChanged)
         }
+        binding.buttonProductDetailEdit.setOnClickListener {
+            navigateEditProduct(viewModel.productDetailDto.value)
+        }
         initCollector()
     }
 
@@ -71,7 +74,8 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
 
         findNavController().navigate(
             ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
-                ProductRegistrationDto(viewModel.productId, productDetailDto)
+                ProductRegistrationDto(viewModel.productId, productDetailDto),
+                viewModel.productId
             )
         )
     }
