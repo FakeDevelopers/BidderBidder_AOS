@@ -91,6 +91,11 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
                     .attachToRecyclerView(binding.recyclerProductRegistration)
             }
         }
+
+        if (viewModel.category.isNotEmpty()) {
+            setCategory(viewModel.category)
+        }
+
         initResultLauncher()
         initListener()
         initCollector()

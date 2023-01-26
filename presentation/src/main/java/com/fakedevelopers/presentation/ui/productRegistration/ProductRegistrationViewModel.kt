@@ -52,7 +52,7 @@ class ProductRegistrationViewModel @Inject constructor(
     private val _condition = MutableStateFlow(false)
     val condition: StateFlow<Boolean> get() = _condition
 
-    private var category = listOf<ProductCategoryDto>()
+    var category = listOf<ProductCategoryDto>()
     private var categoryID = 0L
     val selectedImageInfo = SelectedImageInfo()
     val title = MutableStateFlow("")
