@@ -36,7 +36,6 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.productRegistration.ProductCategoryDto
-import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationFragmentArgs
 import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationViewModel
 import com.fakedevelopers.presentation.ui.util.AlbumImageUtils
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
@@ -81,7 +80,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        val args: ProductRegistrationFragmentArgs by navArgs()
+        val args: ProductModificationFragmentArgs by navArgs()
 
         binding.includeProductRegistrationToolbar.textviewToolbarTitle.text = getString(R.string.product_modification_title)
         args.productRegistrationDto?.let {
