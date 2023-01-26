@@ -54,6 +54,9 @@ class ProductRegistrationViewModel @Inject constructor(
 
     var category = listOf<ProductCategoryDto>()
     private var categoryID = 0L
+
+    var productId = 0L
+
     val selectedImageInfo = SelectedImageInfo()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
@@ -115,9 +118,9 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun requestProductModification(imageList: List<MultipartBody.Part>) {
+    fun requestProductModification(productId: Long, imageList: List<MultipartBody.Part>) {
         viewModelScope.launch {
-            _productRegistrationResponse.emit(EditRepository.postProductEdit(categoryID, imageList, getHashMap()))
+            _productRegistrationResponse.emit(EditRepository.postProductEdit(productId, imageList, getHashMap()))
         }
     }
 

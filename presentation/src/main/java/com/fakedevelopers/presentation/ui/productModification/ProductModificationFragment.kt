@@ -95,6 +95,8 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
             setCategory(viewModel.category)
         }
 
+        viewModel.productId = args.productId
+
         initResultLauncher()
         initListener()
         initCollector()
@@ -173,7 +175,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
                 sendSnackBar("게시글 수정 요청")
                 binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
-                    viewModel.requestProductModification(getMultipartList())
+                    viewModel.requestProductModification(viewModel.productId, getMultipartList())
                 }
             }
         }
