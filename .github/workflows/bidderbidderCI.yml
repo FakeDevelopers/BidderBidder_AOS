@@ -25,7 +25,7 @@ jobs:
       - name: Create data dir
         run: mkdir ./domain/src/main/java/com/fakedevelopers/domain/secret
       - name: Create Constants
-        run: echo '${{ secrets.CONSTANTS }}' > ./domain/src/main/java/com/fakedevelopers/domain/secret/Constants.kt
+        run: echo '${{ secrets.CONSTANTS_SANDBOX }}' > ./domain/src/main/java/com/fakedevelopers/domain/secret/Constants.kt
       - name: Build with Gradle
         run: ./gradlew build
       - name: Build Signed APK
@@ -55,7 +55,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.date.outputs.date }}
-          release_name: Release-prod-${{ steps.date.outputs.date }}
+          release_name: Release-dev-${{ steps.date.outputs.date }}
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1
