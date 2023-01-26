@@ -232,7 +232,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.productRegistrationResponse.collectLatest {
                 if (it.isSuccessful) {
-                    findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+                    findNavController().navigate(R.id.action_productModificationFragment_to_productListFragment)
                 } else {
                     binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
                     sendSnackBar("글쓰기에 실패했어요~")
