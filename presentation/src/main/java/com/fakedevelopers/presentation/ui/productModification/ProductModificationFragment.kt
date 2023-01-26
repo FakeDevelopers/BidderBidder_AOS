@@ -73,7 +73,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+                findNavController().popBackStack()
             }
         }
     }

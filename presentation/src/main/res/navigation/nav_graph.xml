@@ -76,6 +76,9 @@
             app:popUpTo="@id/productModificationFragment"
             app:launchSingleTop="true"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_productModificationFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
     </fragment>
     <fragment
         android:id="@+id/pictureSelectFragment"
