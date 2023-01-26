@@ -59,9 +59,6 @@ class ProductRegistrationViewModel @Inject constructor(
     private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
     val productRegistrationResponse = _productRegistrationResponse.asEventFlow()
 
-    private val _contentLengthVisible = MutableStateFlow(false)
-    val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
-
     private val _condition = MutableStateFlow(false)
     val condition: StateFlow<Boolean> get() = _condition
 
@@ -181,12 +178,6 @@ class ProductRegistrationViewModel @Inject constructor(
         content.value,
         categoryID
     )
-
-    fun setContentLengthVisibility(state: Boolean) {
-        viewModelScope.launch {
-            _contentLengthVisible.emit(state)
-        }
-    }
 
     fun setProductCategory(list: List<ProductCategoryDto>) {
         category = list

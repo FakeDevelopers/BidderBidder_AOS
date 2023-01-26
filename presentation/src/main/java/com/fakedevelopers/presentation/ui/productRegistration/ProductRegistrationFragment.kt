@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -31,6 +32,7 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
+import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -42,7 +44,13 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
+    private val args: ProductRegistrationFragmentArgs by navArgs()
     private val viewModel: ProductRegistrationViewModel by viewModels()
+    private val expirationFilter by lazy {
+        InputFilter { source, _, _, _, dstart, _ ->
+            if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
+        }
+    }
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -55,7 +63,6 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        val args: ProductRegistrationFragmentArgs by navArgs()
         args.productRegistrationDto?.let {
             viewModel.initState(it)
             if (it.selectedImageInfo.uris.isNotEmpty()) {
@@ -72,6 +79,8 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         viewModel.refreshImages()
+        binding.textviewProductRegistrationContentLength.isVisible =
+            binding.edittextProductRegistrationContent.isFocused
     }
 
     private fun checkStoragePermission() {
@@ -99,9 +108,6 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         initEditTextFilter(binding.edittextProductRegistrationHopePrice, MAX_PRICE_LENGTH)
         initEditTextFilter(binding.edittextProductRegistrationOpeningBid, MAX_PRICE_LENGTH)
         initEditTextFilter(binding.edittextProductRegistrationTick, MAX_TICK_LENGTH)
-        val expirationFilter = InputFilter { source, _, _, _, dstart, _ ->
-            if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
-        }
         // 만료 시간 필터 등록
         binding.edittextProductRegistrationExpiration.apply {
             addTextChangedListener(object : TextWatcher {
@@ -143,16 +149,16 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
         keyboardVisibilityUtils = KeyboardVisibilityUtils(
             requireActivity().window,
             onHideKeyboard = {
-                viewModel.setContentLengthVisibility(false)
+                binding.textviewProductRegistrationContentLength.isVisible = false
             }
         )
         // 본문 에딧텍스트 터치, 포커싱
         binding.edittextProductRegistrationContent.apply {
             setOnClickListener {
-                viewModel.setContentLengthVisibility(true)
+                binding.textviewProductRegistrationContentLength.isVisible = true
             }
             setOnFocusChangeListener { _, hasFocus ->
-                viewModel.setContentLengthVisibility(hasFocus)
+                binding.textviewProductRegistrationContentLength.isVisible = hasFocus
             }
         }
         // 툴바 뒤로가기 버튼
@@ -207,13 +213,6 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                 }
             }
         }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.contentLengthVisible.collect {
-                if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
-                    viewModel.setContentLengthVisibility(true)
-                }
-            }
-        }
         // 등록 버튼
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.condition.collectLatest {
@@ -243,8 +242,8 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
 
     // 희망가 <= 최소 입찰가 인지 검사
     private fun checkPriceCondition(): Boolean {
-        val openingBid = viewModel.openingBid.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull() ?: return false
-        val hopePrice = viewModel.hopePrice.value.replace(IS_NOT_NUMBER.toRegex(), "").toLongOrNull()
+        val openingBid = viewModel.openingBid.value.priceToLong() ?: return false
+        val hopePrice = viewModel.hopePrice.value.priceToLong()
         if (hopePrice != null && hopePrice <= openingBid) {
             sendSnackBar(getString(R.string.product_registration_error_minimum_bid))
             return false
