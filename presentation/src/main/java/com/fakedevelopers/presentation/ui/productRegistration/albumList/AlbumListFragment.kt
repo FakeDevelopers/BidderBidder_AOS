@@ -125,9 +125,7 @@ class AlbumListFragment : Fragment() {
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
         // 선택한 이미지 uri를 들고 돌아갑니다
-        findNavController().navigate(
-            AlbumListFragmentDirections.actionPictureSelectFragmentToProductRegistrationFragment(dto)
-        )
+        findNavController().popBackStack()
     }
 
     private fun getPictures() {
