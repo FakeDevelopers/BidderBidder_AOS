@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.api.util
+package com.fakedevelopers.data.util
 
 import com.fakedevelopers.domain.model.BEARER_TOKEN_PREFIX
 import com.google.firebase.auth.FirebaseAuth
@@ -6,7 +6,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class LoginAuthInterceptor @Inject constructor(
+class AuthInterceptor @Inject constructor(
     private val firebase: FirebaseAuth
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response = with(chain) {

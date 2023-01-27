@@ -12,6 +12,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/productlist_load_more"
         android:textSize="12sp"
+        android:textColor="@color/white"
         android:backgroundTint="@color/bidderbidder_primary"
         android:outlineProvider="none"
         app:cornerRadius="5dp"
