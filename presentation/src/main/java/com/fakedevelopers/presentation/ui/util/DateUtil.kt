@@ -7,10 +7,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
 
+const val DATE_PATTERN = "yyyy-MM-dd HH:mm"
+
 class DateUtil(
     private val context: Context
 ) {
-    private val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).apply {
+    private val formatter = SimpleDateFormat(DATE_PATTERN, Locale.getDefault()).apply {
         timeZone = TimeZone.getTimeZone("Asia/Seoul")
     }
 

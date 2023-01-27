@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.widget.EditText
 import com.fakedevelopers.domain.secret.Constants.Companion.dec
+import com.fakedevelopers.presentation.ui.util.priceToLong
 
 class PriceTextWatcher(
     private val editText: EditText,
@@ -47,6 +48,6 @@ class PriceTextWatcher(
             editText.addTextChangedListener(PriceTextWatcher(editText) { checkCondition?.invoke() })
         }
         fun makeComma(price: String) =
-            price.replace(",", "").toLongOrNull()?.let { dec.format(it) } ?: ""
+            price.priceToLong()?.let { dec.format(it) } ?: ""
     }
 }
