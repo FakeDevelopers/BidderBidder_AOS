@@ -18,7 +18,6 @@ import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,7 +32,6 @@ import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.C
 import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
-import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
@@ -218,15 +216,6 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
                 }
             }
         }
-        // 홈 화면 이동 시 글자 수 textView의 visible 처리
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.contentLengthVisible.collect {
-                if (binding.edittextProductRegistrationContent.isFocused != viewModel.contentLengthVisible.value) {
-                    viewModel.setContentLengthVisibility(true)
-                }
-            }
-        }
-        // 등록 버튼
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.condition.collectLatest {
                 val color = if (it) Color.BLACK else Color.GRAY

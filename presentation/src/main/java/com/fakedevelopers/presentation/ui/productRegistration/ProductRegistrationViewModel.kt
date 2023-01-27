@@ -39,7 +39,7 @@ import javax.inject.Inject
 class ProductRegistrationViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
     private val EditRepository: ProductEditRepository,
-    private val categoryRepository: ProductCategoryRepository
+    private val categoryRepository: ProductCategoryRepository,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getBytesByUriUseCase: GetBytesByUriUseCase,
     private val getMediaInfoUseCase: GetMediaInfoUseCase,
@@ -129,12 +129,14 @@ class ProductRegistrationViewModel @Inject constructor(
 
     fun requestProductRegistration() {
         viewModelScope.launch {
+            val imageList = getMultipartList()
             _productRegistrationResponse.emit(repository.postProductRegistration(imageList, getHashMap()))
         }
     }
 
-    fun requestProductModification(productId: Long, imageList: List<MultipartBody.Part>) {
+    fun requestProductModification(productId: Long) {
         viewModelScope.launch {
+            val imageList = getMultipartList()
             _productRegistrationResponse.emit(EditRepository.postProductEdit(productId, imageList, getHashMap()))
         }
     }
