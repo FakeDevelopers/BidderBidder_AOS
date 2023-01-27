@@ -17,6 +17,7 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.orhanobut.logger.Logger
@@ -42,7 +43,7 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
         }
     }
 
-    private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+    private val formatter = DateTimeFormatter.ofPattern(DATE_PATTERN)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
