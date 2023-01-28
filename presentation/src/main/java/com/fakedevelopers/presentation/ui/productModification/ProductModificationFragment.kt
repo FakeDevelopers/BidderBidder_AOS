@@ -23,7 +23,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.databinding.FragmentProductRegistrationBinding
+import com.fakedevelopers.presentation.databinding.FragmentProductEditorBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher
@@ -43,8 +43,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBinding>(
-    R.layout.fragment_product_registration
+class ProductModificationFragment : BaseFragment<FragmentProductEditorBinding>(
+    R.layout.fragment_product_editor
 ) {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
