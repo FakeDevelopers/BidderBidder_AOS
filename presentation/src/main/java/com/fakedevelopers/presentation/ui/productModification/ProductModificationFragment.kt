@@ -25,16 +25,16 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductRegistrationBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
-import com.fakedevelopers.presentation.ui.productRegistration.DragAndDropCallback
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.IS_NOT_NUMBER
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.ProductCategoryDto
-import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationViewModel
+import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.IS_NOT_NUMBER
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_TICK_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.ProductCategoryDto
+import com.fakedevelopers.presentation.ui.productEditor.ProductEditorViewModel
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
@@ -49,7 +49,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
-    private val viewModel: ProductRegistrationViewModel by viewModels()
+    private val viewModel: ProductEditorViewModel by viewModels()
 
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -65,7 +65,7 @@ class ProductModificationFragment : BaseFragment<FragmentProductRegistrationBind
         val args: ProductModificationFragmentArgs by navArgs()
 
         binding.includeProductRegistrationToolbar.textviewToolbarTitle.text = getString(R.string.product_modification_title)
-        args.productRegistrationDto?.let {
+        args.productEditorDto?.let {
             viewModel.initState(it)
             if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))

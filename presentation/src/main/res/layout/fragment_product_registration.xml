@@ -7,7 +7,7 @@
         <import type="android.view.View"/>
         <variable
             name="vm"
-            type="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationViewModel" />
+            type="com.fakedevelopers.presentation.ui.productEditor.ProductEditorViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

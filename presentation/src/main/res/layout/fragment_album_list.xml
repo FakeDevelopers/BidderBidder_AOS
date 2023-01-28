@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View"/>
-        <import type="com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumViewState" />
+        <import type="com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumViewState" />
         <variable
             name="vm"
-            type="com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListViewModel" />
+            type="com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

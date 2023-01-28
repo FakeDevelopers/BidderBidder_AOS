@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration
+package com.fakedevelopers.presentation.ui.productEditor
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
@@ -10,7 +10,7 @@ import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductEditRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
-import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
+import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
@@ -36,7 +36,7 @@ import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
-class ProductRegistrationViewModel @Inject constructor(
+class ProductEditorViewModel @Inject constructor(
     private val repository: ProductRegistrationRepository,
     private val EditRepository: ProductEditRepository,
     private val categoryRepository: ProductCategoryRepository,
@@ -156,7 +156,7 @@ class ProductRegistrationViewModel @Inject constructor(
         }
     }
 
-    fun initState(state: ProductRegistrationDto) {
+    fun initState(state: ProductEditorDto) {
         selectedImageInfo.uris = state.selectedImageInfo.uris
         selectedImageInfo.changeBitmaps.putAll(state.selectedImageInfo.changeBitmaps)
         viewModelScope.launch {
@@ -189,7 +189,7 @@ class ProductRegistrationViewModel @Inject constructor(
         return map
     }
 
-    fun getProductRegistrationDto() = ProductRegistrationDto(
+    fun getProductRegistrationDto() = ProductEditorDto(
         selectedImageInfo,
         title.value,
         hopePrice.value,

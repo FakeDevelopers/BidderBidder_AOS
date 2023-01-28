@@ -42,8 +42,8 @@
             app:destination="@id/pictureSelectFragment"
             app:launchSingleTop="true" />
         <argument
-            android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto"
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -62,8 +62,8 @@
             app:destination="@id/pictureSelectFragment"
             app:launchSingleTop="true" />
         <argument
-            android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto"
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto"
             app:nullable="true"
             android:defaultValue="@null" />
         <argument
@@ -82,7 +82,7 @@
     </fragment>
     <fragment
         android:id="@+id/pictureSelectFragment"
-        android:name="com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListFragment"
+        android:name="com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragment"
         android:label="PictureSelectFragment" >
         <action
             android:id="@+id/action_pictureSelectFragment_to_productRegistrationFragment"
@@ -90,8 +90,8 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/pictureSelectFragment" />
         <argument
-            android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto" />
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto" />
     </fragment>
     <fragment
         android:id="@+id/productSearchFragment"

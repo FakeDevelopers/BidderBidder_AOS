@@ -17,8 +17,8 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
-import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
@@ -75,7 +75,7 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
 
         findNavController().navigate(
             ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
-                ProductRegistrationDto(viewModel.productId, productDetailDto),
+                ProductEditorDto(viewModel.productId, productDetailDto),
                 viewModel.productId
             )
         )

@@ -24,12 +24,16 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductRegistrationBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.IS_NOT_NUMBER
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
-import com.fakedevelopers.presentation.ui.productRegistration.PriceTextWatcher.Companion.MAX_TICK_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.IS_NOT_NUMBER
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_CONTENT_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_EXPIRATION_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_TICK_LENGTH
+import com.fakedevelopers.presentation.ui.productEditor.ProductCategoryDto
+import com.fakedevelopers.presentation.ui.productEditor.ProductEditorViewModel
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import com.fakedevelopers.presentation.ui.util.priceToLong
@@ -45,7 +49,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     private val args: ProductRegistrationFragmentArgs by navArgs()
-    private val viewModel: ProductRegistrationViewModel by viewModels()
+    private val viewModel: ProductEditorViewModel by viewModels()
     private val expirationFilter by lazy {
         InputFilter { source, _, _, _, dstart, _ ->
             if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
@@ -63,7 +67,7 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        args.productRegistrationDto?.let {
+        args.productEditorDto?.let {
             viewModel.initState(it)
             if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
@@ -182,7 +186,10 @@ class ProductRegistrationFragment : BaseFragment<FragmentProductRegistrationBind
     }
 
     private fun initEditTextFilter(editText: EditText, length: Int) {
-        PriceTextWatcher.addEditTextFilter(editText, length) { viewModel.checkRegistrationCondition() }
+        PriceTextWatcher.addEditTextFilter(
+            editText,
+            length
+        ) { viewModel.checkRegistrationCondition() }
     }
 
     private fun initResultLauncher() {

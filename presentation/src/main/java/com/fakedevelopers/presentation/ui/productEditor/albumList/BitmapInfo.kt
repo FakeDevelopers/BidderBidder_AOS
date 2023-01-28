@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration.albumList
+package com.fakedevelopers.presentation.ui.productEditor.albumList
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

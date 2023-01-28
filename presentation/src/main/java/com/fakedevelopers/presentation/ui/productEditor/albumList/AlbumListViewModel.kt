@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration.albumList
+package com.fakedevelopers.presentation.ui.productEditor.albumList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -6,8 +6,8 @@ import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.usecase.GetDateModifiedByUriUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.IsValidUriUseCase
-import com.fakedevelopers.presentation.ui.productRegistration.SelectedPictureListAdapter
-import com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListFragment.Companion.ALL_PICTURES
+import com.fakedevelopers.presentation.ui.productEditor.SelectedPictureListAdapter
+import com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragment.Companion.ALL_PICTURES
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel

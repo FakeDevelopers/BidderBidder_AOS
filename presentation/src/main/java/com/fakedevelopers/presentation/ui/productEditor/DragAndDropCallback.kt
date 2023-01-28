@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration
+package com.fakedevelopers.presentation.ui.productEditor
 
 import android.graphics.Canvas
 import androidx.recyclerview.widget.ItemTouchHelper

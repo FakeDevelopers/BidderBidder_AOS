@@ -1,12 +1,12 @@
-package com.fakedevelopers.presentation.ui.productRegistration
+package com.fakedevelopers.presentation.ui.productEditor
 
 import android.os.Parcelable
 import com.fakedevelopers.presentation.ui.productDetail.ProductDetailDto
-import com.fakedevelopers.presentation.ui.productRegistration.albumList.SelectedImageInfo
+import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class ProductRegistrationDto(
+data class ProductEditorDto(
     val selectedImageInfo: SelectedImageInfo,
     val title: String,
     val hopePrice: String,
