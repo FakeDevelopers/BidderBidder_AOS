@@ -9,10 +9,10 @@ import retrofit2.http.Part
 import retrofit2.http.PartMap
 import retrofit2.http.Path
 
-interface ProductEditService {
+interface ProductModificationService {
     @Multipart
     @POST("product/getProductInfo/{productId}/modify")
-    suspend fun postProductEdit(
+    suspend fun postProductModification(
         @Path("productId") productId: Long,
         @Part files: List<MultipartBody.Part>,
         @PartMap params: HashMap<String, RequestBody>

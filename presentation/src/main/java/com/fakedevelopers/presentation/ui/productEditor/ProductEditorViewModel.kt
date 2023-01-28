@@ -8,7 +8,7 @@ import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
 import com.fakedevelopers.domain.usecase.GetRotateUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
-import com.fakedevelopers.presentation.api.repository.ProductEditRepository
+import com.fakedevelopers.presentation.api.repository.ProductModificationRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
@@ -37,8 +37,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductEditorViewModel @Inject constructor(
-    private val repository: ProductRegistrationRepository,
-    private val EditRepository: ProductEditRepository,
+    private val registrationRepository: ProductRegistrationRepository,
+    private val modificationRepository: ProductModificationRepository,
     private val categoryRepository: ProductCategoryRepository,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getBytesByUriUseCase: GetBytesByUriUseCase,
@@ -130,14 +130,14 @@ class ProductEditorViewModel @Inject constructor(
     fun requestProductRegistration() {
         viewModelScope.launch {
             val imageList = getMultipartList()
-            _productEditorResponse.emit(repository.postProductRegistration(imageList, getHashMap()))
+            _productEditorResponse.emit(registrationRepository.postProductRegistration(imageList, getHashMap()))
         }
     }
 
     fun requestProductModification(productId: Long) {
         viewModelScope.launch {
             val imageList = getMultipartList()
-            _productEditorResponse.emit(EditRepository.postProductEdit(productId, imageList, getHashMap()))
+            _productEditorResponse.emit(modificationRepository.postProductModification(productId, imageList, getHashMap()))
         }
     }
 

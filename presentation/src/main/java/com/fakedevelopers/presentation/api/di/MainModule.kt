@@ -3,13 +3,13 @@ package com.fakedevelopers.presentation.api.di
 import com.fakedevelopers.presentation.api.repository.ChatRepository
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductDetailRepository
-import com.fakedevelopers.presentation.api.repository.ProductEditRepository
+import com.fakedevelopers.presentation.api.repository.ProductModificationRepository
 import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.api.repository.ProductSearchRepository
 import com.fakedevelopers.presentation.api.service.ChatService
 import com.fakedevelopers.presentation.api.service.ProductCategoryService
 import com.fakedevelopers.presentation.api.service.ProductDetailService
-import com.fakedevelopers.presentation.api.service.ProductEditService
+import com.fakedevelopers.presentation.api.service.ProductModificationService
 import com.fakedevelopers.presentation.api.service.ProductRegistrationService
 import com.fakedevelopers.presentation.api.service.ProductSearchService
 import dagger.Module
@@ -36,13 +36,13 @@ class MainModule {
     // 게시글 수정 요청
     @ActivityRetainedScoped
     @Provides
-    fun provideUserProductEditService(@AuthRetrofit retrofit: Retrofit): ProductEditService =
-        retrofit.create(ProductEditService::class.java)
+    fun provideUserProductEditService(@AuthRetrofit retrofit: Retrofit): ProductModificationService =
+        retrofit.create(ProductModificationService::class.java)
 
     @ActivityRetainedScoped
     @Provides
-    fun provideUserProductEditRepository(service: ProductEditService): ProductEditRepository =
-        ProductEditRepository(service)
+    fun provideUserProductEditRepository(service: ProductModificationService): ProductModificationRepository =
+        ProductModificationRepository(service)
 
     // 상품 카테고리 요청
     @ActivityRetainedScoped
