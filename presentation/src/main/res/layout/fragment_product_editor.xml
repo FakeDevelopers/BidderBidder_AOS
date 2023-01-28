@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".ui.productRegistration.ProductRegistrationFragment">
+    tools:context=".ui.productEditor.ProductEditorFragment">
     <data>
         <import type="android.view.View"/>
         <variable
@@ -15,8 +15,8 @@
         android:layout_height="match_parent">
 
         <include
-            android:id="@+id/include_product_registration_toolbar"
-            layout="@layout/toolbar_product_registration"
+            android:id="@+id/include_product_editor_toolbar"
+            layout="@layout/toolbar_product_editor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -28,13 +28,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/include_product_registration_toolbar">
+            app:layout_constraintTop_toBottomOf="@+id/include_product_editor_toolbar">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:divider="@drawable/shape_product_registration_divider"
+                android:divider="@drawable/shape_product_editor_divider"
                 android:orientation="vertical"
                 android:showDividers="middle">
 
@@ -45,7 +45,7 @@
                     android:layout_marginBottom="16dp">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_product_registration"
+                        android:id="@+id/recycler_product_editor"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -54,11 +54,11 @@
                         android:orientation="horizontal"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/cardview_product_registration"
+                        app:layout_constraintStart_toEndOf="@+id/cardview_product_editor"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.cardview.widget.CardView
-                        android:id="@+id/cardview_product_registration"
+                        android:id="@+id/cardview_product_editor"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_marginTop="8dp"
@@ -70,22 +70,22 @@
                             android:id="@+id/imageview_select_picture"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:contentDescription="@string/product_registration_button_to_album"
+                            android:contentDescription="@string/product_editor_button_to_album"
                             android:scaleType="centerCrop"
                             android:src="@drawable/camera_cat" />
                     </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_title"
+                    android:id="@+id/edittext_product_editor_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
-                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
+                    android:afterTextChanged="@{() -> vm.checkEditorCondition()}"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="@string/product_registration_product_title"
+                    android:hint="@string/product_editor_product_title"
                     android:importantForAutofill="no"
                     android:inputType="textPersonName"
                     android:maxLength="100"
@@ -94,14 +94,14 @@
                     tools:ignore="TextContrastCheck" />
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_hope_price"
+                    android:id="@+id/edittext_product_editor_hope_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="@string/product_registration_product_hope_price"
+                    android:hint="@string/product_editor_product_hope_price"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
@@ -109,23 +109,23 @@
                     tools:ignore="TextContrastCheck" />
 
                 <Spinner
-                    android:id="@+id/spinner_product_registration_category"
+                    android:id="@+id/spinner_product_editor_category"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
                     android:minHeight="48dp"
                     android:spinnerMode="dialog"
                     tools:ignore="SpeakableTextPresentCheck" />
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_opening_bid"
+                    android:id="@+id/edittext_product_editor_opening_bid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="@string/product_registration_product_opening_bid"
+                    android:hint="@string/product_editor_product_opening_bid"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
@@ -133,14 +133,14 @@
                     tools:ignore="TextContrastCheck" />
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_tick"
+                    android:id="@+id/edittext_product_editor_tick"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="@string/product_registration_product_tick"
+                    android:hint="@string/product_editor_product_tick"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
@@ -148,32 +148,32 @@
                     tools:ignore="TextContrastCheck" />
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_expiration"
+                    android:id="@+id/edittext_product_editor_expiration"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="@string/product_registration_product_expiration"
+                    android:hint="@string/product_editor_product_expiration"
                     android:importantForAutofill="no"
                     android:inputType="numberDecimal"
                     android:minHeight="48dp"
-                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:afterTextChanged="@{() -> vm.checkEditorCondition()}"
                     android:text="@={vm.expiration}"
                     tools:ignore="TextFields,TextContrastCheck" />
 
                 <EditText
-                    android:id="@+id/edittext_product_registration_content"
+                    android:id="@+id/edittext_product_editor_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="@dimen/product_registration_margin_horizontal"
-                    android:layout_marginVertical="@dimen/product_registration_margin_vertical"
-                    android:afterTextChanged="@{() -> vm.checkRegistrationCondition()}"
+                    android:layout_marginHorizontal="@dimen/product_editor_margin_horizontal"
+                    android:layout_marginVertical="@dimen/product_editor_margin_vertical"
+                    android:afterTextChanged="@{() -> vm.checkEditorCondition()}"
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:gravity="start"
-                    android:hint="@string/product_registration_product_content"
+                    android:hint="@string/product_editor_product_content"
                     android:importantForAutofill="no"
                     android:inputType="textMultiLine"
                     android:maxLength="1000"
@@ -185,7 +185,7 @@
         </ScrollView>
 
         <TextView
-            android:id="@+id/textview_product_registration_content_length"
+            android:id="@+id/textview_product_editor_content_length"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

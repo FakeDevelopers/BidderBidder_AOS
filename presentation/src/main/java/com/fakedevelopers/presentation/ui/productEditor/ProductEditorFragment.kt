@@ -73,8 +73,8 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         super.onStart()
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         viewModel.refreshImages()
-        binding.textviewProductRegistrationContentLength.isVisible =
-            binding.edittextProductRegistrationContent.isFocused
+        binding.textviewProductEditorContentLength.isVisible =
+            binding.edittextProductEditorContent.isFocused
     }
 
     private fun checkStoragePermission() {
@@ -96,11 +96,11 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
 
     protected open fun initListener() {
         // 가격 필터 등록
-        initEditTextFilter(binding.edittextProductRegistrationHopePrice, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductRegistrationOpeningBid, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductRegistrationTick, MAX_TICK_LENGTH)
+        initEditTextFilter(binding.edittextProductEditorHopePrice, MAX_PRICE_LENGTH)
+        initEditTextFilter(binding.edittextProductEditorOpeningBid, MAX_PRICE_LENGTH)
+        initEditTextFilter(binding.edittextProductEditorTick, MAX_TICK_LENGTH)
         // 만료 시간 필터 등록
-        binding.edittextProductRegistrationExpiration.apply {
+        binding.edittextProductEditorExpiration.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
                     // 안써!
@@ -119,7 +119,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
                 }
 
                 override fun afterTextChanged(s: Editable?) {
-                    viewModel.checkRegistrationCondition()
+                    viewModel.checkEditorCondition()
                 }
             })
             filters = arrayOf(expirationFilter, InputFilter.LengthFilter(MAX_EXPIRATION_LENGTH))
@@ -132,24 +132,24 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         keyboardVisibilityUtils = KeyboardVisibilityUtils(
             requireActivity().window,
             onHideKeyboard = {
-                binding.textviewProductRegistrationContentLength.isVisible = false
+                binding.textviewProductEditorContentLength.isVisible = false
             }
         )
         // 본문 에딧텍스트 터치, 포커싱
-        binding.edittextProductRegistrationContent.apply {
+        binding.edittextProductEditorContent.apply {
             setOnClickListener {
-                binding.textviewProductRegistrationContentLength.isVisible = true
+                binding.textviewProductEditorContentLength.isVisible = true
             }
             setOnFocusChangeListener { _, hasFocus ->
-                binding.textviewProductRegistrationContentLength.isVisible = hasFocus
+                binding.textviewProductEditorContentLength.isVisible = hasFocus
             }
         }
         // 툴바 뒤로가기 버튼
-        binding.includeProductRegistrationToolbar.buttonToolbarBack.setOnClickListener {
+        binding.includeProductEditorToolbar.buttonToolbarBack.setOnClickListener {
             backPressedCallback.handleOnBackPressed()
         }
 
-        binding.spinnerProductRegistrationCategory.apply {
+        binding.spinnerProductEditorCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     // Do nothing
@@ -165,7 +165,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         PriceTextWatcher.addEditTextFilter(
             editText,
             length
-        ) { viewModel.checkRegistrationCondition() }
+        ) { viewModel.checkEditorCondition() }
     }
 
     private fun initResultLauncher() {
@@ -181,18 +181,18 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
 
     private fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
-            viewModel.productRegistrationResponse.collectLatest {
+            viewModel.productEditorResponse.collectLatest {
                 if (it.isSuccessful) {
                     findNavController().popBackStack()
                 } else {
-                    binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = true
+                    binding.includeProductEditorToolbar.buttonToolbarRegistration.isEnabled = true
                     sendSnackBar("글쓰기에 실패했어요~")
                 }
             }
         }
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.content.collectLatest {
-                binding.textviewProductRegistrationContentLength.apply {
+                binding.textviewProductEditorContentLength.apply {
                     text = "${it.length} / $MAX_CONTENT_LENGTH"
                     val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
                     setTextColor(color)
@@ -202,7 +202,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.condition.collectLatest {
                 val color = if (it) Color.BLACK else Color.GRAY
-                binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setTextColor(color)
+                binding.includeProductEditorToolbar.buttonToolbarRegistration.setTextColor(color)
             }
         }
         repeatOnStarted(viewLifecycleOwner) {
@@ -242,7 +242,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
             R.layout.spinner_product_registration,
             category.map { it.categoryName }
         )
-        binding.spinnerProductRegistrationCategory.apply {
+        binding.spinnerProductEditorCategory.apply {
             adapter = arrayAdapter
             setSelection(arrayAdapter.count - 1)
         }

@@ -58,8 +58,8 @@ class ProductEditorViewModel @Inject constructor(
     private val _categoryEvent = MutableEventFlow<Response<List<ProductCategoryDto>>>()
     val categoryEvent = _categoryEvent.asEventFlow()
 
-    private val _productRegistrationResponse = MutableEventFlow<Response<String>>()
-    val productRegistrationResponse = _productRegistrationResponse.asEventFlow()
+    private val _productEditorResponse = MutableEventFlow<Response<String>>()
+    val productEditorResponse = _productEditorResponse.asEventFlow()
 
     private val _contentLengthVisible = MutableStateFlow(false)
     val contentLengthVisible: StateFlow<Boolean> get() = _contentLengthVisible
@@ -104,7 +104,7 @@ class ProductEditorViewModel @Inject constructor(
     private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     // 게시글 등록 조건 검사
-    fun checkRegistrationCondition() {
+    fun checkEditorCondition() {
         viewModelScope.launch {
             // 희망가, 호가, 만료 시간은 0이 되면 안됨
             if (hopePrice.value == "0") {
@@ -130,14 +130,14 @@ class ProductEditorViewModel @Inject constructor(
     fun requestProductRegistration() {
         viewModelScope.launch {
             val imageList = getMultipartList()
-            _productRegistrationResponse.emit(repository.postProductRegistration(imageList, getHashMap()))
+            _productEditorResponse.emit(repository.postProductRegistration(imageList, getHashMap()))
         }
     }
 
     fun requestProductModification(productId: Long) {
         viewModelScope.launch {
             val imageList = getMultipartList()
-            _productRegistrationResponse.emit(EditRepository.postProductEdit(productId, imageList, getHashMap()))
+            _productEditorResponse.emit(EditRepository.postProductEdit(productId, imageList, getHashMap()))
         }
     }
 
@@ -189,7 +189,7 @@ class ProductEditorViewModel @Inject constructor(
         return map
     }
 
-    fun getProductRegistrationDto() = ProductEditorDto(
+    fun getProductEditorDto() = ProductEditorDto(
         selectedImageInfo,
         title.value,
         hopePrice.value,

@@ -28,12 +28,12 @@ class ProductModificationFragment : ProductEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.includeProductRegistrationToolbar.textviewToolbarTitle.text = getString(R.string.product_modification_title)
+        binding.includeProductEditorToolbar.textviewToolbarTitle.text = getString(R.string.product_modification_title)
         args.productEditorDto?.let {
             viewModel.initState(it)
             if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
-                    .attachToRecyclerView(binding.recyclerProductRegistration)
+                    .attachToRecyclerView(binding.recyclerProductEditor)
             }
         }
 
@@ -43,10 +43,10 @@ class ProductModificationFragment : ProductEditorFragment() {
     override fun initListener() {
         super.initListener()
         // 게시글 수정 요청
-        binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
+        binding.includeProductEditorToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
                 sendSnackBar("게시글 수정 요청")
-                binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
+                binding.includeProductEditorToolbar.buttonToolbarRegistration.isEnabled = false
                 lifecycleScope.launch {
                     viewModel.requestProductModification(viewModel.productId)
                 }
@@ -60,7 +60,7 @@ class ProductModificationFragment : ProductEditorFragment() {
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
             findNavController().navigate(
                 ProductModificationFragmentDirections
-                    .actionProductModificationFragmentToPictureSelectFragment(viewModel.getProductRegistrationDto())
+                    .actionProductModificationFragmentToPictureSelectFragment(viewModel.getProductEditorDto())
             )
         } else {
             permissionLauncher.launch(permission)

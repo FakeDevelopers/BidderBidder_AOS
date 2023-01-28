@@ -31,17 +31,17 @@ class ProductRegistrationFragment : ProductEditorFragment() {
             viewModel.initState(it)
             if (it.selectedImageInfo.uris.isNotEmpty()) {
                 ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
-                    .attachToRecyclerView(binding.recyclerProductRegistration)
+                    .attachToRecyclerView(binding.recyclerProductEditor)
             }
         }
     }
 
     override fun initListener() {
         super.initListener()
-        binding.includeProductRegistrationToolbar.buttonToolbarRegistration.setOnClickListener {
+        binding.includeProductEditorToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
                 sendSnackBar("게시글 등록 요청")
-                binding.includeProductRegistrationToolbar.buttonToolbarRegistration.isEnabled = false
+                binding.includeProductEditorToolbar.buttonToolbarRegistration.isEnabled = false
                 viewModel.requestProductRegistration()
             }
         }
@@ -53,7 +53,7 @@ class ProductRegistrationFragment : ProductEditorFragment() {
         if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
             findNavController().navigate(
                 ProductRegistrationFragmentDirections
-                    .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductRegistrationDto())
+                    .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductEditorDto())
             )
         } else {
             permissionLauncher.launch(permission)
