@@ -8,9 +8,6 @@ import android.view.inputmethod.InputMethodManager
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.presentation.R
@@ -18,12 +15,12 @@ import com.fakedevelopers.presentation.api.datastore.DatastoreSetting.Companion.
 import com.fakedevelopers.presentation.api.datastore.DatastoreSetting.Companion.datastore
 import com.fakedevelopers.presentation.databinding.FragmentProductSearchBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import java.io.IOException
 
 @AndroidEntryPoint
@@ -59,46 +56,38 @@ class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
     }
 
     private fun initCollector() {
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                searchHistory.collect {
-                    viewModel.setHistoryList(it)
+        repeatOnStarted(viewLifecycleOwner) {
+            searchHistory.collect {
+                viewModel.setHistoryList(it)
+            }
+        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.searchWord.collectLatest {
+                findNavController().apply {
+                    getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
+                    navigate(ProductSearchFragmentDirections.actionProductSearchFragmentToProductListFragment(it))
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchWord.collectLatest {
-                    findNavController().apply {
-                        getViewModelStoreOwner(R.id.nav_graph).viewModelStore.clear()
-                        navigate(ProductSearchFragmentDirections.actionProductSearchFragmentToProductListFragment(it))
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.historySet.collect {
+                requireContext().datastore.edit { preferences ->
+                    preferences[SEARCH_HISTORY] = it
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.historySet.collect {
-                    requireContext().datastore.edit { preferences ->
-                        preferences[SEARCH_HISTORY] = it
-                    }
-                }
-            }
-        }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchBar.collectLatest {
-                    if (it.isNotEmpty()) {
-                        binding.recyclerProductSearchResult.visibility = View.VISIBLE
-                        binding.layoutProductSearchBeforeSearch.visibility = View.INVISIBLE
-                        // 0.7초동안 키보드 조작이 없을때만 api를 요청한다.
-                        delay(WAIT_BEFORE_REQUEST)
-                        viewModel.requestSearchResult()
-                    } else {
-                        binding.recyclerProductSearchResult.visibility = View.INVISIBLE
-                        binding.layoutProductSearchBeforeSearch.visibility = View.VISIBLE
-                        viewModel.clearResult()
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.searchBar.collectLatest {
+                if (it.isNotEmpty()) {
+                    binding.recyclerProductSearchResult.visibility = View.VISIBLE
+                    binding.layoutProductSearchBeforeSearch.visibility = View.INVISIBLE
+                    // 0.7초동안 키보드 조작이 없을때만 api를 요청한다.
+                    delay(WAIT_BEFORE_REQUEST)
+                    viewModel.requestSearchResult()
+                } else {
+                    binding.recyclerProductSearchResult.visibility = View.INVISIBLE
+                    binding.layoutProductSearchBeforeSearch.visibility = View.VISIBLE
+                    viewModel.clearResult()
                 }
             }
         }
