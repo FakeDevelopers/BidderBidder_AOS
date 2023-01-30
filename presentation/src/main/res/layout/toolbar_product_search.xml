@@ -35,7 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
-                android:hint="검색어를 입력해주세요"
+                android:hint="@string/product_search_bar"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
                 android:maxLines="1"
