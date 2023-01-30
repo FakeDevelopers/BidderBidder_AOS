@@ -3,13 +3,14 @@ package com.fakedevelopers.presentation.ui.productEditor
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.model.ProductEditorInfo
 import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
 import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
 import com.fakedevelopers.domain.usecase.GetRotateUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
+import com.fakedevelopers.domain.usecase.ProductModificationUseCase
+import com.fakedevelopers.domain.usecase.ProductRegistrationUseCase
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
-import com.fakedevelopers.presentation.api.repository.ProductModificationRepository
-import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
@@ -25,7 +26,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
@@ -37,8 +37,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProductEditorViewModel @Inject constructor(
-    private val registrationRepository: ProductRegistrationRepository,
-    private val modificationRepository: ProductModificationRepository,
+    private val productModificationUseCase: ProductModificationUseCase,
+    private val productRegistrationUseCase: ProductRegistrationUseCase,
     private val categoryRepository: ProductCategoryRepository,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getBytesByUriUseCase: GetBytesByUriUseCase,
@@ -58,7 +58,7 @@ class ProductEditorViewModel @Inject constructor(
     private val _categoryEvent = MutableEventFlow<Response<List<ProductCategoryDto>>>()
     val categoryEvent = _categoryEvent.asEventFlow()
 
-    private val _productEditorResponse = MutableEventFlow<Response<String>>()
+    private val _productEditorResponse = MutableEventFlow<Result<String>>()
     val productEditorResponse = _productEditorResponse.asEventFlow()
 
     private val _contentLengthVisible = MutableStateFlow(false)
@@ -129,15 +129,16 @@ class ProductEditorViewModel @Inject constructor(
 
     fun requestProductRegistration() {
         viewModelScope.launch {
-            val imageList = getMultipartList()
-            _productEditorResponse.emit(registrationRepository.postProductRegistration(imageList, getHashMap()))
+            val imageInfo = getMultipartList()
+            _productEditorResponse.emit(productRegistrationUseCase(getProductEditorInfo(imageInfo)))
         }
     }
 
     fun requestProductModification(productId: Long) {
         viewModelScope.launch {
-            val imageList = getMultipartList()
-            _productEditorResponse.emit(modificationRepository.postProductModification(productId, imageList, getHashMap()))
+            println("hello")
+            val imageInfo = getMultipartList()
+            _productEditorResponse.emit(productModificationUseCase(productId, getProductEditorInfo(imageInfo)))
         }
     }
 
@@ -171,22 +172,23 @@ class ProductEditorViewModel @Inject constructor(
         }
     }
 
-    private fun getHashMap(): HashMap<String, RequestBody> {
-        println(categoryID)
+    private fun getProductEditorInfo(imageInfo: List<MultipartBody.Part>): ProductEditorInfo {
         val date = LocalDateTime.ofInstant(
             Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
             ZoneId.of("Asia/Seoul")
         )
-        val map = hashMapOf<String, RequestBody>()
-        map["productContent"] = content.value.toPlainRequestBody()
-        map["productTitle"] = title.value.toPlainRequestBody()
-        map["expirationDate"] = dateFormatter.format(date).toPlainRequestBody()
-        map["hopePrice"] = hopePrice.value.replace(",", "").toPlainRequestBody()
-        map["openingBid"] = openingBid.value.replace(",", "").toPlainRequestBody()
-        map["representPicture"] = "0".toPlainRequestBody()
-        map["tick"] = tick.value.replace(",", "").toPlainRequestBody()
-        map["category"] = categoryID.toString().toPlainRequestBody()
-        return map
+
+        return ProductEditorInfo(
+            content.value,
+            title.value,
+            dateFormatter.format(date),
+            hopePrice.value.replace(",", ""),
+            openingBid.value.replace(",", ""),
+            "0",
+            tick.value.replace(",", ""),
+            categoryID.toString(),
+            imageInfo
+        )
     }
 
     fun getProductEditorDto() = ProductEditorDto(

@@ -182,7 +182,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
     private fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.productEditorResponse.collectLatest {
-                if (it.isSuccessful) {
+                if (it.isSuccess) {
                     findNavController().popBackStack()
                 } else {
                     binding.includeProductEditorToolbar.buttonToolbarRegistration.isEnabled = true
