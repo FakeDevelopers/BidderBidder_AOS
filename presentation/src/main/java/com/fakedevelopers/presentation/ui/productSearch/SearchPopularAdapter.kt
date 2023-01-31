@@ -17,7 +17,7 @@ class SearchPopularAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: String) {
             binding.textviewSearchPopular.text = item
-            binding.layoutSearchPopular.setOnClickListener {
+            binding.cardviewSearchPopular.setOnClickListener {
                 searchEvent(item)
             }
         }

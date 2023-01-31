@@ -41,6 +41,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(ActivityMainBinding::infl
             when (item.itemId) {
                 R.id.menu_product_registration -> navController.safeNavigate(R.id.productRegistrationFragment)
                 R.id.menu_chat -> navController.safeNavigate(R.id.channelListFragment)
+                R.id.menu_product_search -> navController.safeNavigate(R.id.productSearchFragment)
             }
             true
         }
