@@ -29,14 +29,13 @@
                     android:id="@+id/button_toolbar_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:backgroundTint="@android:color/transparent"
                     android:minHeight="48dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="?attr/actionModeCloseDrawable"
-                    tools:ignore="ContentDescription,SpeakableTextPresentCheck" />
+                    app:srcCompat="@drawable/ic_back_button"
+                    tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
                 <com.fakedevelopers.presentation.ui.customView.ClearEditText
                     android:id="@+id/edittext_toolbar_search"
@@ -54,13 +53,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/button_toolbar_back"
                     app:layout_constraintTop_toTopOf="parent" />
-
-                <com.google.android.material.divider.MaterialDivider
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edittext_toolbar_search" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
@@ -88,97 +80,68 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layout_product_search_popular"
+                <TextView
+                    android:id="@+id/textview_product_search_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/product_search_history"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textview_product_search_erase_all"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:onClick="@{() -> vm.clearHistory()}"
+                    android:text="@string/product_search_remove_all"
+                    android:textColor="@color/light_gray"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_product_search_history"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/textview_product_search_history" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_product_search_history"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginTop="16dp"
+                    android:adapter="@{vm.searchHistoryAdapter}"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintStart_toStartOf="@id/textview_product_search_history"
+                    app:layout_constraintTop_toBottomOf="@id/textview_product_search_history"
+                    tools:listitem="@layout/recycler_product_search_history" />
+
+                <TextView
+                    android:id="@+id/textview_product_search_popular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="32dp"
+                    android:text="@string/product_search_popular"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toBottomOf="@id/recycler_product_search_history" />
 
-                    <TextView
-                        android:id="@+id/textview_product_search_popular"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/product_search_popular"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_product_search_popular"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:adapter="@{vm.searchPopularAdapter}"
-                        android:orientation="horizontal"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textview_product_search_popular" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layout_product_search_history"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_product_search_popular"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_product_search_popular">
-
-                    <TextView
-                        android:id="@+id/textview_product_search_history"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/product_search_history"
-                        android:textColor="@color/black"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/textview_product_search_erase_all"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:onClick="@{() -> vm.clearHistory()}"
-                        android:text="@string/product_search_remove_all"
-                        android:textStyle="bold"
-                        android:textColor="@color/light_gray"
-                        app:layout_constraintBottom_toBottomOf="@+id/textview_product_search_history"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="1.0"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/textview_product_search_history" />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recycler_product_search_history"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:adapter="@{vm.searchHistoryAdapter}"
-                        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textview_product_search_history"
-                        app:spanCount="2" />
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_marginTop="16dp"
+                    android:adapter="@{vm.searchPopularAdapter}"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintStart_toStartOf="@id/textview_product_search_popular"
+                    app:layout_constraintTop_toBottomOf="@id/textview_product_search_popular"
+                    tools:listitem="@layout/recycler_product_search_popular" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
