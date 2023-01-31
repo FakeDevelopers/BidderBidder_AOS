@@ -2,23 +2,27 @@ package com.fakedevelopers.presentation.ui.productSearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.usecase.GetSearchHistoryUseCase
+import com.fakedevelopers.domain.usecase.SetSearchHistoryUseCase
 import com.fakedevelopers.presentation.api.repository.ProductSearchRepository
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
+import com.fakedevelopers.presentation.ui.util.MutableEventFlow
+import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.random.Random
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
-    private val repository: ProductSearchRepository
+    private val repository: ProductSearchRepository,
+    private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
+    private val setSearchHistoryUseCase: SetSearchHistoryUseCase
 ) : ViewModel() {
 
-    private val _searchWord = MutableSharedFlow<String>()
-    private val _historySet = MutableSharedFlow<Set<String>>()
+    private val _searchWord = MutableEventFlow<String>()
+    val searchWord = _searchWord.asEventFlow()
 
     // api가 있어야 사용가능
     private val resultList = MutableStateFlow<MutableList<String>>(mutableListOf())
@@ -30,11 +34,12 @@ class ProductSearchViewModel @Inject constructor(
     val searchPopularAdapter = SearchPopularAdapter { searchEvent(it) }
     val searchResultAdapter = SearchResultAdapter { searchEvent(it) }
     val searchBar = MutableStateFlow("")
-    val searchWord: SharedFlow<String> get() = _searchWord
-    val historySet: SharedFlow<Set<String>> get() = _historySet
 
     init {
         requestSearchRank()
+        viewModelScope.launch {
+            searchHistoryAdapter.submitList(getSearchHistoryUseCase())
+        }
     }
 
     fun searchEvent(word: String) {
@@ -45,10 +50,10 @@ class ProductSearchViewModel @Inject constructor(
             // 그래서 set을 비운 다음 다시 채워줌
             if (list.contains(word)) {
                 list.remove(word)
-                _historySet.emit(emptySet())
+                setSearchHistoryUseCase(emptyList())
             }
             list.add(0, word)
-            _historySet.emit(list.toSet())
+            setSearchHistoryUseCase(list)
             // 작업이 다 끝나면 검색을 수행
             _searchWord.emit(word)
         }
@@ -68,16 +73,19 @@ class ProductSearchViewModel @Inject constructor(
         }
 
         // 여기서 요청을 하든 해야겠죠
-        searchResultAdapter.submitList(
-            listOf(
-                searchBar.value,
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}"
+        searchResultAdapter.run {
+            setSearchWord(searchBar.value)
+            submitList(
+                listOf(
+                    searchBar.value,
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}"
+                )
             )
-        )
+        }
         prevSearchBar = searchBar.value
     }
 
@@ -93,14 +101,10 @@ class ProductSearchViewModel @Inject constructor(
         }
     }
 
-    fun setHistoryList(list: List<String>) {
-        searchHistoryAdapter.submitList(list.toMutableList())
-    }
-
     fun clearHistory() {
         viewModelScope.launch {
             searchHistoryAdapter.submitList(emptyList())
-            _historySet.emit(emptySet())
+            setSearchHistoryUseCase(emptyList())
         }
     }
 
@@ -112,13 +116,10 @@ class ProductSearchViewModel @Inject constructor(
     }
 
     private fun eraseHistoryEvent(word: String) {
+        val list = searchHistoryAdapter.currentList.filter { it != word }
+        searchHistoryAdapter.submitList(list)
         viewModelScope.launch {
-            val list = mutableListOf<String>().apply {
-                addAll(searchHistoryAdapter.currentList)
-                remove(word)
-            }
-            searchHistoryAdapter.submitList(list)
-            _historySet.emit(list.toSet())
+            setSearchHistoryUseCase(list)
         }
     }
 

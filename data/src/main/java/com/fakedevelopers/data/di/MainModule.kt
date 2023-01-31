@@ -45,4 +45,14 @@ object MainModule {
     @Provides
     fun provideImageRepository(@ApplicationContext context: Context): ImageRepository =
         ImageRepositoryImpl(context.contentResolver)
+
+    @Singleton
+    @Provides
+    fun provideLocalStorageRepository(localStorageDataSource: LocalStorageDataSource): LocalStorageRepository =
+        LocalStorageRepositoryImpl(localStorageDataSource)
+
+    @Singleton
+    @Provides
+    fun provideLocalStorageDataSource(@ApplicationContext context: Context): LocalStorageDataSource =
+        LocalStorageDataSource(context)
 }
