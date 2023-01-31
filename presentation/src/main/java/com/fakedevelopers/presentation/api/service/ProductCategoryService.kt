@@ -1,6 +1,6 @@
 package com.fakedevelopers.presentation.api.service
 
-import com.fakedevelopers.presentation.ui.productRegistration.ProductCategoryDto
+import com.fakedevelopers.presentation.ui.productEditor.ProductCategoryDto
 import retrofit2.Response
 import retrofit2.http.GET
 

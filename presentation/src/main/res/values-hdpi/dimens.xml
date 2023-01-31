@@ -26,8 +26,8 @@
     <dimen name="login_edittext_text_size">10sp</dimen>
     <dimen name="login_logo_size">56sp</dimen>
     <!-- related to productRegistration -->
-    <dimen name="product_registration_margin_vertical">12dp</dimen>
-    <dimen name="product_registration_margin_horizontal">8dp</dimen>
+    <dimen name="product_editor_margin_vertical">12dp</dimen>
+    <dimen name="product_editor_margin_horizontal">8dp</dimen>
     <!-- relate to registration -->
     <dimen name="registration_view_radious">3dp</dimen>
     <dimen name="registration_view_height">38dp</dimen>

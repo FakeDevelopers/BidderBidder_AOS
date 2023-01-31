@@ -2,48 +2,25 @@ package com.fakedevelopers.presentation.ui.loginType
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.presentation.api.repository.SigninGoogleRepository
-import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
-import com.orhanobut.logger.Logger
+import com.fakedevelopers.domain.model.LoginInfo
+import com.fakedevelopers.domain.usecase.LoginWithGoogleUseCase
+import com.fakedevelopers.presentation.ui.util.MutableEventFlow
+import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginTypeViewModel @Inject constructor(
-    private val repository: SigninGoogleRepository,
-    private val _auth: FirebaseAuth
+    private val loginWithGoogleUseCase: LoginWithGoogleUseCase
 ) : ViewModel() {
-    private val _signinGoogleResponse = MutableSharedFlow<Response<SigninGoogleDto>>()
 
-    val signinGoogleResponse: SharedFlow<Response<SigninGoogleDto>> get() = _signinGoogleResponse
+    private val _loginWithGoogleEvent = MutableEventFlow<Result<LoginInfo>>()
+    val loginWithGoogleEvent = _loginWithGoogleEvent.asEventFlow()
 
-    private fun signinGoogleRequest() {
+    fun loginWithGoogle(idToken: String) {
         viewModelScope.launch {
-            repository.postSigninGoogle().let {
-                if (it.isSuccessful) {
-                    _signinGoogleResponse.emit(it)
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
-            }
-        }
-    }
-
-    fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
-        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-        _auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                signinGoogleRequest()
-            } else {
-                Logger.e(task.exception.toString())
-            }
+            _loginWithGoogleEvent.emit(loginWithGoogleUseCase(idToken))
         }
     }
 }
