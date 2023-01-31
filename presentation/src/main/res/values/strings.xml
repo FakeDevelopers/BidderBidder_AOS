@@ -122,6 +122,7 @@
     <string name="product_search_history">최근 검색어</string>
     <string name="product_search_popular">요즘 HOT한 검색어</string>
     <string name="product_search_bar">검색어를 입력해보세요!</string>
+    <string name="product_search_popular_rank">%02d</string>
     <!-- Strings related to time -->
     <string name="time_days">%1d일</string>
     <string name="time_hours">%1d시간</string>
