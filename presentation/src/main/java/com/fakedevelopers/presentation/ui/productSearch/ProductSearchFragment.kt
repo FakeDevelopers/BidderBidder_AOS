@@ -62,24 +62,22 @@ class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
 
     private fun initListener() {
         viewModel.setSearchBar(args.searchWord)
-        binding.toolbarProductSearch.apply {
-            edittextToolbarSearch.let {
-                // 키보드 올리기 전에 포커싱을 줘야함
-                it.requestFocus()
-                imm.showSoftInput(it, 0)
-                it.setOnEditorActionListener { v, actionId, _ ->
-                    if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                        imm.hideSoftInputFromWindow(it.windowToken, 0)
-                        viewModel.searchEvent(v.text.toString())
-                    }
-                    true
+        binding.edittextToolbarSearch.run {
+            // 키보드 올리기 전에 포커싱을 줘야함
+            requestFocus()
+            imm.showSoftInput(this, 0)
+            setOnEditorActionListener { v, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    imm.hideSoftInputFromWindow(windowToken, 0)
+                    viewModel.searchEvent(v.text.toString())
                 }
+                true
             }
-            buttonToolbarBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
         }
+        binding.buttonToolbarBack.setOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
     }
 
     companion object {
-        const val WAIT_BEFORE_REQUEST = 700L
+        private const val WAIT_BEFORE_REQUEST = 700L
     }
 }
