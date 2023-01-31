@@ -73,16 +73,19 @@ class ProductSearchViewModel @Inject constructor(
         }
 
         // 여기서 요청을 하든 해야겠죠
-        searchResultAdapter.submitList(
-            listOf(
-                searchBar.value,
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}",
-                "${searchBar.value}${Random.nextInt(100)}"
+        searchResultAdapter.run {
+            setSearchWord(searchBar.value)
+            submitList(
+                listOf(
+                    searchBar.value,
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}",
+                    "${searchBar.value}${Random.nextInt(100)}"
+                )
             )
-        )
+        }
         prevSearchBar = searchBar.value
     }
 
