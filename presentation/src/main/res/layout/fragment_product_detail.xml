@@ -13,13 +13,21 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <include
+            android:id="@+id/toolbar_product_detail"
+            layout="@layout/toolbar_product_detail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_product_detail"
             app:layout_constraintBottom_toTopOf="@id/divider_product_detail_bottom">
 
             <LinearLayout
@@ -373,21 +381,6 @@
             app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding"
             tools:ignore="TouchTargetSizeCheck" />
 <!--        button for edit-->
-        <ToggleButton
-            android:id="@+id/button_product_detail_edit"
-            android:layout_width="24dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="16dp"
-            android:background="@drawable/selector_button_favorite"
-            android:checked="false"
-            android:text=""
-            android:textOff=""
-            android:textOn=""
-            app:layout_constraintBottom_toBottomOf="@id/button_product_detail_bidding"
-            app:layout_constraintEnd_toStartOf="@id/button_product_detail_buy"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/button_product_detail_bidding"
-            tools:ignore="TouchTargetSizeCheck" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_product_detail_buy"

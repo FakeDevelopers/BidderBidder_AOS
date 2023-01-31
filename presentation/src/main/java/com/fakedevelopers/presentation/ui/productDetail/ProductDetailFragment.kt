@@ -56,10 +56,8 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             adapter = productDetailAdapter
             registerOnPageChangeCallback(onPageChanged)
         }
-        binding.buttonProductDetailEdit.setOnClickListener {
-            navigateEditProduct(viewModel.productDetailDto.value)
-        }
         initCollector()
+        initListener()
     }
 
     private fun initCollector() {
@@ -67,6 +65,15 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             viewModel.eventFlow.collect { event ->
                 handleEvent(event)
             }
+        }
+    }
+
+    private fun initListener() {
+        binding.toolbarProductDetail.buttonToolbarBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.toolbarProductDetail.buttonToolbarOption.setOnClickListener {
+            navigateEditProduct(viewModel.productDetailDto.value)
         }
     }
 
