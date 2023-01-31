@@ -29,6 +29,7 @@
                     android:id="@+id/button_toolbar_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:backgroundTint="@android:color/transparent"
                     android:minHeight="48dp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -37,22 +38,39 @@
                     app:srcCompat="@drawable/ic_back_button"
                     tools:ignore="ContentDescription,SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-                <com.fakedevelopers.presentation.ui.customView.ClearEditText
-                    android:id="@+id/edittext_toolbar_search"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/textinput_toolbar_search"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_marginEnd="16dp"
-                    android:hint="@string/product_search_bar"
-                    android:imeOptions="actionSearch"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:minHeight="48dp"
-                    android:text="@={vm.searchBar}"
-                    android:textColorHint="#757575"
+                    android:background="@drawable/shape_search_bar_background"
+                    android:padding="0dp"
+                    app:endIconMode="clear_text"
+                    app:endIconTint="@color/black"
+                    app:endIconDrawable="@drawable/vector_close"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    app:hintEnabled="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/button_toolbar_back"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edittext_toolbar_search"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:padding="8dp"
+                        android:hint="@string/product_search_bar"
+                        android:textColorHint="@color/black"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:text="@={vm.searchBar}"
+                        android:textColor="@color/black"
+                        android:textSize="12sp" />
+                </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
@@ -84,7 +102,7 @@
                     android:id="@+id/textview_product_search_history"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:text="@string/product_search_history"
                     android:textColor="@color/black"
@@ -96,7 +114,7 @@
                     android:id="@+id/textview_product_search_erase_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     android:onClick="@{() -> vm.clearHistory()}"
                     android:text="@string/product_search_remove_all"
                     android:textColor="@color/light_gray"
@@ -122,7 +140,7 @@
                     android:id="@+id/textview_product_search_popular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="32dp"
                     android:text="@string/product_search_popular"
                     android:textColor="@color/black"
