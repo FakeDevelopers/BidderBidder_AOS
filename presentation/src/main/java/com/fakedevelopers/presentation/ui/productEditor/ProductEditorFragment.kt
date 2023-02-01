@@ -39,7 +39,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
+abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
     R.layout.fragment_product_editor
 ) {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
@@ -107,9 +107,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         }
     }
 
-    protected open fun navigatePictureSelectFragment() {
-        findNavController().navigate(R.id.action_productRegistrationFragment_to_pictureSelectFragment)
-    }
+    protected abstract fun navigatePictureSelectFragment()
 
     protected open fun initListener() {
         // 가격 필터 등록
@@ -247,7 +245,7 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
         val openingBid = viewModel.openingBid.priceToLong() ?: return false
         val hopePrice = viewModel.hopePrice.priceToLong()
         if (hopePrice != null && hopePrice <= openingBid) {
-            sendSnackBar(getString(R.string.product_registration_error_minimum_bid))
+            sendSnackBar(getString(R.string.product_editor_error_minimum_bid))
             return false
         }
         return true

@@ -23,7 +23,7 @@
             android:id="@+id/imageview_picture_select"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/product_registration_album_image"
+            android:contentDescription="@string/product_editor_album_image"
             android:scaleType="centerCrop"
             tools:srcCompat="@tools:sample/avatars" />
 
