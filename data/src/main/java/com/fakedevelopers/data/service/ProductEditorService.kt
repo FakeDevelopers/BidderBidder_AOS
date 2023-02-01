@@ -9,7 +9,7 @@ import retrofit2.http.Path
 
 interface ProductEditorService {
     @Multipart
-    @POST("product/getProductInfo/{productId}/modify")
+    @POST("product/modifyProductInfo/{productId}")
     suspend fun postProductModification(
         @Path("productId") productId: Long,
         @PartMap productEditorInfo: Map<String, String>,
