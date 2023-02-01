@@ -4,13 +4,16 @@ import android.content.Context
 import com.fakedevelopers.data.repository.ImageRepositoryImpl
 import com.fakedevelopers.data.repository.LocalStorageRepositoryImpl
 import com.fakedevelopers.data.repository.ProductEditorRepositoryImpl
+import com.fakedevelopers.data.repository.ProductDetailRepositoryImpl
 import com.fakedevelopers.data.repository.ProductListRepositoryImpl
 import com.fakedevelopers.data.service.ProductEditorService
+import com.fakedevelopers.data.service.ProductDetailService
 import com.fakedevelopers.data.service.ProductListService
 import com.fakedevelopers.data.source.LocalStorageDataSource
 import com.fakedevelopers.domain.repository.ImageRepository
 import com.fakedevelopers.domain.repository.LocalStorageRepository
 import com.fakedevelopers.domain.repository.ProductEditorRepository
+import com.fakedevelopers.domain.repository.ProductDetailRepository
 import com.fakedevelopers.domain.repository.ProductListRepository
 import dagger.Module
 import dagger.Provides
@@ -43,6 +46,16 @@ object MainModule {
     @Provides
     fun provideProductEditorRepository(service: ProductEditorService): ProductEditorRepository =
         ProductEditorRepositoryImpl(service)
+
+    @Singleton
+    @Provides
+    fun provideProductDetailService(@DataObject retrofit: Retrofit): ProductDetailService =
+        retrofit.create(ProductDetailService::class.java)
+
+    @Singleton
+    @Provides
+    fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
+        ProductDetailRepositoryImpl(service)
 
     @Singleton
     @Provides

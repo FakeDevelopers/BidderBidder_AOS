@@ -3,10 +3,12 @@ package com.fakedevelopers.presentation.api.di
 import com.fakedevelopers.presentation.api.repository.ChatRepository
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductDetailRepository
+import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.api.repository.ProductSearchRepository
 import com.fakedevelopers.presentation.api.service.ChatService
 import com.fakedevelopers.presentation.api.service.ProductCategoryService
 import com.fakedevelopers.presentation.api.service.ProductDetailService
+import com.fakedevelopers.presentation.api.service.ProductRegistrationService
 import com.fakedevelopers.presentation.api.service.ProductSearchService
 import dagger.Module
 import dagger.Provides
@@ -28,17 +30,6 @@ class MainModule {
     @Provides
     fun provideProductCategoryRepository(service: ProductCategoryService): ProductCategoryRepository =
         ProductCategoryRepository(service)
-
-    // 상품 상세 정보, 입찰
-    @ActivityRetainedScoped
-    @Provides
-    fun provideProductDetailService(@NormalRetrofit retrofit: Retrofit): ProductDetailService =
-        retrofit.create(ProductDetailService::class.java)
-
-    @ActivityRetainedScoped
-    @Provides
-    fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
-        ProductDetailRepository(service)
 
     // 스트림 유저 토큰
     @ActivityRetainedScoped
