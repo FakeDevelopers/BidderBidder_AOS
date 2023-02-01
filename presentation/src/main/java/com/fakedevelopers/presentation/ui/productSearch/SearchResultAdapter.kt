@@ -1,5 +1,8 @@
 package com.fakedevelopers.presentation.ui.productSearch
 
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -12,11 +15,21 @@ class SearchResultAdapter(
     private val searchEvent: (String) -> Unit
 ) : ListAdapter<String, SearchResultAdapter.ViewHolder>(diffUtil) {
 
+    private var searchWord = ""
+
     inner class ViewHolder(
         private val binding: RecyclerProductSearchResultBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: String) {
-            binding.textviewSearchResult.text = item
+            val start = item.indexOf(searchWord)
+            binding.textviewSearchResult.text = SpannableStringBuilder(item).apply {
+                setSpan(
+                    ForegroundColorSpan(binding.root.context.getColor(R.color.bidderbidder_primary)),
+                    start,
+                    start + searchWord.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
             binding.layoutSearchResult.setOnClickListener {
                 searchEvent(item)
             }
@@ -33,6 +46,10 @@ class SearchResultAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
+    }
+
+    fun setSearchWord(searchWord: String) {
+        this.searchWord = searchWord
     }
 
     companion object {
