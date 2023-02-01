@@ -73,13 +73,14 @@ class ProductEditorViewModel @Inject constructor(
     var productId = 0L
 
     var editorToolbarTitle = ""
-    val selectedImageInfo = SelectedImageInfo()
-    val title = MutableStateFlow("")
+    private val selectedImageInfo = SelectedImageInfo()
+
+    var title = ""
     val content = MutableStateFlow("")
-    val hopePrice = MutableStateFlow("")
-    val openingBid = MutableStateFlow("")
-    val tick = MutableStateFlow("")
-    val expiration = MutableStateFlow("")
+    var hopePrice = ""
+    var openingBid = ""
+    var tick = ""
+    var expiration = ""
 
     init {
         requestProductCategory()
@@ -108,21 +109,21 @@ class ProductEditorViewModel @Inject constructor(
     fun checkEditorCondition() {
         viewModelScope.launch {
             // 희망가, 호가, 만료 시간은 0이 되면 안됨
-            if (hopePrice.value == "0") {
-                hopePrice.emit("")
+            if (hopePrice == "0") {
+                hopePrice = ""
             }
-            if (tick.value == "0") {
-                tick.emit("")
+            if (tick == "0") {
+                tick = ""
             }
-            if (expiration.value == "0") {
-                expiration.emit("")
+            if (expiration == "0") {
+                expiration = ""
             }
             _condition.emit(
-                title.value.isNotEmpty() &&
-                    (hopePrice.value.isEmpty() || hopePrice.value.priceToLong() != null) &&
-                    openingBid.value.priceToLong() != null &&
-                    tick.value.priceToInt() != null &&
-                    expiration.value.toIntOrNull() != null &&
+                title.isNotEmpty() &&
+                    (hopePrice.isEmpty() || hopePrice.priceToLong() != null) &&
+                    openingBid.priceToLong() != null &&
+                    tick.priceToInt() != null &&
+                    expiration.toIntOrNull() != null &&
                     content.value.isNotEmpty()
             )
         }
@@ -163,29 +164,29 @@ class ProductEditorViewModel @Inject constructor(
         viewModelScope.launch {
             categoryID = state.categoryId
             adapter.submitList(selectedImageInfo.uris.toMutableList())
-            title.emit(state.title)
-            hopePrice.emit(state.hopePrice)
-            openingBid.emit(state.openingBid)
-            tick.emit(state.tick)
-            expiration.emit(state.expiration)
+            title = state.title
+            hopePrice = state.hopePrice
+            openingBid = state.openingBid
+            tick = state.tick
+            expiration = state.expiration
             content.emit(state.content)
         }
     }
 
     private fun getProductEditorInfo(imageInfo: List<MultipartBody.Part>): ProductEditorInfo {
         val date = LocalDateTime.ofInstant(
-            Instant.ofEpochMilli(System.currentTimeMillis() + expiration.value.toInt() * 3600000),
+            Instant.ofEpochMilli(System.currentTimeMillis() + expiration.toInt() * 3600000),
             ZoneId.of("Asia/Seoul")
         )
 
         return ProductEditorInfo(
             content.value,
-            title.value,
+            title,
             dateFormatter.format(date),
-            hopePrice.value.replace(",", ""),
-            openingBid.value.replace(",", ""),
+            hopePrice.replace(",", ""),
+            openingBid.replace(",", ""),
             "0",
-            tick.value.replace(",", ""),
+            tick.replace(",", ""),
             categoryID.toString(),
             imageInfo
         )
@@ -193,11 +194,11 @@ class ProductEditorViewModel @Inject constructor(
 
     fun getProductEditorDto() = ProductEditorDto(
         selectedImageInfo,
-        title.value,
-        hopePrice.value,
-        openingBid.value,
-        tick.value,
-        expiration.value,
+        title,
+        hopePrice,
+        openingBid,
+        tick,
+        expiration,
         content.value,
         categoryID
     )

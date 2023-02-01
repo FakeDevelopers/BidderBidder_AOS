@@ -244,8 +244,8 @@ open class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
 
     // 희망가 <= 최소 입찰가 인지 검사
     protected fun checkPriceCondition(): Boolean {
-        val openingBid = viewModel.openingBid.value.priceToLong() ?: return false
-        val hopePrice = viewModel.hopePrice.value.priceToLong()
+        val openingBid = viewModel.openingBid.priceToLong() ?: return false
+        val hopePrice = viewModel.hopePrice.priceToLong()
         if (hopePrice != null && hopePrice <= openingBid) {
             sendSnackBar(getString(R.string.product_registration_error_minimum_bid))
             return false
