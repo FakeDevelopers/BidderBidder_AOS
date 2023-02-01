@@ -3,6 +3,7 @@ package com.fakedevelopers.data.di
 import android.content.Context
 import com.fakedevelopers.data.repository.ImageRepositoryImpl
 import com.fakedevelopers.data.repository.LocalStorageRepositoryImpl
+import com.fakedevelopers.data.repository.ProductEditorRepositoryImpl
 import com.fakedevelopers.data.repository.ProductListRepositoryImpl
 import com.fakedevelopers.data.service.ProductEditorService
 import com.fakedevelopers.data.service.ProductListService
