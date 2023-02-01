@@ -20,7 +20,6 @@ import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.Period
@@ -78,8 +77,6 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
     }
 
     private fun navigateEditProduct(productDetailDto: ProductDetailDto) {
-        if (productDetailDto.productTitle.isBlank() || viewModel.productId == -1L) return
-
         findNavController().navigate(
             ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
                 ProductEditorDto(viewModel.productId, productDetailDto),
@@ -89,7 +86,6 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
     }
 
     private fun setPagerCount(position: Int, totalCount: Int = productDetailAdapter.itemCount) {
-        Logger.i("$position $totalCount")
         binding.textviewProductDetailPictureCount.text =
             getString(R.string.product_detail_picture_count, position + 1, totalCount)
     }
