@@ -3,18 +3,13 @@ package com.fakedevelopers.presentation.ui.productRegistration
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.PermissionChecker
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productEditor.ProductEditorFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class ProductRegistrationFragment : ProductEditorFragment() {
-    private val args: ProductRegistrationFragmentArgs by navArgs()
 
     override val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
@@ -26,18 +21,12 @@ class ProductRegistrationFragment : ProductEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        args.productEditorDto?.let {
-            viewModel.initState(it)
-            if (it.selectedImageInfo.uris.isNotEmpty()) {
-                ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
-                    .attachToRecyclerView(binding.recyclerProductEditor)
-            }
-        }
+        viewModel.editorToolbarTitle = "내 물건 등록"
     }
 
     override fun initListener() {
         super.initListener()
+        // 게시글 등록 요청
         binding.includeProductEditorToolbar.buttonToolbarRegistration.setOnClickListener {
             if (viewModel.condition.value && checkPriceCondition()) {
                 sendSnackBar("게시글 등록 요청")
@@ -47,20 +36,10 @@ class ProductRegistrationFragment : ProductEditorFragment() {
         }
     }
 
-    override fun toPictureSelectFragment(permission: String) {
-        val permissionCheck =
-            PermissionChecker.checkCallingOrSelfPermission(requireContext(), permission)
-        if (permissionCheck == PermissionChecker.PERMISSION_GRANTED) {
-            findNavController().navigate(
-                ProductRegistrationFragmentDirections
-                    .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductEditorDto())
-            )
-        } else {
-            permissionLauncher.launch(permission)
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun navigatePictureSelectFragment() {
+        findNavController().navigate(
+            ProductRegistrationFragmentDirections
+                .actionProductRegistrationFragmentToPictureSelectFragment(viewModel.getProductEditorDto())
+        )
     }
 }

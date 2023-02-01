@@ -72,6 +72,7 @@ class ProductEditorViewModel @Inject constructor(
 
     var productId = 0L
 
+    var editorToolbarTitle = ""
     val selectedImageInfo = SelectedImageInfo()
     val title = MutableStateFlow("")
     val content = MutableStateFlow("")
@@ -136,7 +137,6 @@ class ProductEditorViewModel @Inject constructor(
 
     fun requestProductModification(productId: Long) {
         viewModelScope.launch {
-            println("hello")
             val imageInfo = getMultipartList()
             _productEditorResponse.emit(productModificationUseCase(productId, getProductEditorInfo(imageInfo)))
         }
