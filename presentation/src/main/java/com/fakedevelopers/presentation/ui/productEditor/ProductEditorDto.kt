@@ -1,7 +1,7 @@
 package com.fakedevelopers.presentation.ui.productEditor
 
 import android.os.Parcelable
-import com.fakedevelopers.presentation.ui.productDetail.ProductDetailDto
+import com.fakedevelopers.domain.model.ProductDetailInfo
 import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import kotlinx.parcelize.Parcelize
 
@@ -16,14 +16,14 @@ data class ProductEditorDto(
     val content: String,
     val categoryId: Long
 ) : Parcelable {
-    constructor(categoryId: Long, productDetailDto: ProductDetailDto) : this(
+    constructor(categoryId: Long, productDetailInfo: ProductDetailInfo) : this(
         selectedImageInfo = SelectedImageInfo(),
-        title = productDetailDto.productTitle,
-        hopePrice = productDetailDto.hopePrice.toString(),
-        openingBid = productDetailDto.openingBid.toString(),
-        tick = productDetailDto.tick.toString(),
-        expiration = productDetailDto.expirationDate,
-        content = productDetailDto.productContent,
+        title = productDetailInfo.productTitle,
+        hopePrice = productDetailInfo.hopePrice.toString(),
+        openingBid = productDetailInfo.openingBid.toString(),
+        tick = productDetailInfo.tick.toString(),
+        expiration = productDetailInfo.expirationDate,
+        content = productDetailInfo.productContent,
         categoryId = categoryId
     )
 }
