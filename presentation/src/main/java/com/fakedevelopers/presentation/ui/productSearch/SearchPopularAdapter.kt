@@ -15,9 +15,11 @@ class SearchPopularAdapter(
     inner class ViewHolder(
         private val binding: RecyclerProductSearchPopularBinding
     ) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: String) {
+        fun bind(item: String, position: Int) {
+            binding.textviewSearchPopularRank.text =
+                binding.root.context.getString(R.string.product_search_popular_rank, position + 1)
             binding.textviewSearchPopular.text = item
-            binding.layoutSearchPopular.setOnClickListener {
+            binding.cardviewSearchPopular.setOnClickListener {
                 searchEvent(item)
             }
         }
@@ -32,7 +34,7 @@ class SearchPopularAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), position)
     }
 
     companion object {

@@ -76,10 +76,9 @@
     <!-- Strings related to Toolbar -->
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
-    <!-- Strings related to Product Registration -->
-    <string name="product_registration_button">등록</string>
-    <string name="product_registration_category">카테고리</string>
-    <string name="product_registration_title">내 물건 등록</string>
+    <!-- Strings related to Product Editor -->
+    <string name="product_editor_button">등록</string>
+    <string name="product_editor_category">카테고리</string>
     <string name="product_editor_button_to_album">이미지 선택 버튼</string>
     <string name="product_editor_product_title">제목</string>
     <string name="product_editor_product_hope_price">희망 가격 (선택사항)</string>
@@ -87,12 +86,14 @@
     <string name="product_editor_product_tick">호가</string>
     <string name="product_editor_product_expiration">경매 기간 (최대 72시간)</string>
     <string name="product_editor_product_content">게시글 내용을 작성해주세요.</string>
-    <string name="product_registration_album_image">앨범 이미지</string>
-    <string name="product_registration_selected_image">선택한 이미지</string>
-    <string name="product_registration_represent_image">대 표</string>
-    <string name="product_registration_error_minimum_bid">"최소 입찰가는 희망 가격보다 작아야 합니다."</string>
+    <string name="product_editor_album_image">앨범 이미지</string>
+    <string name="product_editor_selected_image">선택한 이미지</string>
+    <string name="product_editor_represent_image">대 표</string>
+    <string name="product_editor_error_minimum_bid">"최소 입찰가는 희망 가격보다 작아야 합니다."</string>
     <!-- Strings related to Product Modification -->
     <string name="product_modification_title">내 물건 수정</string>
+    <!-- Strings related to Product Registration -->
+    <string name="product_registration_title">내 물건 등록</string>
     <!-- Strings related to album list -->
     <string name="album_selected_button_complete">완료</string>
     <string name="album_selected_error_image">불러올 수 없는 이미지 입니다.</string>
@@ -119,6 +120,12 @@
     <string name="product_detail_rank">%1d등</string>
     <string name="product_detail_secret_rank">*1–3등은 비공개 처리됩니다</string>
     <string name="product_detail_secret_price">비공개</string>
+    <!-- Strings related to Product Search -->
+    <string name="product_search_remove_all">전체 삭제</string>
+    <string name="product_search_history">최근 검색어</string>
+    <string name="product_search_popular">요즘 HOT한 검색어</string>
+    <string name="product_search_bar">검색어를 입력해보세요!</string>
+    <string name="product_search_popular_rank">%02d</string>
     <!-- Strings related to time -->
     <string name="time_days">%1d일</string>
     <string name="time_hours">%1d시간</string>

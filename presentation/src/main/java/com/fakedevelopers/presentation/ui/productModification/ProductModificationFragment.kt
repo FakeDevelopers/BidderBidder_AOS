@@ -21,7 +21,7 @@ class ProductModificationFragment : ProductEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.editorToolbarTitle = "내 물건 수정"
+        viewModel.editorToolbarTitle = getString(R.string.product_modification_title)
         viewModel.productId = args.productId
     }
 
