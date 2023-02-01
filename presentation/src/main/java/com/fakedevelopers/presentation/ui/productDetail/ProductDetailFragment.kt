@@ -10,15 +10,16 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.Period
@@ -55,6 +56,7 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             registerOnPageChangeCallback(onPageChanged)
         }
         initCollector()
+        initListener()
     }
 
     private fun initCollector() {
@@ -65,8 +67,25 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
         }
     }
 
+    private fun initListener() {
+        binding.toolbarProductDetail.buttonToolbarBack.setOnClickListener {
+            findNavController().popBackStack()
+        }
+        binding.toolbarProductDetail.buttonToolbarOption.setOnClickListener {
+            navigateEditProduct(viewModel.productDetailDto.value)
+        }
+    }
+
+    private fun navigateEditProduct(productDetailDto: ProductDetailDto) {
+        findNavController().navigate(
+            ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
+                ProductEditorDto(viewModel.productId, productDetailDto),
+                viewModel.productId
+            )
+        )
+    }
+
     private fun setPagerCount(position: Int, totalCount: Int = productDetailAdapter.itemCount) {
-        Logger.i("$position $totalCount")
         binding.textviewProductDetailPictureCount.text =
             getString(R.string.product_detail_picture_count, position + 1, totalCount)
     }

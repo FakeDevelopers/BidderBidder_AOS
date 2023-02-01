@@ -3,12 +3,10 @@ package com.fakedevelopers.presentation.api.di
 import com.fakedevelopers.presentation.api.repository.ChatRepository
 import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.api.repository.ProductDetailRepository
-import com.fakedevelopers.presentation.api.repository.ProductRegistrationRepository
 import com.fakedevelopers.presentation.api.repository.ProductSearchRepository
 import com.fakedevelopers.presentation.api.service.ChatService
 import com.fakedevelopers.presentation.api.service.ProductCategoryService
 import com.fakedevelopers.presentation.api.service.ProductDetailService
-import com.fakedevelopers.presentation.api.service.ProductRegistrationService
 import com.fakedevelopers.presentation.api.service.ProductSearchService
 import dagger.Module
 import dagger.Provides
@@ -20,17 +18,6 @@ import retrofit2.Retrofit
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 class MainModule {
-    // 게시글 등록 요청
-    @ActivityRetainedScoped
-    @Provides
-    fun provideUserProductRegistrationService(@AuthRetrofit retrofit: Retrofit): ProductRegistrationService =
-        retrofit.create(ProductRegistrationService::class.java)
-
-    @ActivityRetainedScoped
-    @Provides
-    fun provideUserProductRegistrationRepository(service: ProductRegistrationService): ProductRegistrationRepository =
-        ProductRegistrationRepository(service)
-
     // 상품 카테고리 요청
     @ActivityRetainedScoped
     @Provides

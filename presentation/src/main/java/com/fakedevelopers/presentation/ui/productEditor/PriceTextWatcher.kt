@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration
+package com.fakedevelopers.presentation.ui.productEditor
 
 import android.text.Editable
 import android.text.InputFilter

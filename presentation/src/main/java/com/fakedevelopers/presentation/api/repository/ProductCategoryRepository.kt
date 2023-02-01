@@ -1,7 +1,7 @@
 package com.fakedevelopers.presentation.api.repository
 
 import com.fakedevelopers.presentation.api.service.ProductCategoryService
-import com.fakedevelopers.presentation.ui.productRegistration.ProductCategoryDto
+import com.fakedevelopers.presentation.ui.productEditor.ProductCategoryDto
 import retrofit2.Response
 import javax.inject.Inject
 

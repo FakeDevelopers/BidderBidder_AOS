@@ -2,6 +2,12 @@
 <layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="title"
+            type="String"
+            />
+    </data>
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:text="@string/product_registration_button"
+                android:text="@string/product_editor_button"
                 android:textColor="@color/grey"
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -41,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="@string/product_registration_title"
+                android:text="@{title}"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold"

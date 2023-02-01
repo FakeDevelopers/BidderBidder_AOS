@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration.albumList
+package com.fakedevelopers.presentation.ui.productEditor.albumList
 
 import android.content.ContentUris
 import android.database.ContentObserver
@@ -23,8 +23,8 @@ import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
-import com.fakedevelopers.presentation.ui.productRegistration.DragAndDropCallback
-import com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto
+import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
+import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,7 +47,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                     viewModel.setAlbumViewMode(AlbumViewState.GRID)
                 } else {
-                    toProductRegistration(args.productRegistrationDto)
+                    toProductRegistration(args.productEditorDto)
                 }
             }
         }
@@ -76,8 +76,8 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        if (args.productRegistrationDto.selectedImageInfo.uris.isNotEmpty()) {
-            viewModel.initSelectedImageList(args.productRegistrationDto.selectedImageInfo)
+        if (args.productEditorDto.selectedImageInfo.uris.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.productEditorDto.selectedImageInfo)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
         initCollector()
@@ -94,7 +94,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         viewModel.checkSelectedImages(binding.viewpagerPictureSelect.currentItem)
     }
 
-    private fun toProductRegistration(dto: ProductRegistrationDto) {
+    private fun toProductRegistration(dto: ProductEditorDto) {
         dto.selectedImageInfo.apply {
             uris.clear()
             uris.addAll(viewModel.selectedImageInfo.uris)
@@ -102,9 +102,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
         // 선택한 이미지 uri를 들고 돌아갑니다
-        findNavController().navigate(
-            AlbumListFragmentDirections.actionPictureSelectFragmentToProductRegistrationFragment(dto)
-        )
+        findNavController().popBackStack()
     }
 
     private fun getPictures() {
@@ -187,7 +185,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
 
     private fun initListener() {
         binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.productRegistrationDto)
+            toProductRegistration(args.productEditorDto)
         }
         binding.buttonAlbumListRotate.setOnClickListener {
             val uri = viewModel.getCurrentUri()

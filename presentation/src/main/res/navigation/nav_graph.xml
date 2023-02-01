@@ -42,8 +42,8 @@
             app:destination="@id/pictureSelectFragment"
             app:launchSingleTop="true" />
         <argument
-            android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto"
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto"
             app:nullable="true"
             android:defaultValue="@null" />
         <action
@@ -54,8 +54,35 @@
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
+        android:id="@+id/productModificationFragment"
+        android:name="com.fakedevelopers.presentation.ui.productModification.ProductModificationFragment"
+        android:label="ProductModificationFragment" >
+        <action
+            android:id="@+id/action_ProductModificationFragment_to_pictureSelectFragment"
+            app:destination="@id/pictureSelectFragment"
+            app:launchSingleTop="true" />
+        <argument
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="productId"
+            android:defaultValue="-1L"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_productModificationFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:popUpTo="@id/productModificationFragment"
+            app:launchSingleTop="true"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_productModificationFragment_to_productDetailFragment"
+            app:destination="@id/productDetailFragment" />
+    </fragment>
+    <fragment
         android:id="@+id/pictureSelectFragment"
-        android:name="com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListFragment"
+        android:name="com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragment"
         android:label="PictureSelectFragment" >
         <action
             android:id="@+id/action_pictureSelectFragment_to_productRegistrationFragment"
@@ -63,8 +90,8 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/pictureSelectFragment" />
         <argument
-            android:name="productRegistrationDto"
-            app:argType="com.fakedevelopers.presentation.ui.productRegistration.ProductRegistrationDto" />
+            android:name="productEditorDto"
+            app:argType="com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto" />
     </fragment>
     <fragment
         android:id="@+id/productSearchFragment"
@@ -96,6 +123,9 @@
             app:destination="@id/productDetailFragment"
             app:popUpTo="@id/productDetailFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_productDetailFragment_to_productModificationFragment"
+            app:destination="@id/productModificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/chattingFragment"

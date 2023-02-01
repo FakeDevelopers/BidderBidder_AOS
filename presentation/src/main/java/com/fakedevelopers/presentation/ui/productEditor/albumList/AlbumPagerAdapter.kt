@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productRegistration.albumList
+package com.fakedevelopers.presentation.ui.productEditor.albumList
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,7 +9,7 @@ import com.bumptech.glide.signature.ObjectKey
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerAlbumPagerBinding
-import com.fakedevelopers.presentation.ui.productRegistration.albumList.AlbumListAdapter.Companion.diffUtil
+import com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListAdapter.Companion.diffUtil
 import com.fakedevelopers.presentation.ui.util.GlideRequestListener
 
 class AlbumPagerAdapter(
