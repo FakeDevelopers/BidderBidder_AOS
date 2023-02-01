@@ -7,6 +7,7 @@
         android:title="@string/bottom_home"
         android:enabled="true"/>
     <item
+        android:id="@+id/menu_product_search"
         android:icon="@drawable/vector_search"
         android:title="@string/bottom_search"
         android:enabled="true"/>
