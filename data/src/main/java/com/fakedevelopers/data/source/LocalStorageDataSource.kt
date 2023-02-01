@@ -10,11 +10,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-private val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "dataStore")
-
 class LocalStorageDataSource @Inject constructor(
     private val context: Context
 ) {
+    private val Context.datastore: DataStore<Preferences> by preferencesDataStore(name = "dataStore")
     private val searchHistoryKey = stringSetPreferencesKey(name = "search_history")
 
     suspend fun setSearchHistory(searchHistory: List<String>): Boolean =
