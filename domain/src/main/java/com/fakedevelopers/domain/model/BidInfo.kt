@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.productDetail
+package com.fakedevelopers.domain.model
 
 data class BidInfo(
     val bid: Long,

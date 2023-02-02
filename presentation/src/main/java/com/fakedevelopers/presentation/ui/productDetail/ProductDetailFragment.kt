@@ -13,6 +13,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
+import com.fakedevelopers.domain.model.ProductDetailInfo
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
 import com.fakedevelopers.presentation.model.RemainTime
@@ -72,14 +73,14 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             findNavController().popBackStack()
         }
         binding.toolbarProductDetail.buttonToolbarOption.setOnClickListener {
-            navigateEditProduct(viewModel.productDetailDto.value)
+            navigateEditProduct(viewModel.productDetailInfo.value)
         }
     }
 
-    private fun navigateEditProduct(productDetailDto: ProductDetailDto) {
+    private fun navigateEditProduct(productDetailInfo: ProductDetailInfo) {
         findNavController().navigate(
             ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
-                ProductEditorDto(viewModel.productId, productDetailDto),
+                ProductEditorDto(viewModel.productId, productDetailInfo),
                 viewModel.productId
             )
         )
