@@ -17,6 +17,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.fakedevelopers.domain.model.TermItemDto
+import com.fakedevelopers.domain.model.TermListDto
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAcceptTermsBinding
 import com.fakedevelopers.presentation.databinding.IncludeTermCheckboxBinding
@@ -78,9 +80,9 @@ class AcceptTermsFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                acceptTermViewModel.termListEvent.collectLatest {
-                    if (it.isSuccessful) {
-                        it.body()?.let { termList ->
+                acceptTermViewModel.termListEvent.collectLatest { result ->
+                    if (result.isSuccess) {
+                        result.getOrNull()?.let { termList ->
                             setTermView(termList)
                         }
                     }
@@ -89,10 +91,10 @@ class AcceptTermsFragment : Fragment() {
         }
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                acceptTermViewModel.termContentsEvent.collectLatest {
-                    if (it.isSuccessful) {
-                        it.body()?.let { _ ->
-                            viewModel.acceptTermDetail = it.body().toString()
+                acceptTermViewModel.termContentsEvent.collectLatest { result ->
+                    result.isSuccess.let {
+                        result.getOrNull()?.let { contents ->
+                            viewModel.acceptTermDetail = contents
                             viewModel.setCurrentStep(ACCEPT_TERMS_CONTENTS)
                         }
                     }
