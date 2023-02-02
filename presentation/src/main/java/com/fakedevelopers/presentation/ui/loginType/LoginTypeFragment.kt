@@ -66,10 +66,10 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
     }
 
     private fun initListener() {
-        binding.buttonLogintypeGoogle.layoutLoginType.setOnClickListener {
+        binding.buttonLogintypeGoogle.setOnClickListener {
             googleLogin()
         }
-        binding.buttonLogintypeCommon.layoutLoginType.setOnClickListener {
+        binding.buttonLogintypeCommon.setOnClickListener {
             findNavController().navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
         binding.textViewLogintypeRegistration.setOnClickListener {
