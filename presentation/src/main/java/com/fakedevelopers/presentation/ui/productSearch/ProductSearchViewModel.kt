@@ -2,13 +2,14 @@ package com.fakedevelopers.presentation.ui.productSearch
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.usecase.GetProductSearchRankUseCase
 import com.fakedevelopers.domain.usecase.GetSearchHistoryUseCase
 import com.fakedevelopers.domain.usecase.SetSearchHistoryUseCase
-import com.fakedevelopers.presentation.api.repository.ProductSearchRepository
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,7 +17,7 @@ import kotlin.random.Random
 
 @HiltViewModel
 class ProductSearchViewModel @Inject constructor(
-    private val repository: ProductSearchRepository,
+    private val getProductSearchRankUseCase: GetProductSearchRankUseCase,
     private val getSearchHistoryUseCase: GetSearchHistoryUseCase,
     private val setSearchHistoryUseCase: SetSearchHistoryUseCase
 ) : ViewModel() {
@@ -91,12 +92,11 @@ class ProductSearchViewModel @Inject constructor(
 
     private fun requestSearchRank() {
         viewModelScope.launch {
-            repository.getProductSearchRank(LIST_COUNT).let {
-                if (it.isSuccessful) {
-                    searchPopularAdapter.submitList(it.body() ?: listOf(""))
-                } else {
-                    ApiErrorHandler.printErrorMessage(it.errorBody())
-                }
+            val result = getProductSearchRankUseCase(LIST_COUNT)
+            if (result.isSuccess) {
+                searchPopularAdapter.submitList(result.getOrDefault(listOf("")))
+            } else {
+                ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
             }
         }
     }

@@ -46,14 +46,6 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.4.0'
     // Logger
     implementation 'com.orhanobut:logger:2.2.0'
-    // REST API 통신
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    // Converter (JSON 타입 결과를 객체로 매핑)
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    // Converter (결과가 그냥 문자열 일 때)
-    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
-    // okhttp3
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.6'
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'

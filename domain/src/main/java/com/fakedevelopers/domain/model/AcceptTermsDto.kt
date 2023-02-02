@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.ui.register.acceptTerms
+package com.fakedevelopers.domain.model
 
 data class TermListDto(
     val optional: List<TermItemDto>,
