@@ -21,6 +21,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
+import com.fakedevelopers.domain.model.ProductCategoryDto
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductEditorBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
@@ -36,6 +37,7 @@ import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
+import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
@@ -222,10 +224,11 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         }
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.categoryEvent.collectLatest { result ->
-                if (result.isSuccessful) {
-                    handleCategoryResult(result.body())
+                val category = result.getOrNull()
+                if (category.isNullOrEmpty()) {
+                    handleCategoryResult(category)
                 } else {
-                    ApiErrorHandler.printErrorMessage(result.errorBody())
+                    ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
                 }
             }
         }
