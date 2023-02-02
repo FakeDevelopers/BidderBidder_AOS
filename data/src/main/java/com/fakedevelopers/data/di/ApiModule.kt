@@ -1,6 +1,6 @@
 package com.fakedevelopers.data.di
 
-import com.fakedevelopers.data.util.AuthInterceptor
+import com.fakedevelopers.data.util.LoginAuthInterceptor
 import com.fakedevelopers.domain.secret.Constants.Companion.BASE_URL
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
@@ -69,7 +69,7 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideAuthOkHttpClient(
-        @DataObject authInterceptor: AuthInterceptor
+        @DataObject authInterceptor: LoginAuthInterceptor
     ): OkHttpClient =
         if (BuildConfig.DEBUG.not()) {
             val loggingInterceptor = HttpLoggingInterceptor()
@@ -108,12 +108,14 @@ object ApiModule {
     @DataObject
     @Singleton
     @Provides
-    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance().apply {
-        setLanguageCode(Locale.getDefault().language)
+    fun provideFirebaseAuth(): FirebaseAuth {
+        return FirebaseAuth.getInstance().apply {
+            setLanguageCode(Locale.getDefault().language)
+        }
     }
 
     @DataObject
     @Singleton
     @Provides
-    fun provideAuthInterceptor(auth: FirebaseAuth) = AuthInterceptor(auth)
+    fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
 }
