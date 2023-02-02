@@ -1,6 +1,6 @@
-package com.fakedevelopers.presentation.ui.productDetail
+package com.fakedevelopers.domain.model
 
-data class ProductDetailDto(
+data class ProductDetailInfo(
     val bidderCount: Int = 0,
     val bids: List<BidInfo> = emptyList(),
     val createdDate: String = "",

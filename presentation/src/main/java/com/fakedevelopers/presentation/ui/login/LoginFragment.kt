@@ -29,9 +29,6 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
     }
 
     private fun initListener() {
-        binding.includeLoginSignin.button.setOnClickListener {
-            viewModel.loginRequest()
-        }
         binding.textviewLoginRegistration.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_userRegistrationFragment)
         }

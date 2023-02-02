@@ -1,7 +1,6 @@
 package com.fakedevelopers.presentation.api.di
 
 import com.fakedevelopers.domain.secret.Constants.Companion.BASE_URL
-import com.fakedevelopers.presentation.api.util.LoginAuthInterceptor
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -21,15 +20,7 @@ import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class AuthOkHttpClient
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
 annotation class NormalOkHttpClient
-
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class AuthRetrofit
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
@@ -41,22 +32,6 @@ object ApiModule {
 
     @Provides
     fun provideBaseUrl() = BASE_URL
-
-    @Singleton
-    @Provides
-    @AuthOkHttpClient
-    fun provideAuthOkHttpClient(authInterceptor: LoginAuthInterceptor) = if (BuildConfig.DEBUG.not()) {
-        val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS)
-        OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .addInterceptor(loggingInterceptor)
-            .build()
-    } else {
-        OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
-            .build()
-    }
 
     @Singleton
     @Provides
@@ -74,18 +49,6 @@ object ApiModule {
     @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().setLenient().create()
-
-    @Singleton
-    @Provides
-    @AuthRetrofit
-    fun provideAuthRetrofit(@AuthOkHttpClient okHttpClient: OkHttpClient, gson: Gson, baseUrl: String): Retrofit {
-        return Retrofit.Builder()
-            .client(okHttpClient)
-            .baseUrl(baseUrl)
-            .addConverterFactory(ScalarsConverterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build()
-    }
 
     @Singleton
     @Provides
@@ -107,8 +70,4 @@ object ApiModule {
             setLanguageCode(Locale.getDefault().language)
         }
     }
-
-    @Singleton
-    @Provides
-    fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
 }

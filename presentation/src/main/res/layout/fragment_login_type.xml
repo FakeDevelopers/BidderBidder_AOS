@@ -47,47 +47,50 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.8">
 
-            <include
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_logintype_kakao"
-                layout="@layout/include_login_type_button"
+                style="@style/ButtonLoginType"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
                 android:layout_marginBottom="@dimen/login_type_button_margin"
-                app:backgroundColor="@{@color/kakao_background}"
-                app:buttonIcon="@{@drawable/login_type_kakao}"
-                app:textColor="@{@color/kakao_text}"
-                app:titleText="@{@string/logintype_kakaologin}" />
+                android:backgroundTint="@color/kakao_background"
+                android:text="@string/logintype_kakaologin"
+                android:textColor="@color/kakao_text"
+                app:icon="@drawable/vector_kakao"
+                app:iconTint="@color/kakao_text" />
 
-            <include
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_logintype_naver"
-                layout="@layout/include_login_type_button"
+                style="@style/ButtonLoginType"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
                 android:layout_marginBottom="@dimen/login_type_button_margin"
-                app:backgroundColor="@{@color/naver_background}"
-                app:buttonIcon="@{@drawable/login_type_naver}"
-                app:textColor="@{@color/white}"
-                app:titleText="@{@string/logintype_naverlogin}" />
+                android:backgroundTint="@color/naver_background"
+                android:text="@string/logintype_naverlogin"
+                android:textColor="@color/white"
+                app:icon="@drawable/vector_naver"
+                app:iconTint="@color/white" />
 
-            <include
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_logintype_google"
-                layout="@layout/include_login_type_button"
+                style="@style/ButtonLoginType"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
                 android:layout_marginBottom="@dimen/login_type_button_margin"
-                app:backgroundColor="@{@color/google_background}"
-                app:buttonIcon="@{@drawable/login_type_google}"
-                app:textColor="@{@color/black}"
-                app:titleText="@{@string/logintype_googlelogin}" />
+                android:backgroundTint="@color/google_background"
+                android:text="@string/logintype_googlelogin"
+                android:textColor="@color/black"
+                android:drawableLeft="@drawable/vector_google" />
 
-            <include
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_logintype_common"
-                layout="@layout/include_login_type_button"
+                style="@style/ButtonLoginType"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_type_button_height"
-                app:backgroundColor="@{@color/common_login_background}"
-                app:textColor="@{@color/black}"
-                app:titleText="@{@string/logintype_commonlogin}" />
+                android:layout_marginBottom="@dimen/login_type_button_margin"
+                android:backgroundTint="@color/common_login_background"
+                android:text="@string/logintype_commonlogin"
+                android:textColor="@color/black" />
         </LinearLayout>
 
         <TextView

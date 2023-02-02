@@ -2,7 +2,8 @@ package com.fakedevelopers.presentation.ui.productDetail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fakedevelopers.presentation.api.repository.ProductDetailRepository
+import com.fakedevelopers.domain.model.ProductDetailInfo
+import com.fakedevelopers.domain.usecase.GetProductDetailUseCase
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.DateUtil
@@ -10,6 +11,7 @@ import com.fakedevelopers.presentation.ui.util.ExpirationTimerTask
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -18,11 +20,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductDetailViewModel @Inject constructor(
     private val dateUtil: DateUtil,
-    private val repository: ProductDetailRepository
+    private val getProductDetailUseCase: GetProductDetailUseCase
 ) : ViewModel() {
 
-    private val _productDetailDto = MutableStateFlow(ProductDetailDto())
-    val productDetailDto: StateFlow<ProductDetailDto> get() = _productDetailDto
+    private val _productDetailInfo = MutableStateFlow(ProductDetailInfo())
+    val productDetailInfo: StateFlow<ProductDetailInfo> get() = _productDetailInfo
 
     private val _eventFlow = MutableEventFlow<Event>()
     val eventFlow = _eventFlow.asEventFlow()
@@ -38,10 +40,10 @@ class ProductDetailViewModel @Inject constructor(
     fun productDetailRequest(productId: Long) {
         this.productId = productId
         viewModelScope.launch {
-            val result = repository.getProductDetail(productId)
-            if (result.isSuccessful) {
-                val detail = result.body() ?: ProductDetailDto()
-                _productDetailDto.emit(detail)
+            val result = getProductDetailUseCase(productId)
+            if (result.isSuccess) {
+                val detail = result.getOrDefault(ProductDetailInfo())
+                _productDetailInfo.emit(detail)
                 if (detail.images.isEmpty()) {
                     event(Event.ProductImages(listOf("")))
                 } else {
@@ -51,7 +53,7 @@ class ProductDetailViewModel @Inject constructor(
                 startTimerTask(detail.expirationDate)
                 bidInfoAdapter.submitList(detail.bids)
             } else {
-                ApiErrorHandler.printErrorMessage(result.errorBody())
+                ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
             }
         }
     }
