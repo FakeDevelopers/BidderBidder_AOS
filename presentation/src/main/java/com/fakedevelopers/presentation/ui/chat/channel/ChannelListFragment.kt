@@ -22,6 +22,7 @@ import io.getstream.chat.android.offline.plugin.factory.StreamOfflinePluginFacto
 import io.getstream.chat.android.ui.channel.list.viewmodel.ChannelListViewModel
 import io.getstream.chat.android.ui.channel.list.viewmodel.bindView
 import io.getstream.chat.android.ui.channel.list.viewmodel.factory.ChannelListViewModelFactory
+import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -51,12 +52,13 @@ class ChannelListFragment : BaseFragment<FragmentChannelListBinding>(
     private fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.streamUserTokenEvent.collectLatest {
-                    if (it.isSuccessful) {
-                        initUser(it.body().toString())
-                        viewModel.setToken(it.body().toString())
+                viewModel.streamUserTokenEvent.collectLatest { result ->
+                    if (result.isSuccess) {
+                        val token = result.getOrDefault("")
+                        initUser(token)
+                        viewModel.setToken(token)
                     } else {
-                        ApiErrorHandler.printErrorMessage(it.errorBody())
+                        ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
                     }
                 }
             }
