@@ -26,3 +26,10 @@ data class ProductEditorInfo(
         )
     }
 }
+
+data class ProductCategoryDto(
+    val categoryId: Long,
+    val categoryName: String,
+    val parentCategoryId: Long,
+    val subCategories: List<ProductCategoryDto>
+)

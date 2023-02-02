@@ -3,14 +3,15 @@ package com.fakedevelopers.presentation.ui.productEditor
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fakedevelopers.domain.model.ProductCategoryDto
 import com.fakedevelopers.domain.model.ProductEditorInfo
 import com.fakedevelopers.domain.usecase.GetBytesByUriUseCase
 import com.fakedevelopers.domain.usecase.GetMediaInfoUseCase
+import com.fakedevelopers.domain.usecase.GetProductCategoryUseCase
 import com.fakedevelopers.domain.usecase.GetRotateUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.ProductModificationUseCase
 import com.fakedevelopers.domain.usecase.ProductRegistrationUseCase
-import com.fakedevelopers.presentation.api.repository.ProductCategoryRepository
 import com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
@@ -31,7 +32,6 @@ import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
-import retrofit2.Response
 import java.util.Collections
 import javax.inject.Inject
 
@@ -39,7 +39,7 @@ import javax.inject.Inject
 class ProductEditorViewModel @Inject constructor(
     private val productModificationUseCase: ProductModificationUseCase,
     private val productRegistrationUseCase: ProductRegistrationUseCase,
-    private val categoryRepository: ProductCategoryRepository,
+    private val getProductCategoryUseCase: GetProductCategoryUseCase,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getBytesByUriUseCase: GetBytesByUriUseCase,
     private val getMediaInfoUseCase: GetMediaInfoUseCase,
@@ -55,7 +55,7 @@ class ProductEditorViewModel @Inject constructor(
         swapSelectedImage(fromPosition, toPosition)
     }
 
-    private val _categoryEvent = MutableEventFlow<Response<List<ProductCategoryDto>>>()
+    private val _categoryEvent = MutableEventFlow<Result<List<ProductCategoryDto>>>()
     val categoryEvent = _categoryEvent.asEventFlow()
 
     private val _productEditorResponse = MutableEventFlow<Result<String>>()
@@ -154,7 +154,7 @@ class ProductEditorViewModel @Inject constructor(
 
     private fun requestProductCategory() {
         viewModelScope.launch {
-            _categoryEvent.emit(categoryRepository.getProductCategory())
+            _categoryEvent.emit(getProductCategoryUseCase())
         }
     }
 
