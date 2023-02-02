@@ -6,7 +6,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
 
-class AuthInterceptor @Inject constructor(
+class LoginAuthInterceptor @Inject constructor(
     private val firebase: FirebaseAuth
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response = with(chain) {
