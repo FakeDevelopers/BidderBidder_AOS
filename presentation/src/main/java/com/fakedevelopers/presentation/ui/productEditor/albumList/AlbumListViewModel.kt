@@ -3,11 +3,11 @@ package com.fakedevelopers.presentation.ui.productEditor.albumList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.model.AlbumItem
+import com.fakedevelopers.domain.usecase.GetAllImagesUseCase
 import com.fakedevelopers.domain.usecase.GetDateModifiedByUriUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.IsValidUriUseCase
 import com.fakedevelopers.presentation.ui.productEditor.SelectedPictureListAdapter
-import com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragment.Companion.ALL_PICTURES
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +21,8 @@ import javax.inject.Inject
 class AlbumListViewModel @Inject constructor(
     isValidUriUseCase: IsValidUriUseCase,
     private val getDateModifiedFromUriUseCase: GetDateModifiedByUriUseCase,
-    private val getValidUrisUseCase: GetValidUrisUseCase
+    private val getValidUrisUseCase: GetValidUrisUseCase,
+    private val getAllImagesUseCase: GetAllImagesUseCase
 ) : ViewModel() {
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
@@ -37,6 +38,9 @@ class AlbumListViewModel @Inject constructor(
 
     private val _imageCountEvent = MutableEventFlow<Int>()
     val imageCountEvent = _imageCountEvent.asEventFlow()
+
+    private val _albumListEvent = MutableEventFlow<List<String>>()
+    val albumListEvent = _albumListEvent.asEventFlow()
 
     private val _editButtonEnableState = MutableStateFlow(false)
     val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
@@ -55,6 +59,13 @@ class AlbumListViewModel @Inject constructor(
     // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
     var scrollToTopFlag = false
         private set
+
+    init {
+        viewModelScope.launch {
+            allImages = getAllImagesUseCase()
+            _albumListEvent.emit(allImages.keys.toList())
+        }
+    }
 
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
@@ -98,10 +109,6 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    fun initAlbumInfo(map: Map<String, MutableList<AlbumItem>>) {
-        allImages = map
-    }
-
     // 수정된 이미지 비트맵 추가
     fun addBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
         selectedImageInfo.changeBitmaps[uri] = bitmapInfo
@@ -131,7 +138,7 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    fun setSelectedImage(list: List<String>) {
+    private fun setSelectedImage(list: List<String>) {
         selectedImageInfo.uris.filter { !list.contains(it) }.forEach { uri ->
             removeImage(uri)
             selectedImageInfo.changeBitmaps.remove(uri)
@@ -186,7 +193,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun getCurrentUri() = allImages[currentAlbum]?.get(currentViewPagerIdx)?.uri ?: ""
 
-    fun getPictureUri(albumName: String = currentAlbum, position: Int) =
+    private fun getPictureUri(albumName: String = currentAlbum, position: Int) =
         allImages[albumName]?.get(position)?.uri ?: ""
 
     // 수정된 비트맵 가져오기
@@ -295,5 +302,9 @@ class AlbumListViewModel @Inject constructor(
         viewModelScope.launch {
             _imageCountEvent.emit(idx)
         }
+    }
+
+    companion object {
+        private const val ALL_PICTURES = "전체보기"
     }
 }

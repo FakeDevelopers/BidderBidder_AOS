@@ -1,6 +1,7 @@
 package com.fakedevelopers.data.repository
 
 import android.content.ContentResolver
+import android.content.ContentUris
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
@@ -22,6 +23,45 @@ class ImageRepositoryImpl @Inject constructor(
             }
         }
         return false
+    }
+
+    override suspend fun getAllImages(): Map<String, MutableList<AlbumItem>> {
+        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val albums = mutableMapOf<String, MutableList<AlbumItem>>().apply {
+            this[ALL_PICTURES] = mutableListOf()
+        }
+        contentResolver.query(
+            uri,
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.ImageColumns.DATE_MODIFIED
+            ),
+            null,
+            null,
+            MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                // 이미지 Uri
+                val imageUri = ContentUris.withAppendedId(
+                    uri,
+                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
+                ).toString()
+                // 최근 수정 날짜
+                val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
+                val albumItem = AlbumItem(imageUri, date)
+                // 전체보기에 저장
+                albums[ALL_PICTURES]?.add(albumItem)
+                // 이미지 상대 경로에 저장
+                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
+                    val url = path.substringBeforeLast("/")
+                    albums[url]?.add(albumItem) ?: run {
+                        albums[url] = mutableListOf(albumItem)
+                    }
+                }
+            }
+        }
+        return albums
     }
 
     override fun getValidUris(uris: List<String>): List<String> =
@@ -98,4 +138,8 @@ class ImageRepositoryImpl @Inject constructor(
             }
             updatedAlbumItem
         }
+
+    companion object {
+        private const val ALL_PICTURES = "전체보기"
+    }
 }
