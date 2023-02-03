@@ -9,6 +9,7 @@ import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.IsValidUriUseCase
 import com.fakedevelopers.presentation.ui.productEditor.SelectedPictureListAdapter
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
+import com.fakedevelopers.presentation.ui.util.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.asEventFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @HiltViewModel
 class AlbumListViewModel @Inject constructor(
@@ -83,7 +85,7 @@ class AlbumListViewModel @Inject constructor(
     val albumPagerAdapter = AlbumPagerAdapter(
         isValidUri = { uri -> isValidUriUseCase(uri) },
         sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
-        getEditedImage = { uri -> getEditedBitmapInfo(uri) }
+        getEditedImage = { uri -> selectedImageInfo.changeBitmaps[uri] }
     ) { uri ->
         setSelectedState(uri, findSelectedImageIndex(uri) == -1)
     }
@@ -111,14 +113,27 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    // 수정된 이미지 비트맵 추가
-    fun addBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
-        selectedImageInfo.changeBitmaps[uri] = bitmapInfo
+    fun rotateCurrentImage() {
+        val uri = getCurrentUri()
+        // 로테이트된 비트맵이 있으면 그걸 돌림
+        // 없다면 새로 추가
+        selectedImageInfo.changeBitmaps[uri]?.let { bitmapInfo ->
+            bitmapInfo.degree += ROTATE_DEGREE
+            // 360도 돌아갔다면 변경 사항이 없는거다. bitmapInfo를 삭제한다.
+            if (bitmapInfo.degree.roundToInt() == 360) {
+                selectedImageInfo.changeBitmaps.remove(uri)
+            }
+        } ?: addEditedBitmapInfo(uri)
+        // 이미지 새로고침
+        albumPagerAdapter.notifyItemChanged(currentViewPagerIdx)
     }
 
-    // 수정된 이미지 비트맵 삭제
-    fun removeBitmapInfo(uri: String) {
-        selectedImageInfo.changeBitmaps.remove(uri)
+    // 수정된 이미지 비트맵 추가
+    private fun addEditedBitmapInfo(uri: String) {
+        if (findSelectedImageIndex(uri) == -1) {
+            setSelectedState(uri, true)
+        }
+        selectedImageInfo.changeBitmaps[uri] = BitmapInfo(ROTATE_DEGREE)
     }
 
     fun setCurrentViewPagerIdx(idx: Int) {
@@ -152,7 +167,7 @@ class AlbumListViewModel @Inject constructor(
         albumListAdapter.refreshSelectedOrder()
     }
 
-    fun setSelectedState(uri: String, state: Boolean = false) {
+    private fun setSelectedState(uri: String, state: Boolean = false) {
         if (state) {
             selectedImageInfo.uris.add(uri)
         } else {
@@ -194,18 +209,14 @@ class AlbumListViewModel @Inject constructor(
         }
     }
 
-    fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
+    private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
-    fun getCurrentUri() = allImages[currentAlbum]?.get(currentViewPagerIdx)?.uri ?: ""
+    private fun getCurrentUri() = allImages[currentAlbum]?.get(currentViewPagerIdx)?.uri ?: ""
 
     private fun getPictureUri(albumName: String = currentAlbum, position: Int) =
         allImages[albumName]?.get(position)?.uri ?: ""
-
-    // 수정된 비트맵 가져오기
-    fun getEditedBitmapInfo(uri: String) =
-        selectedImageInfo.changeBitmaps[uri]
 
     private fun isAlbumListChanged() =
         albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
@@ -222,7 +233,7 @@ class AlbumListViewModel @Inject constructor(
     fun updateAlbumList(
         albumName: String? = null
     ) {
-        val updatedAlbumItems = getValidUpdatedImageList()
+        val updatedAlbumItems = updatedImageList.mapNotNull { getDateModifiedFromUriUseCase(it) }
         updatedImageList.forEach { uri ->
             removeImage(uri)
         }
@@ -301,9 +312,6 @@ class AlbumListViewModel @Inject constructor(
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
         albumListAdapter.refreshSelectedOrder()
     }
-
-    private fun getValidUpdatedImageList() =
-        updatedImageList.mapNotNull { getDateModifiedFromUriUseCase(it) }
 
     private fun setImageSelectCount(idx: Int) {
         viewModelScope.launch {
