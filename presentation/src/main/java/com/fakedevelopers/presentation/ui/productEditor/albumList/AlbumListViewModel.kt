@@ -186,7 +186,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     fun scrollToTop() {
-        if (scrollToTopFlag && isAlbumListChanged()) {
+        if (scrollToTopFlag && albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)) {
             sendEvent(Event.ScrollToTop(true))
             scrollToTopFlag = false
         }
@@ -201,9 +201,6 @@ class AlbumListViewModel @Inject constructor(
     private fun getPictureUri(albumName: String = currentAlbum, position: Int) =
         allImages[albumName]?.get(position)?.uri ?: ""
 
-    private fun isAlbumListChanged() =
-        albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
-
     fun onAlbumListUpdated(uri: String) {
         updatedImageList.add(uri)
     }
@@ -213,9 +210,7 @@ class AlbumListViewModel @Inject constructor(
         showViewPager(selectedImageInfo.uris.last())
     }
 
-    fun updateAlbumList(
-        albumName: String? = null
-    ) {
+    fun updateAlbumList(albumName: String? = null) {
         val updatedAlbumItems = updatedImageList.mapNotNull { getDateModifiedFromUriUseCase(it) }
         updatedImageList.forEach { uri ->
             removeImage(uri)
