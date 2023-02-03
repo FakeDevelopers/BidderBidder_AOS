@@ -74,14 +74,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         object : GridLayoutManager(requireContext(), 3) {
             override fun onLayoutCompleted(state: RecyclerView.State?) {
                 super.onLayoutCompleted(state)
-                // onLayoutCompleted는 정말 여러번 호출됩니다.
-                // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
-                if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
-                    viewModel.switchScrollFlag()
-                    binding.recyclerAlbumList.post {
-                        binding.recyclerAlbumList.scrollToPosition(0)
-                    }
-                }
+                viewModel.scrollToTop()
             }
         }
     }
@@ -146,6 +139,13 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.albumListEvent.collectLatest { albumList ->
                 initSpinner(albumList)
+            }
+        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.scrollEvent.collectLatest {
+                binding.recyclerAlbumList.post {
+                    binding.recyclerAlbumList.scrollToPosition(0)
+                }
             }
         }
         repeatOnStarted(viewLifecycleOwner) {

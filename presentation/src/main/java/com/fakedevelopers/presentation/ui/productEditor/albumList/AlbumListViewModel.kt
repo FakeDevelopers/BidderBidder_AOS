@@ -39,6 +39,9 @@ class AlbumListViewModel @Inject constructor(
     private val _imageCountEvent = MutableEventFlow<Int>()
     val imageCountEvent = _imageCountEvent.asEventFlow()
 
+    private val _scrollEvent = MutableEventFlow<Boolean>()
+    val scrollEvent = _scrollEvent.asEventFlow()
+
     private val _albumListEvent = MutableEventFlow<List<String>>()
     val albumListEvent = _albumListEvent.asEventFlow()
 
@@ -57,8 +60,7 @@ class AlbumListViewModel @Inject constructor(
         private set
 
     // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
-    var scrollToTopFlag = false
-        private set
+    private var scrollToTopFlag = false
 
     init {
         viewModelScope.launch {
@@ -117,10 +119,6 @@ class AlbumListViewModel @Inject constructor(
     // 수정된 이미지 비트맵 삭제
     fun removeBitmapInfo(uri: String) {
         selectedImageInfo.changeBitmaps.remove(uri)
-    }
-
-    fun switchScrollFlag() {
-        scrollToTopFlag = !scrollToTopFlag
     }
 
     fun setCurrentViewPagerIdx(idx: Int) {
@@ -187,6 +185,15 @@ class AlbumListViewModel @Inject constructor(
         setSelectedImageList()
     }
 
+    fun scrollToTop() {
+        if (scrollToTopFlag && isAlbumListChanged()) {
+            viewModelScope.launch {
+                _scrollEvent.emit(true)
+            }
+            scrollToTopFlag = false
+        }
+    }
+
     fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
@@ -200,7 +207,7 @@ class AlbumListViewModel @Inject constructor(
     fun getEditedBitmapInfo(uri: String) =
         selectedImageInfo.changeBitmaps[uri]
 
-    fun isAlbumListChanged() =
+    private fun isAlbumListChanged() =
         albumListAdapter.currentList[0] == allImages[currentAlbum]?.get(0)
 
     fun onAlbumListUpdated(uri: String) {
@@ -265,7 +272,7 @@ class AlbumListViewModel @Inject constructor(
         if (albumName != currentAlbum) {
             currentAlbum = albumName
             // 앨범을 바꿀 때 최상위 스크롤을 해주는 플래그를 true로 바꿔준다.
-            switchScrollFlag()
+            scrollToTopFlag = true
         }
     }
 
