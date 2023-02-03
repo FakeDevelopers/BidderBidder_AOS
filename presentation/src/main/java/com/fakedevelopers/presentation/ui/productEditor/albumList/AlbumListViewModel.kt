@@ -29,23 +29,8 @@ class AlbumListViewModel @Inject constructor(
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
 
-    private val _onListChange = MutableEventFlow<Boolean>()
-    val onListChange = _onListChange.asEventFlow()
-
-    private val _selectErrorImage = MutableEventFlow<Boolean>()
-    val selectErrorImage = _selectErrorImage.asEventFlow()
-
-    private val _startViewPagerIndex = MutableEventFlow<Int>()
-    val startViewPagerIndex = _startViewPagerIndex.asEventFlow()
-
-    private val _imageCountEvent = MutableEventFlow<Int>()
-    val imageCountEvent = _imageCountEvent.asEventFlow()
-
-    private val _scrollEvent = MutableEventFlow<Boolean>()
-    val scrollEvent = _scrollEvent.asEventFlow()
-
-    private val _albumListEvent = MutableEventFlow<List<String>>()
-    val albumListEvent = _albumListEvent.asEventFlow()
+    private val _event = MutableEventFlow<Event>()
+    val event = _event.asEventFlow()
 
     private val _editButtonEnableState = MutableStateFlow(false)
     val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
@@ -67,7 +52,7 @@ class AlbumListViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             allImages = getAllImagesUseCase()
-            _albumListEvent.emit(allImages.keys.toList())
+            sendEvent(Event.AlbumList(allImages.keys.toList()))
         }
     }
 
@@ -75,7 +60,7 @@ class AlbumListViewModel @Inject constructor(
     val albumListAdapter = AlbumListAdapter(
         isValidUri = { uri -> isValidUriUseCase(uri) },
         findSelectedImageIndex = { findSelectedImageIndex(it) },
-        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
+        sendErrorToast = { sendEvent(Event.SelectErrorImage(true)) },
         showViewPager = { uri -> showViewPager(uri) }
     ) { uri, state ->
         setSelectedState(uri, state)
@@ -84,7 +69,7 @@ class AlbumListViewModel @Inject constructor(
     // 뷰 페이저 앨범 리스트 어뎁터
     val albumPagerAdapter = AlbumPagerAdapter(
         isValidUri = { uri -> isValidUriUseCase(uri) },
-        sendErrorToast = { viewModelScope.launch { _selectErrorImage.emit(true) } },
+        sendErrorToast = { sendEvent(Event.SelectErrorImage(true)) },
         getEditedImage = { uri -> selectedImageInfo.changeBitmaps[uri] }
     ) { uri ->
         setSelectedState(uri, findSelectedImageIndex(uri) == -1)
@@ -138,7 +123,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun setCurrentViewPagerIdx(idx: Int) {
         currentViewPagerIdx = idx
-        setImageSelectCount(findSelectedImageIndex(getCurrentUri()))
+        sendEvent(Event.ImageCount(findSelectedImageIndex(getCurrentUri())))
     }
 
     fun setAlbumViewMode(state: AlbumViewState) {
@@ -188,9 +173,9 @@ class AlbumListViewModel @Inject constructor(
         // 선택 상태를 변경해준다.
         viewModelScope.launch {
             if (state) {
-                setImageSelectCount(selectedImageInfo.uris.lastIndex)
+                sendEvent(Event.ImageCount(selectedImageInfo.uris.lastIndex))
             } else {
-                setImageSelectCount(-1)
+                sendEvent(Event.ImageCount(-1))
             }
         }
         // 선택 이미지가 남아 있으면 편집 버튼 활성화
@@ -202,9 +187,7 @@ class AlbumListViewModel @Inject constructor(
 
     fun scrollToTop() {
         if (scrollToTopFlag && isAlbumListChanged()) {
-            viewModelScope.launch {
-                _scrollEvent.emit(true)
-            }
+            sendEvent(Event.ScrollToTop(true))
             scrollToTopFlag = false
         }
     }
@@ -259,9 +242,7 @@ class AlbumListViewModel @Inject constructor(
             // 유효한 선택 이미지 리스트로 갱신
             setSelectedImage(getValidUrisUseCase(selectedImageInfo.uris))
             if (albumViewMode.value == AlbumViewState.PAGER && idx != null) {
-                setImageSelectCount(
-                    findSelectedImageIndex(getPictureUri(position = idx))
-                )
+                sendEvent(Event.ImageCount(findSelectedImageIndex(getPictureUri(position = idx))))
             }
         }
     }
@@ -292,9 +273,7 @@ class AlbumListViewModel @Inject constructor(
         allImages[currentAlbum]?.let { album ->
             val idx = album.indexOf(album.find { it.uri == uri })
             if (idx != -1) {
-                viewModelScope.launch {
-                    _startViewPagerIndex.emit(idx)
-                }
+                sendEvent(Event.StartViewPagerIndex(idx))
                 setAlbumViewMode(AlbumViewState.PAGER)
             }
         }
@@ -302,9 +281,7 @@ class AlbumListViewModel @Inject constructor(
 
     private fun setSelectedImageList() {
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
-        viewModelScope.launch {
-            _onListChange.emit(true)
-        }
+        sendEvent(Event.OnListChange(selectedImageInfo.uris.isEmpty()))
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
@@ -313,10 +290,19 @@ class AlbumListViewModel @Inject constructor(
         albumListAdapter.refreshSelectedOrder()
     }
 
-    private fun setImageSelectCount(idx: Int) {
+    private fun sendEvent(event: Event) {
         viewModelScope.launch {
-            _imageCountEvent.emit(idx)
+            _event.emit(event)
         }
+    }
+
+    sealed class Event {
+        data class OnListChange(val state: Boolean) : Event()
+        data class SelectErrorImage(val state: Boolean) : Event()
+        data class StartViewPagerIndex(val idx: Int) : Event()
+        data class ImageCount(val count: Int) : Event()
+        data class ScrollToTop(val state: Boolean) : Event()
+        data class AlbumList(val albums: List<String>) : Event()
     }
 
     companion object {

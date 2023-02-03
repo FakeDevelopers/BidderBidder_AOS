@@ -9,7 +9,6 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -25,7 +24,6 @@ import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
@@ -89,11 +87,11 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             true,
             contentObserver
         )
-        binding.recyclerAlbumList.layoutManager = albumLayoutManager
-        initCollector()
+        binding.recyclerAlbumList.run {
+            layoutManager = albumLayoutManager
+            itemAnimator = null
+        }
         initListener()
-        // 요소가 많아 난잡해지므로 이동 애니메이션은 없앰
-        binding.recyclerAlbumList.itemAnimator = null
     }
 
     override fun onStart() {
@@ -121,61 +119,48 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.event.collect { event ->
+                handleEvent(event)
+            }
+        }
     }
 
-    private fun initCollector() {
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.albumListEvent.collectLatest { albumList ->
-                initSpinner(albumList)
+    private fun handleEvent(event: AlbumListViewModel.Event) {
+        when (event) {
+            is AlbumListViewModel.Event.AlbumList -> initSpinner(event.albums)
+            is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
+            is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
+            is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
+            is AlbumListViewModel.Event.SelectErrorImage -> sendSnackBar(getString(R.string.album_selected_error_image))
+            is AlbumListViewModel.Event.StartViewPagerIndex -> initViewPagerIndex(event.idx)
+        }
+    }
+
+    private fun handleImageCount(count: Int) {
+        binding.textviewPictureSelectCount.apply {
+            text = if (count != -1) {
+                setBackgroundResource(R.drawable.shape_picture_select_count)
+                (count + 1).toString()
+            } else {
+                setBackgroundResource(R.drawable.shape_picture_select_empty)
+                ""
             }
         }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.scrollEvent.collectLatest {
-                binding.recyclerAlbumList.post {
-                    binding.recyclerAlbumList.scrollToPosition(0)
-                }
+    }
+
+    private fun onAlbumChanged(state: Boolean) {
+        binding.buttonAlbumListComplete.visibility =
+            if (state) {
+                View.INVISIBLE
+            } else {
+                View.VISIBLE
             }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.onListChange.collectLatest {
-                binding.buttonAlbumListComplete.visibility =
-                    if (viewModel.selectedImageInfo.uris.isEmpty()) {
-                        View.INVISIBLE
-                    } else {
-                        View.VISIBLE
-                    }
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.selectErrorImage.collectLatest {
-                Toast.makeText(
-                    requireContext(),
-                    getText(R.string.album_selected_error_image),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.startViewPagerIndex.collectLatest { position ->
-                // 같은 요소를
-                if (viewModel.currentViewPagerIdx == position) {
-                    setPagerUI(position)
-                }
-                binding.viewpagerPictureSelect.setCurrentItem(position, false)
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.imageCountEvent.collectLatest { idx ->
-                binding.textviewPictureSelectCount.apply {
-                    text = if (idx != -1) {
-                        setBackgroundResource(R.drawable.shape_picture_select_count)
-                        (idx + 1).toString()
-                    } else {
-                        setBackgroundResource(R.drawable.shape_picture_select_empty)
-                        ""
-                    }
-                }
-            }
+    }
+
+    private fun scrollAlbumListToTop() {
+        binding.recyclerAlbumList.run {
+            post { scrollToPosition(0) }
         }
     }
 
@@ -196,6 +181,13 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 }
             }
         }
+    }
+
+    private fun initViewPagerIndex(idx: Int) {
+        if (viewModel.currentViewPagerIdx == idx) {
+            setPagerUI(idx)
+        }
+        binding.viewpagerPictureSelect.setCurrentItem(idx, false)
     }
 
     private fun setPagerUI(position: Int) {
