@@ -72,8 +72,8 @@ class ProductRegistrationFragment : ProductEditorFragment() {
         }
     }
 
-    override fun onDestroyView() {
+    override fun onStop() {
         viewModel.saveProductWrite()
-        super.onDestroyView()
+        super.onStop()
     }
 }

@@ -26,6 +26,9 @@ import com.fakedevelopers.presentation.ui.util.priceToInt
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.toBitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -234,8 +237,8 @@ class ProductEditorViewModel @Inject constructor(
         }
     }
 
-    fun saveProductWrite() {
-        viewModelScope.launch {
+    fun saveProductWrite(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        CoroutineScope(dispatcher).launch {
             setProductWriteUseCase(
                 ProductWriteDto(
                     title = title.value,
@@ -250,8 +253,8 @@ class ProductEditorViewModel @Inject constructor(
         }
     }
 
-    fun clearProductWrite() {
-        viewModelScope.launch {
+    fun clearProductWrite(dispatcher: CoroutineDispatcher = Dispatchers.IO) {
+        CoroutineScope(dispatcher).launch {
             setProductWriteUseCase()
         }
     }
