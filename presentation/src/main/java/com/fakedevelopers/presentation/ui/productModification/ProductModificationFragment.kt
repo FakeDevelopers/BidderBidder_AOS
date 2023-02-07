@@ -26,9 +26,7 @@ class ProductModificationFragment : ProductEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val productModificationDto = args.productModificationDto
         viewModel.editorToolbarTitle = getString(R.string.product_modification_title)
-        viewModel.productId = productModificationDto.productId
     }
 
     override fun initListener() {
@@ -38,7 +36,7 @@ class ProductModificationFragment : ProductEditorFragment() {
             if (viewModel.condition.value && checkPriceCondition()) {
                 sendSnackBar("게시글 수정 요청")
                 binding.includeProductEditorToolbar.buttonToolbarRegistration.isEnabled = false
-                viewModel.requestProductModification(viewModel.productId)
+                viewModel.requestProductModification()
             }
         }
     }
