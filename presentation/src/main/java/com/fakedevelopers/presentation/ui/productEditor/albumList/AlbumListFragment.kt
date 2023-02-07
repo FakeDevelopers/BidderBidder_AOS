@@ -21,7 +21,6 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
-import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,7 +39,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                     viewModel.setAlbumViewMode(AlbumViewState.GRID)
                 } else {
-                    toProductRegistration(args.productEditorDto)
+                    toProductRegistration(args.selectedImageInfo)
                 }
             }
         }
@@ -78,8 +77,8 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        if (args.productEditorDto.selectedImageInfo.uris.isNotEmpty()) {
-            viewModel.initSelectedImageList(args.productEditorDto.selectedImageInfo)
+        if (args.selectedImageInfo.uris.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.selectedImageInfo)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
         requireActivity().contentResolver.registerContentObserver(
@@ -101,20 +100,19 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         viewModel.checkSelectedImages(binding.viewpagerPictureSelect.currentItem)
     }
 
-    private fun toProductRegistration(dto: ProductEditorDto) {
-        dto.selectedImageInfo.apply {
+    private fun toProductRegistration(selectedImageInfo: SelectedImageInfo) {
+        selectedImageInfo.run {
             uris.clear()
             uris.addAll(viewModel.selectedImageInfo.uris)
             changeBitmaps.clear()
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
-        // 선택한 이미지 uri를 들고 돌아갑니다
         findNavController().popBackStack()
     }
 
     private fun initListener() {
         binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.productEditorDto)
+            toProductRegistration(args.selectedImageInfo)
         }
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))

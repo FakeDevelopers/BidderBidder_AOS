@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.model.ProductDetailInfo
 import com.fakedevelopers.domain.usecase.GetProductDetailUseCase
+import com.fakedevelopers.presentation.model.ProductModificationDto
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.DateUtil
@@ -58,6 +59,22 @@ class ProductDetailViewModel @Inject constructor(
         }
     }
 
+    fun toProductModification() {
+        event(
+            Event.ToProductModification(
+                ProductModificationDto(
+                    productId = productId,
+                    expirationDate = productDetailInfo.value.expirationDate,
+                    hopePrice = productDetailInfo.value.hopePrice,
+                    images = productDetailInfo.value.images,
+                    openingBid = productDetailInfo.value.openingBid,
+                    productContent = productDetailInfo.value.productContent,
+                    productTitle = productDetailInfo.value.productTitle
+                )
+            )
+        )
+    }
+
     private fun startTimerTask(expirationDate: String) {
         timerTask = ExpirationTimerTask(
             remainTime = dateUtil.getRemainTimeMillisecond(expirationDate) ?: 0L,
@@ -87,5 +104,6 @@ class ProductDetailViewModel @Inject constructor(
         data class Expired(val state: Boolean) : Event()
         data class Timer(val remainTime: RemainTime) : Event()
         data class CreatedDate(val date: String) : Event()
+        data class ToProductModification(val productModificationDto: ProductModificationDto) : Event()
     }
 }

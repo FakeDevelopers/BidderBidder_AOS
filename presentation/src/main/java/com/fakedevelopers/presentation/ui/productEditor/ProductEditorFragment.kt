@@ -19,8 +19,6 @@ import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.domain.model.ProductCategoryDto
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductEditorBinding
@@ -31,7 +29,6 @@ import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Compani
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_EXPIRATION_TIME
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_PRICE_LENGTH
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_TICK_LENGTH
-import com.fakedevelopers.presentation.ui.productModification.ProductModificationFragmentArgs
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
 import com.fakedevelopers.presentation.ui.util.priceToLong
@@ -45,9 +42,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
     R.layout.fragment_product_editor
 ) {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
-    protected lateinit var permissionLauncher: ActivityResultLauncher<String>
-
-    protected val args: ProductModificationFragmentArgs by navArgs()
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     protected val viewModel: ProductEditorViewModel by viewModels()
     private val expirationFilter by lazy {
@@ -67,15 +62,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-
-        args.productEditorDto?.let {
-            viewModel.initState(it)
-            if (it.selectedImageInfo.uris.isNotEmpty()) {
-                ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
-                    .attachToRecyclerView(binding.recyclerProductEditor)
-            }
-        }
-
+        initSelectedImages()
         if (viewModel.category.isNotEmpty()) {
             setCategory(viewModel.category)
         }
@@ -110,6 +97,8 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
     }
 
     protected abstract fun navigatePictureSelectFragment()
+
+    protected abstract fun initSelectedImages()
 
     protected open fun initListener() {
         // 가격 필터 등록
@@ -196,7 +185,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
             }
     }
 
-    private fun initCollector() {
+    protected open fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.productEditorResponse.collectLatest {
                 if (it.isSuccess) {
@@ -245,8 +234,8 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
 
     // 희망가 <= 최소 입찰가 인지 검사
     protected fun checkPriceCondition(): Boolean {
-        val openingBid = viewModel.openingBid.priceToLong() ?: return false
-        val hopePrice = viewModel.hopePrice.priceToLong()
+        val openingBid = viewModel.openingBid.value.priceToLong() ?: return false
+        val hopePrice = viewModel.hopePrice.value.priceToLong()
         if (hopePrice != null && hopePrice <= openingBid) {
             sendSnackBar(getString(R.string.product_editor_error_minimum_bid))
             return false
