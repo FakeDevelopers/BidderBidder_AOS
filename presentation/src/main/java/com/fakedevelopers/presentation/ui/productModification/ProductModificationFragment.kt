@@ -10,7 +10,6 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.model.ProductModificationDto
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productEditor.ProductEditorFragment
-import com.orhanobut.logger.Logger
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +30,6 @@ class ProductModificationFragment : ProductEditorFragment() {
         val productModificationDto = args.productModificationDto
         viewModel.editorToolbarTitle = getString(R.string.product_modification_title)
         viewModel.productId = productModificationDto.productId
-        Logger.t("datatest").i("$productModificationDto")
         initState(productModificationDto)
     }
 
