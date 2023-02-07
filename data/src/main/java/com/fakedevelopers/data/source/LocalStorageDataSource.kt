@@ -54,4 +54,11 @@ class LocalStorageDataSource @Inject constructor(
 
     suspend fun getProductWrite(): ProductWrite =
         context.productWriteDatastore.data.first()
+
+    suspend fun clearProductWrite() =
+        runCatching {
+            context.productWriteDatastore.updateData { productWrite ->
+                productWrite.toBuilder().clear().build()
+            }
+        }.isSuccess
 }

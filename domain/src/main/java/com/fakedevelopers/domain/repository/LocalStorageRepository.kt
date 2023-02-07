@@ -7,4 +7,5 @@ interface LocalStorageRepository {
     suspend fun setSearchHistory(searchHistory: List<String>): Boolean
     suspend fun getProductWrite(): ProductWriteDto
     suspend fun setProductWrite(productWriteDto: ProductWriteDto): Boolean
+    suspend fun clearProductWrite(): Boolean
 }

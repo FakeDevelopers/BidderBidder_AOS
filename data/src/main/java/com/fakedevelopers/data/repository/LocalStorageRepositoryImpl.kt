@@ -29,4 +29,7 @@ class LocalStorageRepositoryImpl @Inject constructor(
 
     override suspend fun setProductWrite(productWriteDto: ProductWriteDto) =
         localStorageDataSource.setProductWrite(productWriteDto)
+
+    override suspend fun clearProductWrite() =
+        localStorageDataSource.clearProductWrite()
 }
