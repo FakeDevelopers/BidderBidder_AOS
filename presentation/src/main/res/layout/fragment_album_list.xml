@@ -159,6 +159,7 @@
                 android:text="회전"
                 android:textColor="@color/black"
                 android:visibility="@{vm.albumViewMode == AlbumViewState.PAGER ? View.VISIBLE : View.GONE}"
+                android:onClick="@{() -> vm.rotateCurrentImage()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
