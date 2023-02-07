@@ -7,7 +7,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.model.ProductModificationDto
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.productEditor.ProductEditorFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,17 +29,6 @@ class ProductModificationFragment : ProductEditorFragment() {
         val productModificationDto = args.productModificationDto
         viewModel.editorToolbarTitle = getString(R.string.product_modification_title)
         viewModel.productId = productModificationDto.productId
-        initState(productModificationDto)
-    }
-
-    private fun initState(productModificationDto: ProductModificationDto) {
-        binding.edittextProductEditorTitle.setText(productModificationDto.productTitle)
-        binding.edittextProductEditorHopePrice.setText(productModificationDto.hopePrice.toString())
-        binding.edittextProductEditorContent.setText(productModificationDto.productContent)
-        binding.edittextProductEditorTick.setText(productModificationDto.tick.toString())
-        binding.edittextProductEditorOpeningBid.setText(productModificationDto.openingBid.toString())
-        binding.edittextProductEditorExpiration.setText(productModificationDto.expirationDate)
-
     }
 
     override fun initListener() {
