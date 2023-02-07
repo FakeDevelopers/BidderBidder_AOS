@@ -41,12 +41,12 @@ class LocalStorageDataSource @Inject constructor(
             context.productWriteDatastore.updateData { productWrite ->
                 productWrite.toBuilder()
                     .setTitle(productWriteDto.title)
-                    .setHopePrice(productWrite.hopePrice)
-                    .setOpeningBid(productWrite.openingBid)
-                    .setTick(productWrite.tick)
-                    .setExpiration(productWrite.expiration)
-                    .setContent(productWrite.content)
-                    .setCategoryId(productWrite.categoryId)
+                    .setHopePrice(productWriteDto.hopePrice)
+                    .setOpeningBid(productWriteDto.openingBid)
+                    .setTick(productWriteDto.tick)
+                    .setExpiration(productWriteDto.expiration)
+                    .setContent(productWriteDto.content)
+                    .setCategoryId(productWriteDto.categoryId)
                     .build()
             }
         }.isSuccess
