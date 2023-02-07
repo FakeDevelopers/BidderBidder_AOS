@@ -74,7 +74,7 @@ class ProductEditorViewModel @Inject constructor(
     var category = listOf<ProductCategoryDto>()
     private var categoryID = 0L
 
-    var productId = 0L
+    private var productId = 0L
 
     var editorToolbarTitle = ""
     val selectedImageInfo = SelectedImageInfo()
@@ -140,7 +140,7 @@ class ProductEditorViewModel @Inject constructor(
         }
     }
 
-    fun requestProductModification(productId: Long) {
+    fun requestProductModification() {
         viewModelScope.launch {
             val imageInfo = getMultipartList()
             _productEditorResponse.emit(productModificationUseCase(productId, getProductEditorInfo(imageInfo)))
@@ -180,6 +180,7 @@ class ProductEditorViewModel @Inject constructor(
                 expiration.emit(it.expirationDate)
                 content.emit(it.productContent)
             }
+            productId = it.productId
         }
     }
 
