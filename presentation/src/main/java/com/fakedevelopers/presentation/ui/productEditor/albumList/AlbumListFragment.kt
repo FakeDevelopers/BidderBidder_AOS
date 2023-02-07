@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumList
 
-import android.content.ContentUris
 import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -19,18 +17,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
-import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
-import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
-import com.fakedevelopers.presentation.ui.util.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
-import kotlin.collections.set
-import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
@@ -47,7 +39,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                     viewModel.setAlbumViewMode(AlbumViewState.GRID)
                 } else {
-                    toProductRegistration(args.productEditorDto)
+                    toProductRegistration(args.selectedImageInfo)
                 }
             }
         }
@@ -73,18 +65,32 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
+    private val albumLayoutManager by lazy {
+        object : GridLayoutManager(requireContext(), 3) {
+            override fun onLayoutCompleted(state: RecyclerView.State?) {
+                super.onLayoutCompleted(state)
+                viewModel.scrollToTop()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        if (args.productEditorDto.selectedImageInfo.uris.isNotEmpty()) {
-            viewModel.initSelectedImageList(args.productEditorDto.selectedImageInfo)
+        if (args.selectedImageInfo.uris.isNotEmpty()) {
+            viewModel.initSelectedImageList(args.selectedImageInfo)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
-        initCollector()
+        requireActivity().contentResolver.registerContentObserver(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            true,
+            contentObserver
+        )
+        binding.recyclerAlbumList.run {
+            layoutManager = albumLayoutManager
+            itemAnimator = null
+        }
         initListener()
-        getPictures()
-        // 요소가 많아 난잡해지므로 이동 애니메이션은 없앰
-        binding.recyclerAlbumList.itemAnimator = null
     }
 
     override fun onStart() {
@@ -94,86 +100,78 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         viewModel.checkSelectedImages(binding.viewpagerPictureSelect.currentItem)
     }
 
-    private fun toProductRegistration(dto: ProductEditorDto) {
-        dto.selectedImageInfo.apply {
+    private fun toProductRegistration(selectedImageInfo: SelectedImageInfo) {
+        selectedImageInfo.run {
             uris.clear()
             uris.addAll(viewModel.selectedImageInfo.uris)
             changeBitmaps.clear()
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
-        // 선택한 이미지 uri를 들고 돌아갑니다
         findNavController().popBackStack()
     }
 
-    private fun getPictures() {
-        val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        requireActivity().contentResolver.registerContentObserver(uri, true, contentObserver)
-        requireActivity().contentResolver.query(
-            uri,
-            arrayOf(
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.DATA,
-                MediaStore.Images.ImageColumns.DATE_MODIFIED
-            ),
-            null,
-            null,
-            MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
-        )?.use { cursor ->
-            val albums = mutableMapOf<String, MutableList<AlbumItem>>()
-            albums[ALL_PICTURES] = mutableListOf()
-            val albumNameSummary = mutableMapOf<String, String>()
-            albumNameSummary[ALL_PICTURES] = ALL_PICTURES
-            while (cursor.moveToNext()) {
-                // 이미지 Uri
-                val imageUri = ContentUris.withAppendedId(
-                    uri,
-                    cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID))
-                ).toString()
-                // 최근 수정 날짜
-                val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                val albumItem = AlbumItem(imageUri, date)
-                // 전체보기에 저장
-                albums[ALL_PICTURES]?.add(albumItem)
-                // 이미지 상대 경로에 저장
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
-                    val url = path.substringBeforeLast("/")
-                    if (!albumNameSummary.containsKey(url)) {
-                        albumNameSummary[url] = url.split("/").last()
-                        albums[url] = mutableListOf()
-                    }
-                    albums[url]?.add(albumItem)
-                }
-            }
-            viewModel.initAlbumInfo(albums)
-            initSpinner(albumNameSummary)
-            // 앨범 전환 시 가장 위로 스크롤
-            binding.recyclerAlbumList.layoutManager = object : GridLayoutManager(requireContext(), 3) {
-                override fun onLayoutCompleted(state: RecyclerView.State?) {
-                    super.onLayoutCompleted(state)
-                    // onLayoutCompleted는 정말 여러번 호출됩니다.
-                    // 스크롤을 올리는 이벤트를 단 한번만 실행하기 위해 flag를 사용했읍니다.
-                    if (viewModel.scrollToTopFlag && viewModel.isAlbumListChanged()) {
-                        viewModel.switchScrollFlag()
-                        binding.recyclerAlbumList.post {
-                            binding.recyclerAlbumList.scrollToPosition(0)
-                        }
-                    }
-                }
+    private fun initListener() {
+        binding.buttonAlbumListComplete.setOnClickListener {
+            toProductRegistration(args.selectedImageInfo)
+        }
+        binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
+        ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
+            .attachToRecyclerView(binding.recyclerSelectedPicture)
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.event.collect { event ->
+                handleEvent(event)
             }
         }
     }
 
-    private fun initSpinner(albumNameSummary: Map<String, String>) {
-        val (keys, values) = albumNameSummary.keys.toList() to albumNameSummary.values.toList()
+    private fun handleEvent(event: AlbumListViewModel.Event) {
+        when (event) {
+            is AlbumListViewModel.Event.AlbumList -> initSpinner(event.albums)
+            is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
+            is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
+            is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
+            is AlbumListViewModel.Event.SelectErrorImage -> sendSnackBar(getString(R.string.album_selected_error_image))
+            is AlbumListViewModel.Event.StartViewPagerIndex -> initViewPagerIndex(event.idx)
+        }
+    }
+
+    private fun handleImageCount(count: Int) {
+        binding.textviewPictureSelectCount.apply {
+            text = if (count != -1) {
+                setBackgroundResource(R.drawable.shape_picture_select_count)
+                (count + 1).toString()
+            } else {
+                setBackgroundResource(R.drawable.shape_picture_select_empty)
+                ""
+            }
+        }
+    }
+
+    private fun onAlbumChanged(state: Boolean) {
+        binding.buttonAlbumListComplete.visibility =
+            if (state) {
+                View.INVISIBLE
+            } else {
+                View.VISIBLE
+            }
+    }
+
+    private fun scrollAlbumListToTop() {
+        binding.recyclerAlbumList.run {
+            post { scrollToPosition(0) }
+        }
+    }
+
+    private fun initSpinner(albums: List<String>) {
         binding.spinnerAlbumList.apply {
             adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                values
+                albums.map { album -> album.substringAfterLast("/") }
             )
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.updateAlbumList(keys[position])
+                    viewModel.updateAlbumList(albums[position])
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -183,67 +181,11 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    private fun initListener() {
-        binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.productEditorDto)
+    private fun initViewPagerIndex(idx: Int) {
+        if (viewModel.currentViewPagerIdx == idx) {
+            setPagerUI(idx)
         }
-        binding.buttonAlbumListRotate.setOnClickListener {
-            val uri = viewModel.getCurrentUri()
-            // 로테이트된 비트맵이 있으면 그걸 돌림
-            // 없다면 새로 추가
-            viewModel.getEditedBitmapInfo(uri)?.let { bitmapInfo ->
-                updateBitmapInfo(uri, bitmapInfo)
-            } ?: addBitmapInfo(uri)
-            // 이미지 새로고침
-            viewModel.albumPagerAdapter.notifyItemChanged(viewModel.currentViewPagerIdx)
-        }
-        binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
-        ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
-            .attachToRecyclerView(binding.recyclerSelectedPicture)
-    }
-
-    private fun initCollector() {
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.onListChange.collectLatest {
-                binding.buttonAlbumListComplete.visibility =
-                    if (viewModel.selectedImageInfo.uris.isEmpty()) {
-                        View.INVISIBLE
-                    } else {
-                        View.VISIBLE
-                    }
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.selectErrorImage.collectLatest {
-                Toast.makeText(
-                    requireContext(),
-                    getText(R.string.album_selected_error_image),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.startViewPagerIndex.collectLatest { position ->
-                // 같은 요소를
-                if (viewModel.currentViewPagerIdx == position) {
-                    setPagerUI(position)
-                }
-                binding.viewpagerPictureSelect.setCurrentItem(position, false)
-            }
-        }
-        repeatOnStarted(viewLifecycleOwner) {
-            viewModel.imageCountEvent.collectLatest { idx ->
-                binding.textviewPictureSelectCount.apply {
-                    text = if (idx != -1) {
-                        setBackgroundResource(R.drawable.shape_picture_select_count)
-                        (idx + 1).toString()
-                    } else {
-                        setBackgroundResource(R.drawable.shape_picture_select_empty)
-                        ""
-                    }
-                }
-            }
-        }
+        binding.viewpagerPictureSelect.setCurrentItem(idx, false)
     }
 
     private fun setPagerUI(position: Int) {
@@ -252,32 +194,10 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
     }
 
-    // 수정된 이미지 비트맵 추가
-    private fun addBitmapInfo(uri: String) {
-        // 이미지가 선택이 안되어 있다면 이미지 선택
-        if (viewModel.findSelectedImageIndex(uri) == -1) {
-            viewModel.setSelectedState(uri, true)
-        }
-        viewModel.addBitmapInfo(uri, BitmapInfo(ROTATE_DEGREE))
-    }
-
-    // BitmapInfo 갱신
-    private fun updateBitmapInfo(uri: String, bitmapInfo: BitmapInfo) {
-        bitmapInfo.degree += ROTATE_DEGREE
-        // 360도 돌아갔다면 변경 사항이 없는거다. bitmapInfo를 삭제한다.
-        if (bitmapInfo.degree.roundToInt() == 360) {
-            viewModel.removeBitmapInfo(uri)
-        }
-    }
-
     override fun onDestroyView() {
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
         requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         backPressedCallback.remove()
         super.onDestroyView()
-    }
-
-    companion object {
-        const val ALL_PICTURES = "전체보기"
     }
 }
