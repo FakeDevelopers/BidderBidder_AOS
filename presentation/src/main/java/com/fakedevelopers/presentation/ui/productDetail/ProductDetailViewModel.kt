@@ -69,7 +69,8 @@ class ProductDetailViewModel @Inject constructor(
                     images = productDetailInfo.value.images,
                     openingBid = productDetailInfo.value.openingBid,
                     productContent = productDetailInfo.value.productContent,
-                    productTitle = productDetailInfo.value.productTitle
+                    productTitle = productDetailInfo.value.productTitle,
+                    tick = productDetailInfo.value.tick
                 )
             )
         )
