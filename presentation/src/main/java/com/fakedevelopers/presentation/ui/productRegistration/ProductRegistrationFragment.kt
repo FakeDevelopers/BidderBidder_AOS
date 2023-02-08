@@ -2,7 +2,6 @@ package com.fakedevelopers.presentation.ui.productRegistration
 
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -14,21 +13,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class ProductRegistrationFragment : ProductEditorFragment() {
-
+class ProductRegistrationFragment : ProductEditorFragment(
+    R.string.product_registration_title
+) {
     private val args: ProductRegistrationFragmentArgs by navArgs()
-
-    override val backPressedCallback by lazy {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
-            }
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.editorToolbarTitle = "내 물건 등록"
         viewModel.loadProductWrite()
     }
 
@@ -72,8 +63,12 @@ class ProductRegistrationFragment : ProductEditorFragment() {
         }
     }
 
-    override fun onStop() {
+    override fun handleOnBackPressed() {
+        findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
+    }
+
+    override fun onDestroyView() {
         viewModel.saveProductWrite()
-        super.onStop()
+        super.onDestroyView()
     }
 }

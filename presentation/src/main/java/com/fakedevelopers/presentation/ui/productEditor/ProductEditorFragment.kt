@@ -14,6 +14,7 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.isVisible
@@ -31,6 +32,7 @@ import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Compani
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
+import com.fakedevelopers.presentation.ui.util.priceToInt
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,11 +40,11 @@ import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
+abstract class ProductEditorFragment(
+    @StringRes private val titleId: Int
+) : BaseFragment<FragmentProductEditorBinding>(
     R.layout.fragment_product_editor
 ) {
-    private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
-    private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     protected val viewModel: ProductEditorViewModel by viewModels()
     private val expirationFilter by lazy {
@@ -51,10 +53,29 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         }
     }
 
-    protected open val backPressedCallback by lazy {
+    private val permissionLauncher: ActivityResultLauncher<String> by lazy {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                checkStoragePermission()
+            } else {
+                sendSnackBar(getString(R.string.read_external_storage))
+            }
+        }
+    }
+
+    private val keyboardVisibilityUtils: KeyboardVisibilityUtils by lazy {
+        KeyboardVisibilityUtils(
+            requireActivity().window,
+            onHideKeyboard = {
+                binding.textviewProductEditorContentLength.isVisible = false
+            }
+        )
+    }
+
+    private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().popBackStack()
+                handleOnBackPressed()
             }
         }
     }
@@ -62,11 +83,11 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
+        binding.includeProductEditorToolbar.textviewToolbarTitle.setText(titleId)
         initSelectedImages()
         if (viewModel.category.isNotEmpty()) {
             setCategory(viewModel.category)
         }
-        initResultLauncher()
         initListener()
         initCollector()
     }
@@ -100,11 +121,13 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
 
     protected abstract fun initSelectedImages()
 
+    protected abstract fun handleOnBackPressed()
+
     protected open fun initListener() {
         // 가격 필터 등록
-        initEditTextFilter(binding.edittextProductEditorHopePrice, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductEditorOpeningBid, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductEditorTick, MAX_TICK_LENGTH)
+        binding.edittextProductEditorHopePrice.setPriceFilter(MAX_PRICE_LENGTH)
+        binding.edittextProductEditorOpeningBid.setPriceFilter(MAX_PRICE_LENGTH)
+        binding.edittextProductEditorTick.setPriceFilter(MAX_TICK_LENGTH)
         // 만료 시간 필터 등록
         binding.edittextProductEditorExpiration.apply {
             addTextChangedListener(object : TextWatcher {
@@ -113,7 +136,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    s.toString().replace(IS_NOT_NUMBER.toRegex(), "").toIntOrNull()?.let {
+                    s.toString().priceToInt()?.let {
                         if (it > MAX_EXPIRATION_TIME) {
                             setText(MAX_EXPIRATION_TIME.toString())
                             setSelection(text.length)
@@ -134,13 +157,6 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         binding.imageviewSelectPicture.setOnClickListener {
             checkStoragePermission()
         }
-        // 키보드 이벤트
-        keyboardVisibilityUtils = KeyboardVisibilityUtils(
-            requireActivity().window,
-            onHideKeyboard = {
-                binding.textviewProductEditorContentLength.isVisible = false
-            }
-        )
         // 본문 에딧텍스트 터치, 포커싱
         binding.edittextProductEditorContent.apply {
             setOnClickListener {
@@ -154,7 +170,6 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         binding.includeProductEditorToolbar.buttonToolbarBack.setOnClickListener {
             backPressedCallback.handleOnBackPressed()
         }
-
         binding.spinnerProductEditorCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -165,24 +180,6 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
                 }
             }
         }
-    }
-
-    private fun initEditTextFilter(editText: EditText, length: Int) {
-        PriceTextWatcher.addEditTextFilter(
-            editText,
-            length
-        ) { viewModel.checkEditorCondition() }
-    }
-
-    private fun initResultLauncher() {
-        permissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    checkStoragePermission()
-                } else {
-                    sendSnackBar(getString(R.string.read_external_storage))
-                }
-            }
     }
 
     protected open fun initCollector() {
@@ -199,7 +196,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.content.collectLatest {
                 binding.textviewProductEditorContentLength.apply {
-                    text = "${it.length} / $MAX_CONTENT_LENGTH"
+                    text = getString(R.string.product_editor_contents_length, it.length, MAX_CONTENT_LENGTH)
                     val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
                     setTextColor(color)
                 }
@@ -214,7 +211,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.categoryEvent.collectLatest { result ->
                 val category = result.getOrNull()
-                if (category.isNullOrEmpty()) {
+                if (category.isNullOrEmpty().not()) {
                     handleCategoryResult(category)
                 } else {
                     ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
@@ -259,5 +256,12 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         super.onDestroyView()
         backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
+    }
+
+    private fun EditText.setPriceFilter(length: Int) {
+        PriceTextWatcher.addEditTextFilter(
+            this,
+            length
+        ) { viewModel.checkEditorCondition() }
     }
 }
