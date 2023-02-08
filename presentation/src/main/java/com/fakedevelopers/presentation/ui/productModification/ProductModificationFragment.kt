@@ -1,7 +1,5 @@
 package com.fakedevelopers.presentation.ui.productModification
 
-import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -12,7 +10,9 @@ import com.fakedevelopers.presentation.ui.productEditor.ProductEditorFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class ProductModificationFragment : ProductEditorFragment() {
+class ProductModificationFragment : ProductEditorFragment(
+    R.string.product_modification_title
+) {
 
     private val args: ProductModificationFragmentArgs by navArgs()
 
@@ -22,11 +22,6 @@ class ProductModificationFragment : ProductEditorFragment() {
                 findNavController().navigate(R.id.action_productModificationFragment_to_productListFragment)
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewModel.editorToolbarTitle = getString(R.string.product_modification_title)
     }
 
     override fun initListener() {

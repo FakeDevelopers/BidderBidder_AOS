@@ -14,7 +14,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-class ProductRegistrationFragment : ProductEditorFragment() {
+class ProductRegistrationFragment : ProductEditorFragment(
+    R.string.product_registration_title
+) {
 
     private val args: ProductRegistrationFragmentArgs by navArgs()
 
@@ -28,7 +30,6 @@ class ProductRegistrationFragment : ProductEditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.editorToolbarTitle = "내 물건 등록"
         viewModel.loadProductWrite()
     }
 

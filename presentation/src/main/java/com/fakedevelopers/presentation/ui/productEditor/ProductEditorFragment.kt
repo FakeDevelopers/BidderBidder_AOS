@@ -14,6 +14,7 @@ import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.StringRes
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
 import androidx.core.view.isVisible
@@ -38,7 +39,9 @@ import io.getstream.logging.helper.stringify
 import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
-abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding>(
+abstract class ProductEditorFragment(
+    @StringRes private val titleId: Int
+) : BaseFragment<FragmentProductEditorBinding>(
     R.layout.fragment_product_editor
 ) {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
@@ -62,6 +65,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
+        binding.includeProductEditorToolbar.textviewToolbarTitle.setText(titleId)
         initSelectedImages()
         if (viewModel.category.isNotEmpty()) {
             setCategory(viewModel.category)

@@ -76,7 +76,6 @@ class ProductEditorViewModel @Inject constructor(
 
     private var productId = 0L
 
-    var editorToolbarTitle = ""
     val selectedImageInfo = SelectedImageInfo()
 
     var title = MutableStateFlow("")
