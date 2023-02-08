@@ -44,7 +44,6 @@ abstract class ProductEditorFragment(
 ) : BaseFragment<FragmentProductEditorBinding>(
     R.layout.fragment_product_editor
 ) {
-    private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
 
     protected val viewModel: ProductEditorViewModel by viewModels()
     private val expirationFilter by lazy {
@@ -61,6 +60,15 @@ abstract class ProductEditorFragment(
                 sendSnackBar(getString(R.string.read_external_storage))
             }
         }
+    }
+
+    private val keyboardVisibilityUtils: KeyboardVisibilityUtils by lazy {
+        KeyboardVisibilityUtils(
+            requireActivity().window,
+            onHideKeyboard = {
+                binding.textviewProductEditorContentLength.isVisible = false
+            }
+        )
     }
 
     private val backPressedCallback by lazy {
@@ -148,13 +156,6 @@ abstract class ProductEditorFragment(
         binding.imageviewSelectPicture.setOnClickListener {
             checkStoragePermission()
         }
-        // 키보드 이벤트
-        keyboardVisibilityUtils = KeyboardVisibilityUtils(
-            requireActivity().window,
-            onHideKeyboard = {
-                binding.textviewProductEditorContentLength.isVisible = false
-            }
-        )
         // 본문 에딧텍스트 터치, 포커싱
         binding.edittextProductEditorContent.apply {
             setOnClickListener {
