@@ -169,7 +169,6 @@ abstract class ProductEditorFragment(
         binding.includeProductEditorToolbar.buttonToolbarBack.setOnClickListener {
             backPressedCallback.handleOnBackPressed()
         }
-
         binding.spinnerProductEditorCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -203,7 +202,7 @@ abstract class ProductEditorFragment(
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.content.collectLatest {
                 binding.textviewProductEditorContentLength.apply {
-                    text = "${it.length} / $MAX_CONTENT_LENGTH"
+                    text = getString(R.string.product_editor_contents_length, it.length, MAX_CONTENT_LENGTH)
                     val color = if (it.length == MAX_CONTENT_LENGTH) Color.RED else Color.GRAY
                     setTextColor(color)
                 }

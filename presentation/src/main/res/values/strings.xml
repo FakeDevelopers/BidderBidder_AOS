@@ -77,6 +77,7 @@
     <string name="toolbar_search">검색</string>
     <string name="toolbar_alarm">알림</string>
     <!-- Strings related to Product Editor -->
+    <string name="product_editor_contents_length">%1d / %2d</string>
     <string name="product_editor_button">등록</string>
     <string name="product_editor_category">카테고리</string>
     <string name="product_editor_button_to_album">이미지 선택 버튼</string>
