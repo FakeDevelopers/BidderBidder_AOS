@@ -214,7 +214,7 @@ abstract class ProductEditorFragment : BaseFragment<FragmentProductEditorBinding
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.categoryEvent.collectLatest { result ->
                 val category = result.getOrNull()
-                if (category.isNullOrEmpty()) {
+                if (category.isNullOrEmpty().not()) {
                     handleCategoryResult(category)
                 } else {
                     ApiErrorHandler.printMessage(result.exceptionOrNull()?.stringify().toString())
