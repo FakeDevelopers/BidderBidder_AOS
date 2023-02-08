@@ -32,6 +32,7 @@ import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Compani
 import com.fakedevelopers.presentation.ui.productEditor.PriceTextWatcher.Companion.MAX_TICK_LENGTH
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.KeyboardVisibilityUtils
+import com.fakedevelopers.presentation.ui.util.priceToInt
 import com.fakedevelopers.presentation.ui.util.priceToLong
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
@@ -124,9 +125,9 @@ abstract class ProductEditorFragment(
 
     protected open fun initListener() {
         // 가격 필터 등록
-        initEditTextFilter(binding.edittextProductEditorHopePrice, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductEditorOpeningBid, MAX_PRICE_LENGTH)
-        initEditTextFilter(binding.edittextProductEditorTick, MAX_TICK_LENGTH)
+        binding.edittextProductEditorHopePrice.setPriceFilter(MAX_PRICE_LENGTH)
+        binding.edittextProductEditorOpeningBid.setPriceFilter(MAX_PRICE_LENGTH)
+        binding.edittextProductEditorTick.setPriceFilter(MAX_TICK_LENGTH)
         // 만료 시간 필터 등록
         binding.edittextProductEditorExpiration.apply {
             addTextChangedListener(object : TextWatcher {
@@ -135,7 +136,7 @@ abstract class ProductEditorFragment(
                 }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    s.toString().replace(IS_NOT_NUMBER.toRegex(), "").toIntOrNull()?.let {
+                    s.toString().priceToInt()?.let {
                         if (it > MAX_EXPIRATION_TIME) {
                             setText(MAX_EXPIRATION_TIME.toString())
                             setSelection(text.length)
@@ -179,13 +180,6 @@ abstract class ProductEditorFragment(
                 }
             }
         }
-    }
-
-    private fun initEditTextFilter(editText: EditText, length: Int) {
-        PriceTextWatcher.addEditTextFilter(
-            editText,
-            length
-        ) { viewModel.checkEditorCondition() }
     }
 
     protected open fun initCollector() {
@@ -262,5 +256,12 @@ abstract class ProductEditorFragment(
         super.onDestroyView()
         backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
+    }
+
+    private fun EditText.setPriceFilter(length: Int) {
+        PriceTextWatcher.addEditTextFilter(
+            this,
+            length
+        ) { viewModel.checkEditorCondition() }
     }
 }
