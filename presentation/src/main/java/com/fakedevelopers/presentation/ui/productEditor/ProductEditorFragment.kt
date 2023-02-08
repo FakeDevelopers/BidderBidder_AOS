@@ -45,12 +45,21 @@ abstract class ProductEditorFragment(
     R.layout.fragment_product_editor
 ) {
     private lateinit var keyboardVisibilityUtils: KeyboardVisibilityUtils
-    private lateinit var permissionLauncher: ActivityResultLauncher<String>
 
     protected val viewModel: ProductEditorViewModel by viewModels()
     private val expirationFilter by lazy {
         InputFilter { source, _, _, _, dstart, _ ->
             if (source == "0" && dstart == 0) "" else source.replace(IS_NOT_NUMBER.toRegex(), "")
+        }
+    }
+
+    private val permissionLauncher: ActivityResultLauncher<String> by lazy {
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                checkStoragePermission()
+            } else {
+                sendSnackBar(getString(R.string.read_external_storage))
+            }
         }
     }
 
@@ -70,7 +79,6 @@ abstract class ProductEditorFragment(
         if (viewModel.category.isNotEmpty()) {
             setCategory(viewModel.category)
         }
-        initResultLauncher()
         initListener()
         initCollector()
     }
@@ -176,17 +184,6 @@ abstract class ProductEditorFragment(
             editText,
             length
         ) { viewModel.checkEditorCondition() }
-    }
-
-    private fun initResultLauncher() {
-        permissionLauncher =
-            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                if (isGranted) {
-                    checkStoragePermission()
-                } else {
-                    sendSnackBar(getString(R.string.read_external_storage))
-                }
-            }
     }
 
     protected open fun initCollector() {
