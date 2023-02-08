@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.productModification
 
-import androidx.activity.OnBackPressedCallback
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -13,16 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class ProductModificationFragment : ProductEditorFragment(
     R.string.product_modification_title
 ) {
-
     private val args: ProductModificationFragmentArgs by navArgs()
-
-    override val backPressedCallback by lazy {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                findNavController().navigate(R.id.action_productModificationFragment_to_productListFragment)
-            }
-        }
-    }
 
     override fun initListener() {
         super.initListener()
@@ -49,5 +39,9 @@ class ProductModificationFragment : ProductEditorFragment(
             ItemTouchHelper(DragAndDropCallback(viewModel.adapter))
                 .attachToRecyclerView(binding.recyclerProductEditor)
         }
+    }
+
+    override fun handleOnBackPressed() {
+        findNavController().navigate(R.id.action_productModificationFragment_to_productListFragment)
     }
 }

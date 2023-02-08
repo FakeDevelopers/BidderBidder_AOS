@@ -63,10 +63,10 @@ abstract class ProductEditorFragment(
         }
     }
 
-    protected open val backPressedCallback by lazy {
+    private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                findNavController().popBackStack()
+                handleOnBackPressed()
             }
         }
     }
@@ -111,6 +111,8 @@ abstract class ProductEditorFragment(
     protected abstract fun navigatePictureSelectFragment()
 
     protected abstract fun initSelectedImages()
+
+    protected abstract fun handleOnBackPressed()
 
     protected open fun initListener() {
         // 가격 필터 등록
