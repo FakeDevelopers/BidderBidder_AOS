@@ -47,9 +47,6 @@ class AlbumListViewModel @Inject constructor(
     var currentViewPagerIdx = 0
         private set
 
-    // 앨범 전환 시 리스트를 탑으로 올리기 위한 플래그
-    private var scrollToTopFlag = false
-
     init {
         viewModelScope.launch {
             allImages = getImagesUseCase(args.get<String>("albumName")).toMutableList()
@@ -184,13 +181,6 @@ class AlbumListViewModel @Inject constructor(
         setSelectedImageList()
     }
 
-    fun scrollToTop() {
-        if (scrollToTopFlag && albumListAdapter.currentList[0] == allImages[0]) {
-            sendEvent(Event.ScrollToTop(true))
-            scrollToTopFlag = false
-        }
-    }
-
     private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
@@ -275,7 +265,6 @@ class AlbumListViewModel @Inject constructor(
         data class SelectErrorImage(val state: Boolean) : Event()
         data class StartViewPagerIndex(val idx: Int) : Event()
         data class ImageCount(val count: Int) : Event()
-        data class ScrollToTop(val state: Boolean) : Event()
         data class AlbumList(val albums: List<AlbumItem>) : Event()
     }
 }

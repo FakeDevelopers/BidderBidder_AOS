@@ -11,9 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
@@ -63,15 +61,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    private val albumLayoutManager by lazy {
-        object : GridLayoutManager(requireContext(), 3) {
-            override fun onLayoutCompleted(state: RecyclerView.State?) {
-                super.onLayoutCompleted(state)
-                viewModel.scrollToTop()
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
@@ -84,10 +73,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             true,
             contentObserver
         )
-        binding.recyclerAlbumList.run {
-            layoutManager = albumLayoutManager
-            itemAnimator = null
-        }
+        binding.recyclerAlbumList.itemAnimator = null
         initListener()
     }
 
@@ -127,7 +113,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList()
             is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
             is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
-            is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
             is AlbumListViewModel.Event.SelectErrorImage -> sendSnackBar(getString(R.string.album_selected_error_image))
             is AlbumListViewModel.Event.StartViewPagerIndex -> initViewPagerIndex(event.idx)
         }
@@ -152,12 +137,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             } else {
                 View.VISIBLE
             }
-    }
-
-    private fun scrollAlbumListToTop() {
-        binding.recyclerAlbumList.run {
-            post { scrollToPosition(0) }
-        }
     }
 
     private fun initViewPagerIndex(idx: Int) {
