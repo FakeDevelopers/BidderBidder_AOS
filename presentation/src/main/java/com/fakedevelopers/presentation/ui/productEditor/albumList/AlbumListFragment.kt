@@ -1,11 +1,6 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumList
 
-import android.database.ContentObserver
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
@@ -49,18 +44,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.
-    private val contentObserver by lazy {
-        object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean, uri: Uri?) {
-                super.onChange(selfChange, uri)
-                if (uri != null) {
-                    viewModel.onAlbumListUpdated(uri.toString())
-                }
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
@@ -68,11 +51,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             viewModel.initSelectedImageList(args.selectedImageInfo)
             binding.buttonAlbumListComplete.visibility = View.VISIBLE
         }
-        requireActivity().contentResolver.registerContentObserver(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            true,
-            contentObserver
-        )
         binding.recyclerAlbumList.itemAnimator = null
         initListener()
     }
@@ -154,7 +132,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
 
     override fun onDestroyView() {
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
-        requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         backPressedCallback.remove()
         super.onDestroyView()
     }

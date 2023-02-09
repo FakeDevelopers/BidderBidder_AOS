@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.usecase.GetDateModifiedByUriUseCase
+import com.fakedevelopers.domain.usecase.GetImageObserverUseCase
 import com.fakedevelopers.domain.usecase.GetImagesUseCase
 import com.fakedevelopers.domain.usecase.GetValidUrisUseCase
 import com.fakedevelopers.domain.usecase.IsValidUriUseCase
@@ -26,7 +27,8 @@ class AlbumListViewModel @Inject constructor(
     isValidUriUseCase: IsValidUriUseCase,
     private val getDateModifiedFromUriUseCase: GetDateModifiedByUriUseCase,
     private val getValidUrisUseCase: GetValidUrisUseCase,
-    private val getImagesUseCase: GetImagesUseCase
+    private val getImagesUseCase: GetImagesUseCase,
+    private val getImageObserverUseCase: GetImageObserverUseCase
 ) : ViewModel() {
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
@@ -51,6 +53,9 @@ class AlbumListViewModel @Inject constructor(
         viewModelScope.launch {
             allImages = getImagesUseCase(args.get<String>("albumName")).toMutableList()
             sendEvent(Event.AlbumList(allImages))
+            getImageObserverUseCase().collect { uri ->
+                updatedImageList.add(uri)
+            }
         }
     }
 
@@ -184,10 +189,6 @@ class AlbumListViewModel @Inject constructor(
     private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
 
     fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
-
-    fun onAlbumListUpdated(uri: String) {
-        updatedImageList.add(uri)
-    }
 
     // 편집 버튼 클릭
     fun onEditButtonClick() {

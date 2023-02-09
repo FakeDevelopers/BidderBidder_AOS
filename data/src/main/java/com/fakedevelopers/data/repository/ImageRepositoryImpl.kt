@@ -2,13 +2,19 @@ package com.fakedevelopers.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.database.ContentObserver
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.model.MediaInfo
 import com.fakedevelopers.domain.repository.ImageRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
@@ -16,6 +22,7 @@ import javax.inject.Inject
 class ImageRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver
 ) : ImageRepository {
+
     override fun isValid(uri: String): Boolean {
         contentResolver.runCatching {
             openFileDescriptor(Uri.parse(uri), "r")?.use {
@@ -52,6 +59,25 @@ class ImageRepositoryImpl @Inject constructor(
             }
         }
         return images
+    }
+
+    override fun getImageObserver(): Flow<String> = callbackFlow {
+        val contentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                super.onChange(selfChange, uri)
+                if (uri != null) {
+                    trySend(uri.toString())
+                }
+            }
+        }
+        contentResolver.registerContentObserver(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            true,
+            contentObserver
+        )
+        awaitClose {
+            contentResolver.unregisterContentObserver(contentObserver)
+        }
     }
 
     override fun getValidUris(uris: List<String>): List<String> =
