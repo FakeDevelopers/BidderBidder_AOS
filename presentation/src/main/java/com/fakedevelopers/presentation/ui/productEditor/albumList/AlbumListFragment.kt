@@ -124,7 +124,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
 
     private fun handleEvent(event: AlbumListViewModel.Event) {
         when (event) {
-            is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList(event.albums[0])
+            is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList()
             is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
             is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
             is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
