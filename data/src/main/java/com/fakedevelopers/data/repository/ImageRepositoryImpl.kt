@@ -11,6 +11,7 @@ import androidx.exifinterface.media.ExifInterface
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.model.MediaInfo
 import com.fakedevelopers.domain.repository.ImageRepository
+import com.orhanobut.logger.Logger
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -35,10 +36,11 @@ class ImageRepositoryImpl @Inject constructor(
     override suspend fun getImages(path: String?): List<AlbumItem> {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         val where = if (path.isNullOrEmpty().not()) {
-            MediaStore.Images.Media.DATA + path
+            MediaStore.Images.Media.DATA + " LIKE '%$path%'"
         } else {
             null
         }
+        Logger.t("albumtest").i(where.toString())
         val images = mutableListOf<AlbumItem>()
         contentResolver.query(
             uri,
