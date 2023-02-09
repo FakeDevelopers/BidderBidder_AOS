@@ -55,7 +55,8 @@ class ImageRepositoryImpl @Inject constructor(
                 ).toString()
                 // 최근 수정 날짜
                 val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                images.add(AlbumItem(imageUri, date))
+                val realPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                images.add(AlbumItem(imageUri, date, realPath))
             }
         }
         return images
