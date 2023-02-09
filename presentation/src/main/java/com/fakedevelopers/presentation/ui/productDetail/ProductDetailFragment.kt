@@ -13,12 +13,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.viewpager2.widget.ViewPager2
-import com.fakedevelopers.domain.model.ProductDetailInfo
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentProductDetailBinding
+import com.fakedevelopers.presentation.model.ProductModificationDto
 import com.fakedevelopers.presentation.model.RemainTime
 import com.fakedevelopers.presentation.ui.base.BaseFragment
-import com.fakedevelopers.presentation.ui.productEditor.ProductEditorDto
 import com.fakedevelopers.presentation.ui.util.DATE_PATTERN
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,15 +72,14 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             findNavController().popBackStack()
         }
         binding.toolbarProductDetail.buttonToolbarOption.setOnClickListener {
-            navigateEditProduct(viewModel.productDetailInfo.value)
+            viewModel.toProductModification()
         }
     }
 
-    private fun navigateEditProduct(productDetailInfo: ProductDetailInfo) {
+    private fun navigateEditProduct(productModificationDto: ProductModificationDto) {
         findNavController().navigate(
             ProductDetailFragmentDirections.actionProductDetailFragmentToProductModificationFragment(
-                ProductEditorDto(viewModel.productId, productDetailInfo),
-                viewModel.productId
+                productModificationDto
             )
         )
     }
@@ -97,6 +95,7 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             is ProductDetailViewModel.Event.Expired -> handleExpired(event.state)
             is ProductDetailViewModel.Event.Timer -> handleRemainTime(event.remainTime)
             is ProductDetailViewModel.Event.ProductImages -> handleProductImages(event.images)
+            is ProductDetailViewModel.Event.ToProductModification -> navigateEditProduct(event.productModificationDto)
         }
     }
 

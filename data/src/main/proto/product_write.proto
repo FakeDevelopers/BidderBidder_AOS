@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.fakedevelopers.data.model";
+option java_multiple_files = true;
+
+message ProductWrite {
+  string title = 1;
+  string hopePrice = 2;
+  string openingBid = 3;
+  string tick = 4;
+  string expiration = 5;
+  string content = 6;
+  int64 categoryId = 7;
+}
