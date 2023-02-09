@@ -89,10 +89,9 @@
             app:launchSingleTop="true"
             app:popUpTo="@id/pictureSelectFragment" />
         <argument
-            android:name="albumName"
+            android:name="albumPath"
             app:argType="string"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            android:defaultValue="" />
         <argument
             android:name="selectedImageInfo"
             app:argType="com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo" />
