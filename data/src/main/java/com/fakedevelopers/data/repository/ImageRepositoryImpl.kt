@@ -34,7 +34,11 @@ class ImageRepositoryImpl @Inject constructor(
 
     override suspend fun getImages(path: String?): List<AlbumItem> {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val where = path?.let { MediaStore.Images.Media.DATA + it }
+        val where = if (path.isNullOrEmpty().not()) {
+            MediaStore.Images.Media.DATA + path
+        } else {
+            null
+        }
         val images = mutableListOf<AlbumItem>()
         contentResolver.query(
             uri,
