@@ -11,17 +11,17 @@ import com.fakedevelopers.presentation.databinding.RecyclerAlbumSelectBinding
 import com.fakedevelopers.presentation.model.AlbumInfo
 
 class AlbumSelectAdapter(
-    private val onClick: () -> Unit
+    private val onClick: (String) -> Unit
 ) : ListAdapter<AlbumInfo, AlbumSelectAdapter.ViewHolder>(diffUtil) {
 
     class ViewHolder(
         private val binding: RecyclerAlbumSelectBinding,
-        private val onClick: () -> Unit
+        private val onClick: (String) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: AlbumInfo) {
             binding.albumInfo = item
             binding.root.setOnClickListener {
-                onClick()
+                onClick(item.path)
             }
         }
     }
