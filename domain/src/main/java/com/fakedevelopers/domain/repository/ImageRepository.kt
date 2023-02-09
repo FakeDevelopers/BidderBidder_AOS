@@ -7,7 +7,7 @@ import kotlinx.coroutines.Dispatchers
 
 interface ImageRepository {
     fun isValid(uri: String): Boolean
-    suspend fun getAllImages(): Map<String, MutableList<AlbumItem>>
+    suspend fun getImages(path: String?): List<AlbumItem>
     fun getValidUris(uris: List<String>): List<String>
     fun getDateModifiedByUri(uri: String): AlbumItem?
     suspend fun getBytesByUri(uri: String, dispatcher: CoroutineDispatcher = Dispatchers.IO): ByteArray?

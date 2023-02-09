@@ -25,11 +25,10 @@ class ImageRepositoryImpl @Inject constructor(
         return false
     }
 
-    override suspend fun getAllImages(): Map<String, MutableList<AlbumItem>> {
+    override suspend fun getImages(path: String?): List<AlbumItem> {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val albums = mutableMapOf<String, MutableList<AlbumItem>>().apply {
-            this[ALL_PICTURES] = mutableListOf()
-        }
+        val where = path?.let { MediaStore.Images.Media.DATA + it }
+        val images = mutableListOf<AlbumItem>()
         contentResolver.query(
             uri,
             arrayOf(
@@ -37,7 +36,7 @@ class ImageRepositoryImpl @Inject constructor(
                 MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
-            null,
+            where,
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
         )?.use { cursor ->
@@ -49,19 +48,10 @@ class ImageRepositoryImpl @Inject constructor(
                 ).toString()
                 // 최근 수정 날짜
                 val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                val albumItem = AlbumItem(imageUri, date)
-                // 전체보기에 저장
-                albums[ALL_PICTURES]?.add(albumItem)
-                // 이미지 상대 경로에 저장
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
-                    val url = path.substringBeforeLast("/")
-                    albums[url]?.add(albumItem) ?: run {
-                        albums[url] = mutableListOf(albumItem)
-                    }
-                }
+                images.add(AlbumItem(imageUri, date))
             }
         }
-        return albums
+        return images
     }
 
     override fun getValidUris(uris: List<String>): List<String> =
@@ -138,8 +128,4 @@ class ImageRepositoryImpl @Inject constructor(
             }
             updatedAlbumItem
         }
-
-    companion object {
-        private const val ALL_PICTURES = "전체보기"
-    }
 }
