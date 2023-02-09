@@ -7,8 +7,6 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -126,7 +124,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
 
     private fun handleEvent(event: AlbumListViewModel.Event) {
         when (event) {
-            is AlbumListViewModel.Event.AlbumList -> initSpinner(event.albums)
+            is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList(event.albums[0])
             is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
             is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
             is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
@@ -159,25 +157,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
     private fun scrollAlbumListToTop() {
         binding.recyclerAlbumList.run {
             post { scrollToPosition(0) }
-        }
-    }
-
-    private fun initSpinner(albums: List<String>) {
-        binding.spinnerAlbumList.apply {
-            adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                albums.map { album -> album.substringAfterLast("/") }
-            )
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.updateAlbumList(albums[position])
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // 안쓸거야!!
-                }
-            }
         }
     }
 
