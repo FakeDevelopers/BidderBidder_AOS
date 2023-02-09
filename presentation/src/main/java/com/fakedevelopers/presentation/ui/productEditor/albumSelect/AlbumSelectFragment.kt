@@ -9,8 +9,10 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumSelectBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
+@AndroidEntryPoint
 class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
     R.layout.fragment_album_select
 ) {
@@ -22,7 +24,7 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
         AlbumSelectAdapter { path ->
             findNavController().navigate(
                 AlbumSelectFragmentDirections.actionAlbumSelectFragmentToPictureSelectFragment(
-                    albumName = path,
+                    albumPath = path,
                     selectedImageInfo = args.selectedImageInfo
                 )
             )
@@ -31,8 +33,8 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initCollector()
         binding.recyclerAlbumSelect.adapter = adapter
+        initCollector()
     }
 
     private fun initCollector() {

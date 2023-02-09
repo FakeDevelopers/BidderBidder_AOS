@@ -39,6 +39,9 @@ class AlbumListViewModel @Inject constructor(
     private val _editButtonEnableState = MutableStateFlow(false)
     val editButtonEnableState: StateFlow<Boolean> get() = _editButtonEnableState
 
+    private val _albumTitle = MutableStateFlow("")
+    val albumTitle: StateFlow<String> get() = _albumTitle
+
     private val updatedImageList = hashSetOf<String>()
 
     private var totalPictureCount = 0
@@ -51,7 +54,9 @@ class AlbumListViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            allImages = getImagesUseCase(args.get<String>("albumName")).toMutableList()
+            val path = args.get<String>("albumPath") ?: ""
+            _albumTitle.emit(path.substringAfterLast('/'))
+            allImages = getImagesUseCase(path).toMutableList()
             sendEvent(Event.AlbumList(allImages))
             getImageObserverUseCase().collect { uri ->
                 updatedImageList.add(uri)

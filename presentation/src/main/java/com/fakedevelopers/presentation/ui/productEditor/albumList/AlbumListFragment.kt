@@ -14,6 +14,7 @@ import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
@@ -53,6 +54,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
         binding.recyclerAlbumList.itemAnimator = null
         initListener()
+        initCollector()
     }
 
     override fun onStart() {
@@ -76,12 +78,27 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         binding.buttonAlbumListComplete.setOnClickListener {
             toProductRegistration(args.selectedImageInfo)
         }
+        binding.textviewAlbumListTitle.setOnClickListener {
+            findNavController().navigate(
+                AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(viewModel.selectedImageInfo)
+            )
+        }
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
+    private fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.event.collect { event ->
                 handleEvent(event)
+            }
+        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.albumTitle.collectLatest { title ->
+                binding.textviewAlbumListTitle.text = title.ifEmpty {
+                    getString(R.string.album_select_recent_images)
+                }
             }
         }
     }

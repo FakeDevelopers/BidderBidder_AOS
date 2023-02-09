@@ -7,9 +7,11 @@ import com.fakedevelopers.domain.usecase.GetImagesUseCase
 import com.fakedevelopers.presentation.model.AlbumInfo
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.asEventFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class AlbumSelectViewModel @Inject constructor(
     private val getImagesUseCase: GetImagesUseCase
 ) : ViewModel() {
@@ -35,15 +37,16 @@ class AlbumSelectViewModel @Inject constructor(
         )
         val countMap = mutableMapOf<String, Int>()
         albumItems.forEach { albumItem ->
-            countMap[albumItem.path] = (countMap[albumItem.path] ?: 0) + 1
+            val relPath = albumItem.path.substringBeforeLast('/')
+            countMap[relPath] = (countMap[relPath] ?: 0) + 1
         }
-        countMap.keys.forEach { path ->
+        countMap.keys.forEach { relPath ->
             albumInfo.add(
                 AlbumInfo(
-                    path = path,
-                    firstImage = albumItems.find { it.path == path }?.uri ?: "",
-                    name = path.substringAfterLast('/'),
-                    count = countMap[path] ?: 0
+                    path = relPath,
+                    firstImage = albumItems.find { it.path.contains(relPath) }?.uri ?: "",
+                    name = relPath.substringAfterLast('/'),
+                    count = countMap[relPath] ?: 0
                 )
             )
         }
