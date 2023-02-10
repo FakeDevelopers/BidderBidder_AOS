@@ -44,7 +44,6 @@ class AlbumListViewModel @Inject constructor(
 
     private val updatedImageList = hashSetOf<String>()
 
-    private var totalPictureCount = 0
     private var allImages = mutableListOf<AlbumItem>()
     val selectedImageInfo = SelectedImageInfo()
 
@@ -52,10 +51,12 @@ class AlbumListViewModel @Inject constructor(
     var currentViewPagerIdx = 0
         private set
 
+    private val path = args.get<String>("albumPath") ?: ""
+    val title = path.substringAfterLast('/')
+
     init {
         viewModelScope.launch {
-            val path = args.get<String>("albumPath") ?: ""
-            _albumTitle.emit(path.substringAfterLast('/'))
+            _albumTitle.emit(title)
             allImages = getImagesUseCase(path).toMutableList()
             sendEvent(Event.AlbumList(allImages))
             getImageObserverUseCase().collect { uri ->
@@ -67,7 +68,7 @@ class AlbumListViewModel @Inject constructor(
     // 그리드 앨범 리스트 어뎁터
     val albumListAdapter = AlbumListAdapter(
         isValidUri = { uri -> isValidUriUseCase(uri) },
-        findSelectedImageIndex = { findSelectedImageIndex(it) },
+        findSelectedImageIndex = { selectedImageInfo.uris.indexOf(it) },
         sendErrorToast = { sendEvent(Event.SelectErrorImage(true)) },
         showViewPager = { uri -> showViewPager(uri) }
     ) { uri, state ->
@@ -80,7 +81,7 @@ class AlbumListViewModel @Inject constructor(
         sendErrorToast = { sendEvent(Event.SelectErrorImage(true)) },
         getEditedImage = { uri -> selectedImageInfo.changeBitmaps[uri] }
     ) { uri ->
-        setSelectedState(uri, findSelectedImageIndex(uri) == -1)
+        setSelectedState(uri, selectedImageInfo.uris.indexOf(uri) == -1)
     }
 
     // 선택 사진 리스트 어뎁터
@@ -89,7 +90,7 @@ class AlbumListViewModel @Inject constructor(
             setSelectedState(it)
             albumListAdapter.refreshSelectedOrder()
         },
-        findSelectedImageIndex = { findSelectedImageIndex(it) },
+        findSelectedImageIndex = { selectedImageInfo.uris.indexOf(it) },
         swapSelectedImage = { fromPosition, toPosition -> swapSelectedImage(fromPosition, toPosition) }
     )
 
@@ -123,7 +124,7 @@ class AlbumListViewModel @Inject constructor(
 
     // 수정된 이미지 비트맵 추가
     private fun addEditedBitmapInfo(uri: String) {
-        if (findSelectedImageIndex(uri) == -1) {
+        if (selectedImageInfo.uris.indexOf(uri) == -1) {
             setSelectedState(uri, true)
         }
         selectedImageInfo.changeBitmaps[uri] = BitmapInfo(ROTATE_DEGREE)
@@ -131,13 +132,19 @@ class AlbumListViewModel @Inject constructor(
 
     fun setCurrentViewPagerIdx(idx: Int) {
         currentViewPagerIdx = idx
-        sendEvent(Event.ImageCount(findSelectedImageIndex(allImages[currentViewPagerIdx].uri)))
+        sendEvent(Event.ImageCount(selectedImageInfo.uris.indexOf(allImages[currentViewPagerIdx].uri)))
+        viewModelScope.launch {
+            _albumTitle.emit("${idx + 1} / ${allImages.size}")
+        }
     }
 
     fun setAlbumViewMode(state: AlbumViewState) {
         // 보기 모드를 전환하기 전에 변경 사항을 반영해준다
         if (state == AlbumViewState.GRID) {
             albumListAdapter.refreshAll()
+            viewModelScope.launch {
+                _albumTitle.emit(title)
+            }
         }
         viewModelScope.launch {
             _albumViewMode.emit(state)
@@ -152,7 +159,7 @@ class AlbumListViewModel @Inject constructor(
         viewModelScope.launch {
             selectedPictureAdapter.submitList(list.toMutableList())
             if (list.isNotEmpty() && !list.contains(selectedImageInfo.uris[0])) {
-                selectedPictureAdapter.notifyItemChanged(findSelectedImageIndex(list[0]))
+                selectedPictureAdapter.notifyItemChanged(selectedImageInfo.uris.indexOf(list[0]))
             }
             setAdapterList()
         }
@@ -164,7 +171,7 @@ class AlbumListViewModel @Inject constructor(
         if (state) {
             selectedImageInfo.uris.add(uri)
         } else {
-            val idx = findSelectedImageIndex(uri)
+            val idx = selectedImageInfo.uris.indexOf(uri)
             selectedImageInfo.uris.removeAt(idx)
             // 수정된 내용(BitmapInfo)도 같이 삭제
             if (selectedImageInfo.changeBitmaps.remove(uri) != null) {
@@ -190,10 +197,6 @@ class AlbumListViewModel @Inject constructor(
         }
         setSelectedImageList()
     }
-
-    private fun findSelectedImageIndex(uri: String) = selectedImageInfo.uris.indexOf(uri)
-
-    fun getCurrentPositionString(position: Int) = "$position / $totalPictureCount"
 
     // 편집 버튼 클릭
     fun onEditButtonClick() {
@@ -223,7 +226,7 @@ class AlbumListViewModel @Inject constructor(
             // 유효한 선택 이미지 리스트로 갱신
             setSelectedImage(getValidUrisUseCase(selectedImageInfo.uris))
             if (albumViewMode.value == AlbumViewState.PAGER && idx != null) {
-                sendEvent(Event.ImageCount(findSelectedImageIndex(allImages[idx].uri)))
+                sendEvent(Event.ImageCount(selectedImageInfo.uris.indexOf(allImages[idx].uri)))
             }
         }
     }
@@ -237,7 +240,6 @@ class AlbumListViewModel @Inject constructor(
         val currentList = mutableListOf<AlbumItem>().apply { addAll(allImages) }
         albumListAdapter.submitList(currentList)
         albumPagerAdapter.submitList(currentList)
-        totalPictureCount = allImages.size
     }
 
     // 앨범 뷰 페이저
@@ -251,7 +253,7 @@ class AlbumListViewModel @Inject constructor(
 
     private fun setSelectedImageList() {
         selectedPictureAdapter.submitList(selectedImageInfo.uris.toMutableList())
-        sendEvent(Event.OnListChange(selectedImageInfo.uris.isEmpty()))
+        sendEvent(Event.OnListChange(selectedImageInfo.uris.size))
     }
 
     private fun swapSelectedImage(fromPosition: Int, toPosition: Int) {
@@ -267,7 +269,7 @@ class AlbumListViewModel @Inject constructor(
     }
 
     sealed class Event {
-        data class OnListChange(val state: Boolean) : Event()
+        data class OnListChange(val count: Int) : Event()
         data class SelectErrorImage(val state: Boolean) : Event()
         data class StartViewPagerIndex(val idx: Int) : Event()
         data class ImageCount(val count: Int) : Event()

@@ -3,6 +3,8 @@ package com.fakedevelopers.presentation.ui.productEditor.albumList
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -31,7 +33,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                     viewModel.setAlbumViewMode(AlbumViewState.GRID)
                 } else {
-                    toProductRegistration(args.selectedImageInfo)
+                    findNavController().popBackStack()
                 }
             }
         }
@@ -40,7 +42,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                setPagerUI(position)
+                viewModel.setCurrentViewPagerIdx(position)
             }
         }
     }
@@ -50,7 +52,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         binding.vm = viewModel
         if (args.selectedImageInfo.uris.isNotEmpty()) {
             viewModel.initSelectedImageList(args.selectedImageInfo)
-            binding.buttonAlbumListComplete.visibility = View.VISIBLE
+            setCompleteTextVisibility(args.selectedImageInfo.uris.size)
         }
         binding.recyclerAlbumList.itemAnimator = null
         initListener()
@@ -75,13 +77,20 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
     }
 
     private fun initListener() {
-        binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.selectedImageInfo)
-        }
-        binding.textviewAlbumListTitle.setOnClickListener {
-            findNavController().navigate(
-                AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(viewModel.selectedImageInfo)
-            )
+        binding.toolbarAlbumList.run {
+            textviewAlbumComplete.setOnClickListener {
+                if (viewModel.albumViewMode.value == AlbumViewState.GRID) {
+                    toProductRegistration(args.selectedImageInfo)
+                }
+            }
+            textviewAlbumTitle.setOnClickListener {
+                findNavController().navigate(
+                    AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(viewModel.selectedImageInfo)
+                )
+            }
+            buttonAlbumClose.setOnClickListener {
+                findNavController().popBackStack()
+            }
         }
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
@@ -96,7 +105,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.albumTitle.collectLatest { title ->
-                binding.textviewAlbumListTitle.text = title.ifEmpty {
+                binding.toolbarAlbumList.textviewAlbumTitle.text = title.ifEmpty {
                     getString(R.string.album_select_recent_images)
                 }
             }
@@ -107,7 +116,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         when (event) {
             is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList()
             is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
-            is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
+            is AlbumListViewModel.Event.OnListChange -> setCompleteTextVisibility(event.count)
             is AlbumListViewModel.Event.SelectErrorImage -> sendSnackBar(getString(R.string.album_selected_error_image))
             is AlbumListViewModel.Event.StartViewPagerIndex -> initViewPagerIndex(event.idx)
         }
@@ -125,26 +134,22 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    private fun onAlbumChanged(state: Boolean) {
-        binding.buttonAlbumListComplete.visibility =
-            if (state) {
-                View.INVISIBLE
-            } else {
-                View.VISIBLE
-            }
+    private fun setCompleteTextVisibility(count: Int) {
+        val state = count != 0
+        val colorId = if (state) R.color.black else R.color.gray_80
+        binding.toolbarAlbumList.run {
+            textviewAlbumCount.isVisible = state
+            textviewAlbumCount.text = count.toString()
+            textviewAlbumComplete.isEnabled = state
+            textviewAlbumComplete.setTextColor(ContextCompat.getColor(requireContext(), colorId))
+        }
     }
 
     private fun initViewPagerIndex(idx: Int) {
         if (viewModel.currentViewPagerIdx == idx) {
-            setPagerUI(idx)
+            viewModel.setCurrentViewPagerIdx(idx)
         }
         binding.viewpagerPictureSelect.setCurrentItem(idx, false)
-    }
-
-    private fun setPagerUI(position: Int) {
-        // 사진 편집 대상을 알기 위해 현재 보고 있는 이미지의 인덱스 저장
-        viewModel.setCurrentViewPagerIdx(position)
-        binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
     }
 
     override fun onDestroyView() {
