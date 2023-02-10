@@ -97,7 +97,9 @@
             app:argType="com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo" />
         <action
             android:id="@+id/action_pictureSelectFragment_to_albumSelectFragment"
-            app:destination="@id/albumSelectFragment" />
+            app:destination="@id/albumSelectFragment"
+            app:popUpTo="@id/pictureSelectFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/productSearchFragment"
@@ -162,7 +164,9 @@
         android:label="AlbumSelectFragment" >
         <action
             android:id="@+id/action_albumSelectFragment_to_pictureSelectFragment"
-            app:destination="@id/pictureSelectFragment" />
+            app:destination="@id/pictureSelectFragment"
+            app:popUpTo="@id/albumSelectFragment"
+            app:popUpToInclusive="true" />
         <argument
             android:name="selectedImageInfo"
             app:argType="com.fakedevelopers.presentation.ui.productEditor.albumList.SelectedImageInfo" />
