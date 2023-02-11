@@ -22,4 +22,16 @@ interface ProductEditorService {
         @PartMap productEditorInfo: Map<String, String>,
         @Part files: List<MultipartBody.Part>
     ): String
+
+    @Multipart
+    @POST("product/deleteProduct/{productId}")
+    suspend fun postDeleteProduct(
+        @Path("productId") productId: Long
+    ): Boolean
+
+    @Multipart
+    @POST("product/checkUserIsSame/{productId}")
+    suspend fun postCheckUserIsSame(
+        @Path("productId") productId: Long
+    ): Boolean
 }

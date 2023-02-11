@@ -24,4 +24,16 @@ class ProductEditorRepositoryImpl @Inject constructor(
             service.postProductRegistration(productEditorInfo.getMap(), productEditorInfo.files)
         }
     }
+
+    override suspend fun postDeleteProduct(productId: Long): Result<Boolean> {
+        return runCatching {
+            service.postDeleteProduct(productId)
+        }
+    }
+
+    override suspend fun postCheckUserIsSame(productId: Long): Result<Boolean> {
+        return runCatching {
+            service.postCheckUserIsSame(productId)
+        }
+    }
 }

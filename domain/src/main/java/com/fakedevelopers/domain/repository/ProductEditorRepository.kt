@@ -11,4 +11,12 @@ interface ProductEditorRepository {
     suspend fun postProductRegistration(
         productEditorInfo: ProductEditorInfo
     ): Result<String>
+
+    suspend fun postDeleteProduct(
+        productId: Long
+    ): Result<Boolean>
+
+    suspend fun postCheckUserIsSame(
+        productId: Long
+    ): Result<Boolean>
 }
