@@ -23,15 +23,13 @@ interface ProductEditorService {
         @Part files: List<MultipartBody.Part>
     ): String
 
-    @Multipart
     @POST("product/deleteProduct/{productId}")
     suspend fun postDeleteProduct(
-        @Path("productId") productId: Long
+        @Path("productId", encoded = true) productId: Long
     ): Boolean
 
-    @Multipart
     @POST("product/checkUserIsSame/{productId}")
     suspend fun postCheckUserIsSame(
-        @Path("productId") productId: Long
+        @Path("productId", encoded = true) productId: Long
     ): Boolean
 }

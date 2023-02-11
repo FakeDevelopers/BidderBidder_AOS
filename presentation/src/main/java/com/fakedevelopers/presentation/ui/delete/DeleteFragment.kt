@@ -29,7 +29,7 @@ class DeleteFragment : BaseFragment<FragmentDeleteBinding>(
                 if (it.isSuccess) {
                     sendSnackBar(it.toString())
                 } else {
-                    sendSnackBar("어.. 요건 디스코드를 확인해")
+                    sendSnackBar(it.exceptionOrNull().toString())
                 }
             }
         }
@@ -38,7 +38,7 @@ class DeleteFragment : BaseFragment<FragmentDeleteBinding>(
                 if (it.isSuccess) {
                     sendSnackBar(it.toString())
                 } else {
-                    sendSnackBar("어.. 요건 디스코드를 확인해")
+                    sendSnackBar(it.exceptionOrNull().toString())
                 }
             }
         }
