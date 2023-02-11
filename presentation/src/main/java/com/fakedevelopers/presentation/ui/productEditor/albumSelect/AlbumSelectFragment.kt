@@ -2,12 +2,14 @@ package com.fakedevelopers.presentation.ui.productEditor.albumSelect
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumSelectBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragmentDirections
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -34,6 +36,34 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerAlbumSelect.adapter = adapter
+        binding.toolbarAlbumSelect.textviewAlbumTitle.run {
+            text = args.title
+            setOnClickListener {
+                findNavController().popBackStack()
+            }
+        }
+        binding.toolbarAlbumSelect.buttonAlbumClose.setOnClickListener {
+            // AlbumListFragment와 동일한 로직, 추상화가 필요
+            findNavController().run {
+                if (backQueue.any { it.destination.id == R.id.productRegistrationFragment }) {
+                    navigate(
+                        AlbumListFragmentDirections
+                            .actionPictureSelectFragmentToProductRegistrationFragment(args.selectedImageInfo)
+                    )
+                } else {
+                    // 이렇게 쓰면 안됨. 반드시 수정해야함
+                    popBackStack()
+                    popBackStack()
+                }
+            }
+        }
+        if (args.selectedImageInfo.uris.isNotEmpty()) {
+            binding.toolbarAlbumSelect.run {
+                textviewAlbumComplete.isEnabled = true
+                textviewAlbumComplete.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                textviewAlbumCount.text = args.selectedImageInfo.uris.size.toString()
+            }
+        }
         initCollector()
     }
 

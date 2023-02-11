@@ -66,27 +66,39 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         viewModel.checkSelectedImages(binding.viewpagerPictureSelect.currentItem)
     }
 
-    private fun toProductRegistration(selectedImageInfo: SelectedImageInfo) {
+    private fun toProductEditor(selectedImageInfo: SelectedImageInfo) {
         selectedImageInfo.run {
             uris.clear()
             uris.addAll(viewModel.selectedImageInfo.uris)
             changeBitmaps.clear()
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
-        findNavController().popBackStack()
+        findNavController().run {
+            if (backQueue.any { it.destination.id == R.id.productRegistrationFragment }) {
+                navigate(
+                    AlbumListFragmentDirections
+                        .actionPictureSelectFragmentToProductRegistrationFragment(selectedImageInfo)
+                )
+            } else {
+                popBackStack()
+            }
+        }
     }
 
     private fun initListener() {
         binding.toolbarAlbumList.run {
             textviewAlbumComplete.setOnClickListener {
-                if (viewModel.albumViewMode.value == AlbumViewState.GRID) {
-                    toProductRegistration(args.selectedImageInfo)
-                }
+                toProductEditor(args.selectedImageInfo)
             }
             textviewAlbumTitle.setOnClickListener {
-                findNavController().navigate(
-                    AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(viewModel.selectedImageInfo)
-                )
+                if (viewModel.albumViewMode.value == AlbumViewState.GRID) {
+                    findNavController().navigate(
+                        AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(
+                            selectedImageInfo = viewModel.selectedImageInfo,
+                            title = binding.toolbarAlbumList.textviewAlbumTitle.text.toString()
+                        )
+                    )
+                }
             }
             buttonAlbumClose.setOnClickListener {
                 findNavController().popBackStack()
