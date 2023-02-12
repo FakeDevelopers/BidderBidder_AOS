@@ -11,7 +11,6 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -72,14 +71,6 @@ abstract class ProductEditorFragment(
         )
     }
 
-    private val backPressedCallback by lazy {
-        object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                handleOnBackPressed()
-            }
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
@@ -94,7 +85,6 @@ abstract class ProductEditorFragment(
 
     override fun onStart() {
         super.onStart()
-        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
         viewModel.refreshImages()
         binding.textviewProductEditorContentLength.isVisible =
             binding.edittextProductEditorContent.isFocused
@@ -120,8 +110,6 @@ abstract class ProductEditorFragment(
     protected abstract fun navigatePictureSelectFragment()
 
     protected abstract fun initSelectedImages()
-
-    protected abstract fun handleOnBackPressed()
 
     protected open fun initListener() {
         // 가격 필터 등록
@@ -168,7 +156,7 @@ abstract class ProductEditorFragment(
         }
         // 툴바 뒤로가기 버튼
         binding.includeProductEditorToolbar.buttonToolbarBack.setOnClickListener {
-            backPressedCallback.handleOnBackPressed()
+            findNavController().popBackStack()
         }
         binding.spinnerProductEditorCategory.apply {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -254,7 +242,6 @@ abstract class ProductEditorFragment(
 
     override fun onDestroyView() {
         super.onDestroyView()
-        backPressedCallback.remove()
         keyboardVisibilityUtils.deleteKeyboardListeners()
     }
 

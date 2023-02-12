@@ -166,8 +166,8 @@ class ProductEditorViewModel @Inject constructor(
         productModificationDto: ProductModificationDto? = null
     ) {
         selectedImageInfo?.let {
-            selectedImageInfo.uris = it.uris
-            selectedImageInfo.changeBitmaps.putAll(it.changeBitmaps)
+            this.selectedImageInfo.uris = it.uris
+            this.selectedImageInfo.changeBitmaps.putAll(it.changeBitmaps)
             adapter.submitList(it.uris.toMutableList())
         }
         productModificationDto?.let {

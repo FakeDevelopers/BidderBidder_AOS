@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="albumInfo"
+            type="com.fakedevelopers.domain.model.AlbumInfo" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageview_album_select"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerCrop"
+            app:image_uri="@{albumInfo.firstImage}"
+            app:layout_constraintBottom_toBottomOf="@id/divider_album_select"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            tools:srcCompat="@drawable/the_cat" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textview_album_select_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginStart="16dp"
+            android:text="@{albumInfo.name}"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toEndOf="@id/imageview_album_select"
+            app:layout_constraintBottom_toTopOf="@id/textview_album_select_count"
+            app:layout_constraintTop_toTopOf="@id/imageview_album_select"
+            tools:layout_editor_absoluteX="133dp"
+            tools:layout_editor_absoluteY="17dp"
+            tools:text="최근 항목"/>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/textview_album_select_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gray_85"
+            android:textSize="16sp"
+            android:text="@{String.valueOf(albumInfo.count)}"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/textview_album_select_name"
+            app:layout_constraintTop_toBottomOf="@id/textview_album_select_name"
+            app:layout_constraintBottom_toBottomOf="@id/imageview_album_select"
+            tools:layout_editor_absoluteX="133dp"
+            tools:layout_editor_absoluteY="17dp"
+            tools:text="33426"/>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_album_select"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/imageview_album_select"
+            app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

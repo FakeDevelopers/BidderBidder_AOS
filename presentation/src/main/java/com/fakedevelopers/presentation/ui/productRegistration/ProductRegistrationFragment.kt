@@ -63,10 +63,6 @@ class ProductRegistrationFragment : ProductEditorFragment(
         }
     }
 
-    override fun handleOnBackPressed() {
-        findNavController().navigate(R.id.action_productRegistrationFragment_to_productListFragment)
-    }
-
     override fun onDestroyView() {
         viewModel.saveProductWrite()
         super.onDestroyView()

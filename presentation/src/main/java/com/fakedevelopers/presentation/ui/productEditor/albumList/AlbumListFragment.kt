@@ -1,21 +1,17 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumList
 
-import android.database.ContentObserver
-import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.provider.MediaStore
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumListBinding
@@ -23,6 +19,7 @@ import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
@@ -39,7 +36,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                 if (viewModel.albumViewMode.value == AlbumViewState.PAGER) {
                     viewModel.setAlbumViewMode(AlbumViewState.GRID)
                 } else {
-                    toProductRegistration(args.selectedImageInfo)
+                    findNavController().popBackStack()
                 }
             }
         }
@@ -48,28 +45,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                setPagerUI(position)
-            }
-        }
-    }
-
-    // 외부 저장소에 변화가 생기면 얘가 호출이 됩니다.
-    private val contentObserver by lazy {
-        object : ContentObserver(Handler(Looper.getMainLooper())) {
-            override fun onChange(selfChange: Boolean, uri: Uri?) {
-                super.onChange(selfChange, uri)
-                if (uri != null) {
-                    viewModel.onAlbumListUpdated(uri.toString())
-                }
-            }
-        }
-    }
-
-    private val albumLayoutManager by lazy {
-        object : GridLayoutManager(requireContext(), 3) {
-            override fun onLayoutCompleted(state: RecyclerView.State?) {
-                super.onLayoutCompleted(state)
-                viewModel.scrollToTop()
+                viewModel.setCurrentViewPagerIdx(position)
             }
         }
     }
@@ -79,18 +55,11 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         binding.vm = viewModel
         if (args.selectedImageInfo.uris.isNotEmpty()) {
             viewModel.initSelectedImageList(args.selectedImageInfo)
-            binding.buttonAlbumListComplete.visibility = View.VISIBLE
+            setCompleteTextVisibility(args.selectedImageInfo.uris.size)
         }
-        requireActivity().contentResolver.registerContentObserver(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            true,
-            contentObserver
-        )
-        binding.recyclerAlbumList.run {
-            layoutManager = albumLayoutManager
-            itemAnimator = null
-        }
+        binding.recyclerAlbumList.itemAnimator = null
         initListener()
+        initCollector()
     }
 
     override fun onStart() {
@@ -100,36 +69,79 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         viewModel.checkSelectedImages(binding.viewpagerPictureSelect.currentItem)
     }
 
-    private fun toProductRegistration(selectedImageInfo: SelectedImageInfo) {
+    private fun toProductEditor(selectedImageInfo: SelectedImageInfo) {
         selectedImageInfo.run {
             uris.clear()
             uris.addAll(viewModel.selectedImageInfo.uris)
             changeBitmaps.clear()
             changeBitmaps.putAll(viewModel.selectedImageInfo.changeBitmaps)
         }
-        findNavController().popBackStack()
+        findNavController().run {
+            if (backQueue.any { it.destination.id == R.id.productRegistrationFragment }) {
+                navigate(
+                    AlbumListFragmentDirections
+                        .actionPictureSelectFragmentToProductRegistrationFragment(selectedImageInfo)
+                )
+            } else {
+                popBackStack()
+            }
+        }
     }
 
     private fun initListener() {
-        binding.buttonAlbumListComplete.setOnClickListener {
-            toProductRegistration(args.selectedImageInfo)
+        binding.toolbarAlbumList.run {
+            textviewAlbumComplete.setOnClickListener {
+                toProductEditor(args.selectedImageInfo)
+            }
+            textviewAlbumTitle.setOnClickListener {
+                if (viewModel.albumViewMode.value == AlbumViewState.GRID) {
+                    findNavController().navigate(
+                        AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(
+                            selectedImageInfo = viewModel.selectedImageInfo,
+                            title = binding.toolbarAlbumList.textviewAlbumTitle.text.toString().substringBeforeLast(' ')
+                        )
+                    )
+                }
+            }
+            buttonAlbumClose.setOnClickListener {
+                findNavController().popBackStack()
+            }
         }
         binding.viewpagerPictureSelect.registerOnPageChangeCallback(onPageChangeCallback)
         ItemTouchHelper(DragAndDropCallback(viewModel.selectedPictureAdapter))
             .attachToRecyclerView(binding.recyclerSelectedPicture)
+    }
+
+    private fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.event.collect { event ->
                 handleEvent(event)
+            }
+        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.albumTitle.collectLatest { title ->
+                val toolbarTitle = getString(
+                    R.string.album_list_title,
+                    title.ifEmpty { getString(R.string.album_select_recent_images) }
+                )
+                binding.toolbarAlbumList.textviewAlbumTitle.text =
+                    SpannableStringBuilder(toolbarTitle).apply {
+                        setSpan(
+                            RelativeSizeSpan(0.5f),
+                            toolbarTitle.lastIndex,
+                            toolbarTitle.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
             }
         }
     }
 
     private fun handleEvent(event: AlbumListViewModel.Event) {
         when (event) {
-            is AlbumListViewModel.Event.AlbumList -> initSpinner(event.albums)
+            is AlbumListViewModel.Event.AlbumList -> viewModel.updateAlbumList()
             is AlbumListViewModel.Event.ImageCount -> handleImageCount(event.count)
-            is AlbumListViewModel.Event.OnListChange -> onAlbumChanged(event.state)
-            is AlbumListViewModel.Event.ScrollToTop -> scrollAlbumListToTop()
+            is AlbumListViewModel.Event.OnListChange -> setCompleteTextVisibility(event.count)
             is AlbumListViewModel.Event.SelectErrorImage -> sendSnackBar(getString(R.string.album_selected_error_image))
             is AlbumListViewModel.Event.StartViewPagerIndex -> initViewPagerIndex(event.idx)
         }
@@ -147,56 +159,26 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    private fun onAlbumChanged(state: Boolean) {
-        binding.buttonAlbumListComplete.visibility =
-            if (state) {
-                View.INVISIBLE
-            } else {
-                View.VISIBLE
-            }
-    }
-
-    private fun scrollAlbumListToTop() {
-        binding.recyclerAlbumList.run {
-            post { scrollToPosition(0) }
-        }
-    }
-
-    private fun initSpinner(albums: List<String>) {
-        binding.spinnerAlbumList.apply {
-            adapter = ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                albums.map { album -> album.substringAfterLast("/") }
-            )
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.updateAlbumList(albums[position])
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    // 안쓸거야!!
-                }
-            }
+    private fun setCompleteTextVisibility(count: Int) {
+        val state = count != 0
+        val colorId = if (state) R.color.black else R.color.gray_80
+        binding.toolbarAlbumList.run {
+            textviewAlbumCount.isVisible = state
+            textviewAlbumCount.text = count.toString()
+            textviewAlbumComplete.isEnabled = state
+            textviewAlbumComplete.setTextColor(ContextCompat.getColor(requireContext(), colorId))
         }
     }
 
     private fun initViewPagerIndex(idx: Int) {
         if (viewModel.currentViewPagerIdx == idx) {
-            setPagerUI(idx)
+            viewModel.setCurrentViewPagerIdx(idx)
         }
         binding.viewpagerPictureSelect.setCurrentItem(idx, false)
     }
 
-    private fun setPagerUI(position: Int) {
-        // 사진 편집 대상을 알기 위해 현재 보고 있는 이미지의 인덱스 저장
-        viewModel.setCurrentViewPagerIdx(position)
-        binding.textviewAlbumListIndex.text = viewModel.getCurrentPositionString(position + 1)
-    }
-
     override fun onDestroyView() {
         binding.viewpagerPictureSelect.unregisterOnPageChangeCallback(onPageChangeCallback)
-        requireActivity().contentResolver.unregisterContentObserver(contentObserver)
         backPressedCallback.remove()
         super.onDestroyView()
     }
