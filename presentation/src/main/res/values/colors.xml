@@ -30,5 +30,15 @@
     <color name="dark_gray">#6B6B6B</color>
     <color name="medium_gray">#959595</color>
     <color name="light_gray">#DBDBDB</color>
-    <color name="milk_gray">#EEEEEE</color>
+    <color name="gray_90">#6B6B6B</color>
+    <color name="gray_85">#828282</color>
+    <color name="gray_80">#959595</color>
+    <color name="gray_70">#9B9B9B</color>
+    <color name="gray_50">#BCBCBC</color>
+    <color name="gray_40">#C4C4C4</color>
+    <color name="gray_30">#DBDBDB</color>
+    <color name="gray_20">#EBEBEB</color>
+    <color name="gray_10">#F2F2F2</color>
+    <color name="ash_blue">#ACB4BE</color>
+    <color name="ivory">#EEEEEE</color>
 </resources>

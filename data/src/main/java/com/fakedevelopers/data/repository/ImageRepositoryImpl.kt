@@ -2,13 +2,19 @@ package com.fakedevelopers.data.repository
 
 import android.content.ContentResolver
 import android.content.ContentUris
+import android.database.ContentObserver
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import androidx.exifinterface.media.ExifInterface
 import com.fakedevelopers.domain.model.AlbumItem
 import com.fakedevelopers.domain.model.MediaInfo
 import com.fakedevelopers.domain.repository.ImageRepository
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 import java.util.Locale
 import javax.inject.Inject
@@ -16,6 +22,7 @@ import javax.inject.Inject
 class ImageRepositoryImpl @Inject constructor(
     private val contentResolver: ContentResolver
 ) : ImageRepository {
+
     override fun isValid(uri: String): Boolean {
         contentResolver.runCatching {
             openFileDescriptor(Uri.parse(uri), "r")?.use {
@@ -25,11 +32,14 @@ class ImageRepositoryImpl @Inject constructor(
         return false
     }
 
-    override suspend fun getAllImages(): Map<String, MutableList<AlbumItem>> {
+    override suspend fun getImages(path: String?): List<AlbumItem> {
         val uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-        val albums = mutableMapOf<String, MutableList<AlbumItem>>().apply {
-            this[ALL_PICTURES] = mutableListOf()
+        val where = if (path.isNullOrEmpty().not()) {
+            MediaStore.Images.Media.DATA + " LIKE '%$path%'"
+        } else {
+            null
         }
+        val images = mutableListOf<AlbumItem>()
         contentResolver.query(
             uri,
             arrayOf(
@@ -37,7 +47,7 @@ class ImageRepositoryImpl @Inject constructor(
                 MediaStore.Images.Media.DATA,
                 MediaStore.Images.ImageColumns.DATE_MODIFIED
             ),
-            null,
+            where,
             null,
             MediaStore.Images.ImageColumns.DATE_MODIFIED + " DESC"
         )?.use { cursor ->
@@ -49,19 +59,30 @@ class ImageRepositoryImpl @Inject constructor(
                 ).toString()
                 // 최근 수정 날짜
                 val date = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_MODIFIED))
-                val albumItem = AlbumItem(imageUri, date)
-                // 전체보기에 저장
-                albums[ALL_PICTURES]?.add(albumItem)
-                // 이미지 상대 경로에 저장
-                cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)).let { path ->
-                    val url = path.substringBeforeLast("/")
-                    albums[url]?.add(albumItem) ?: run {
-                        albums[url] = mutableListOf(albumItem)
-                    }
+                val realPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                images.add(AlbumItem(imageUri, date, realPath))
+            }
+        }
+        return images
+    }
+
+    override fun getImageObserver(): Flow<String> = callbackFlow {
+        val contentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+            override fun onChange(selfChange: Boolean, uri: Uri?) {
+                super.onChange(selfChange, uri)
+                if (uri != null) {
+                    trySend(uri.toString())
                 }
             }
         }
-        return albums
+        contentResolver.registerContentObserver(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            true,
+            contentObserver
+        )
+        awaitClose {
+            contentResolver.unregisterContentObserver(contentObserver)
+        }
     }
 
     override fun getValidUris(uris: List<String>): List<String> =
@@ -138,8 +159,4 @@ class ImageRepositoryImpl @Inject constructor(
             }
             updatedAlbumItem
         }
-
-    companion object {
-        private const val ALL_PICTURES = "전체보기"
-    }
 }

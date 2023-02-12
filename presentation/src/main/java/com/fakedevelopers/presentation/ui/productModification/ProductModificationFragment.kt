@@ -40,8 +40,4 @@ class ProductModificationFragment : ProductEditorFragment(
                 .attachToRecyclerView(binding.recyclerProductEditor)
         }
     }
-
-    override fun handleOnBackPressed() {
-        findNavController().navigate(R.id.action_productModificationFragment_to_productListFragment)
-    }
 }
