@@ -1,6 +1,9 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumList
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
@@ -95,7 +98,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
                     findNavController().navigate(
                         AlbumListFragmentDirections.actionPictureSelectFragmentToAlbumSelectFragment(
                             selectedImageInfo = viewModel.selectedImageInfo,
-                            title = binding.toolbarAlbumList.textviewAlbumTitle.text.toString()
+                            title = binding.toolbarAlbumList.textviewAlbumTitle.text.toString().substringBeforeLast(' ')
                         )
                     )
                 }
@@ -117,9 +120,19 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.albumTitle.collectLatest { title ->
-                binding.toolbarAlbumList.textviewAlbumTitle.text = title.ifEmpty {
-                    getString(R.string.album_select_recent_images)
-                }
+                val toolbarTitle = getString(
+                    R.string.album_list_title,
+                    title.ifEmpty { getString(R.string.album_select_recent_images) }
+                )
+                binding.toolbarAlbumList.textviewAlbumTitle.text =
+                    SpannableStringBuilder(toolbarTitle).apply {
+                        setSpan(
+                            RelativeSizeSpan(0.5f),
+                            toolbarTitle.lastIndex,
+                            toolbarTitle.length,
+                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
+                    }
             }
         }
     }

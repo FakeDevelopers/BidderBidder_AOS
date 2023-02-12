@@ -1,6 +1,9 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumSelect
 
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.RelativeSizeSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
@@ -36,8 +39,16 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recyclerAlbumSelect.adapter = adapter
+        val toolbarTitle = getString(R.string.album_select_title, args.title)
         binding.toolbarAlbumSelect.textviewAlbumTitle.run {
-            text = args.title
+            text = SpannableStringBuilder(toolbarTitle).apply {
+                setSpan(
+                    RelativeSizeSpan(0.5f),
+                    toolbarTitle.lastIndex,
+                    toolbarTitle.length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
             setOnClickListener {
                 findNavController().popBackStack()
             }
