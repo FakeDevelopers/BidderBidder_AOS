@@ -1,4 +1,4 @@
-package com.fakedevelopers.presentation.model
+package com.fakedevelopers.domain.model
 
 data class AlbumInfo(
     val path: String,

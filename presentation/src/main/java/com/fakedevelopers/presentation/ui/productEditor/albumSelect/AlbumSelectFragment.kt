@@ -37,6 +37,7 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.initAlbumInfo(getString(R.string.album_select_recent_images))
         binding.recyclerAlbumSelect.adapter = adapter
         val toolbarTitle = getString(R.string.album_select_title, args.title)
         binding.toolbarAlbumSelect.textviewAlbumTitle.run {

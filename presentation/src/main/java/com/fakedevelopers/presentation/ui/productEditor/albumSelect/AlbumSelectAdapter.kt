@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerAlbumSelectBinding
-import com.fakedevelopers.presentation.model.AlbumInfo
+import com.fakedevelopers.domain.model.AlbumInfo
 
 class AlbumSelectAdapter(
     private val onClick: (String) -> Unit

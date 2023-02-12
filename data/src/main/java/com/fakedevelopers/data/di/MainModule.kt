@@ -1,6 +1,7 @@
 package com.fakedevelopers.data.di
 
 import android.content.Context
+import com.fakedevelopers.data.repository.AlbumRepositoryImpl
 import com.fakedevelopers.data.repository.ChatRepositoryImpl
 import com.fakedevelopers.data.repository.ImageRepositoryImpl
 import com.fakedevelopers.data.repository.LocalStorageRepositoryImpl
@@ -16,6 +17,7 @@ import com.fakedevelopers.data.service.ProductEditorService
 import com.fakedevelopers.data.service.ProductListService
 import com.fakedevelopers.data.service.ProductSearchService
 import com.fakedevelopers.data.source.LocalStorageDataSource
+import com.fakedevelopers.domain.repository.AlbumRepository
 import com.fakedevelopers.domain.repository.ChatRepository
 import com.fakedevelopers.domain.repository.ImageRepository
 import com.fakedevelopers.domain.repository.LocalStorageRepository
@@ -112,4 +114,9 @@ object MainModule {
     @Provides
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepositoryImpl(service)
+
+    @Singleton
+    @Provides
+    fun provideAlbumRepository(): AlbumRepository =
+        AlbumRepositoryImpl()
 }
