@@ -172,5 +172,10 @@
         <argument
             android:name="title"
             app:argType="string" />
+        <action
+            android:id="@+id/action_albumSelectFragment_to_productRegistrationFragment"
+            app:destination="@id/productRegistrationFragment"
+            app:popUpTo="@id/productRegistrationFragment"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

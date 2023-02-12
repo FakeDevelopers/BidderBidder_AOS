@@ -12,7 +12,6 @@ import androidx.navigation.fragment.navArgs
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAlbumSelectBinding
 import com.fakedevelopers.presentation.ui.base.BaseFragment
-import com.fakedevelopers.presentation.ui.productEditor.albumList.AlbumListFragmentDirections
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -58,8 +57,8 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
             findNavController().run {
                 if (backQueue.any { it.destination.id == R.id.productRegistrationFragment }) {
                     navigate(
-                        AlbumListFragmentDirections
-                            .actionPictureSelectFragmentToProductRegistrationFragment(args.selectedImageInfo)
+                        AlbumSelectFragmentDirections
+                            .actionAlbumSelectFragmentToProductRegistrationFragment(args.selectedImageInfo)
                     )
                 } else {
                     // 이렇게 쓰면 안됨. 반드시 수정해야함
