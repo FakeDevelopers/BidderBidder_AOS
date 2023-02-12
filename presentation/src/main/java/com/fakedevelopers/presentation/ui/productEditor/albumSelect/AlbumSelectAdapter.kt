@@ -6,9 +6,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.fakedevelopers.domain.model.AlbumInfo
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.RecyclerAlbumSelectBinding
-import com.fakedevelopers.domain.model.AlbumInfo
 
 class AlbumSelectAdapter(
     private val onClick: (String) -> Unit
