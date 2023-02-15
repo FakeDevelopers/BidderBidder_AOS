@@ -37,6 +37,14 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         initCollector()
     }
 
+    protected open fun initListener() {
+        // 호출을 BaseFragment로 위임하기 위한 빈 메소드 입니다.
+    }
+
+    protected open fun initCollector() {
+        // 호출을 BaseFragment로 위임하기 위한 빈 메소드 입니다.
+    }
+
     protected fun sendSnackBar(
         message: String,
         @IntRange(from = -2) length: Int = Snackbar.LENGTH_SHORT,
@@ -57,10 +65,6 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         startActivity(Intent(requireContext(), activity))
         requireActivity().finish()
     }
-
-    protected open fun initListener() {}
-
-    protected open fun initCollector() {}
 
     override fun onDestroyView() {
         super.onDestroyView()
