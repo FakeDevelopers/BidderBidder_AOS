@@ -20,10 +20,9 @@ class DeleteFragment : BaseFragment<FragmentDeleteBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        initCollector()
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.deleteEvent.collectLatest {
                 if (it.isSuccess) {
