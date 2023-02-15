@@ -79,8 +79,6 @@ abstract class ProductEditorFragment(
         if (viewModel.category.isNotEmpty()) {
             setCategory(viewModel.category)
         }
-        initListener()
-        initCollector()
     }
 
     override fun onStart() {
@@ -111,7 +109,7 @@ abstract class ProductEditorFragment(
 
     protected abstract fun initSelectedImages()
 
-    protected open fun initListener() {
+    override fun initListener() {
         // 가격 필터 등록
         binding.edittextProductEditorHopePrice.setPriceFilter(MAX_PRICE_LENGTH)
         binding.edittextProductEditorOpeningBid.setPriceFilter(MAX_PRICE_LENGTH)
@@ -170,7 +168,7 @@ abstract class ProductEditorFragment(
         }
     }
 
-    protected open fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.productEditorResponse.collectLatest {
                 if (it.isSuccess) {

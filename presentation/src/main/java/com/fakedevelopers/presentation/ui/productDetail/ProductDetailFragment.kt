@@ -55,11 +55,9 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
             adapter = productDetailAdapter
             registerOnPageChangeCallback(onPageChanged)
         }
-        initCollector()
-        initListener()
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.eventFlow.collect { event ->
                 handleEvent(event)
@@ -67,7 +65,7 @@ class ProductDetailFragment : BaseFragment<FragmentProductDetailBinding>(
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.toolbarProductDetail.buttonToolbarBack.setOnClickListener {
             findNavController().popBackStack()
         }

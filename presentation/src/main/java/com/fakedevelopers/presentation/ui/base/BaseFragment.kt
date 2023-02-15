@@ -31,7 +31,13 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         }
     }
 
-    fun sendSnackBar(
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListener()
+        initCollector()
+    }
+
+    protected fun sendSnackBar(
         message: String,
         @IntRange(from = -2) length: Int = Snackbar.LENGTH_SHORT,
         anchorView: View? = null
@@ -47,10 +53,14 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         }.show()
     }
 
-    fun navigateActivity(activity: Class<*>) {
+    protected fun navigateActivity(activity: Class<*>) {
         startActivity(Intent(requireContext(), activity))
         requireActivity().finish()
     }
+
+    protected open fun initListener() {}
+
+    protected open fun initCollector() {}
 
     override fun onDestroyView() {
         super.onDestroyView()
