@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.CallSuper
 import androidx.annotation.StringRes
 import androidx.core.content.PermissionChecker
 import androidx.core.content.PermissionChecker.checkCallingOrSelfPermission
@@ -109,6 +110,7 @@ abstract class ProductEditorFragment(
 
     protected abstract fun initSelectedImages()
 
+    @CallSuper
     override fun initListener() {
         // 가격 필터 등록
         binding.edittextProductEditorHopePrice.setPriceFilter(MAX_PRICE_LENGTH)
@@ -168,6 +170,7 @@ abstract class ProductEditorFragment(
         }
     }
 
+    @CallSuper
     override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.productEditorResponse.collectLatest {
