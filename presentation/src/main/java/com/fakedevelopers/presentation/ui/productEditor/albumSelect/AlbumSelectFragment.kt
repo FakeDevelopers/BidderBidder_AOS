@@ -39,6 +39,16 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
         super.onViewCreated(view, savedInstanceState)
         viewModel.initAlbumInfo(getString(R.string.album_select_recent_images))
         binding.recyclerAlbumSelect.adapter = adapter
+        if (args.selectedImageInfo.uris.isNotEmpty()) {
+            binding.toolbarAlbumSelect.run {
+                textviewAlbumComplete.isEnabled = true
+                textviewAlbumComplete.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
+                textviewAlbumCount.text = args.selectedImageInfo.uris.size.toString()
+            }
+        }
+    }
+
+    override fun initListener() {
         val toolbarTitle = getString(R.string.album_select_title, args.title)
         binding.toolbarAlbumSelect.textviewAlbumTitle.run {
             text = SpannableStringBuilder(toolbarTitle).apply {
@@ -68,17 +78,9 @@ class AlbumSelectFragment : BaseFragment<FragmentAlbumSelectBinding>(
                 }
             }
         }
-        if (args.selectedImageInfo.uris.isNotEmpty()) {
-            binding.toolbarAlbumSelect.run {
-                textviewAlbumComplete.isEnabled = true
-                textviewAlbumComplete.setTextColor(ContextCompat.getColor(requireContext(), R.color.black))
-                textviewAlbumCount.text = args.selectedImageInfo.uris.size.toString()
-            }
-        }
-        initCollector()
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.albumInfoEvent.collectLatest {
                 adapter.submitList(it)

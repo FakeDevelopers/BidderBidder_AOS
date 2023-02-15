@@ -56,12 +56,10 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        initListener()
-        initCollector()
         viewModel.initSearchWord(args.searchWord)
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.isRefreshing.collectLatest { state ->
                 binding.swipeProductList.isRefreshing = state
@@ -76,7 +74,7 @@ class ProductListFragment : BaseFragment<FragmentProductListBinding>(
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.swipeProductList.setOnRefreshListener {
             viewModel.requestProductList(true)
         }

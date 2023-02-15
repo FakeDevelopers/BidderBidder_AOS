@@ -4,25 +4,19 @@ import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentPhoneAuthBinding
+import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.register.RegistrationProgressState.CONGRATULATIONS
 import com.fakedevelopers.presentation.ui.register.RegistrationProgressState.PHONE_AUTH_CHECK_AUTH_CODE
 import com.fakedevelopers.presentation.ui.register.UserRegistrationViewModel
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.AuthResult
@@ -30,15 +24,12 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
-class PhoneAuthFragment : Fragment() {
-
-    private var _binding: FragmentPhoneAuthBinding? = null
-
-    private val binding get() = _binding!!
+class PhoneAuthFragment : BaseFragment<FragmentPhoneAuthBinding>(
+    R.layout.fragment_phone_auth
+) {
     private val phoneAuthViewModel: PhoneAuthViewModel by viewModels()
     private val userRegistrationViewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
@@ -53,7 +44,7 @@ class PhoneAuthFragment : Fragment() {
             // 인증 실패 상태
             // 보통 할당량이 다 떨어지면 여기로 간다
             override fun onVerificationFailed(e: FirebaseException) {
-                Toast.makeText(requireContext(), "저런 실패했군요!", Toast.LENGTH_SHORT).show()
+                sendSnackBar("저런 실패했군요!")
                 phoneAuthViewModel.setCodeSendingStates(PhoneAuthState.INIT)
             }
 
@@ -72,31 +63,12 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_phone_auth,
-            container,
-            false
-        )
-        return binding.run {
-            vm = phoneAuthViewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initListener()
-        initCollector()
+        binding.vm = phoneAuthViewModel
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.buttonPhoneauthSendCode.setOnClickListener {
             if (phoneAuthViewModel.phoneNumber.value.isNotEmpty()) {
                 if (phoneAuthViewModel.isPhoneNumberCheck()) {
@@ -113,59 +85,48 @@ class PhoneAuthFragment : Fragment() {
         }
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         // 코드 발송 상태에 따라 버튼 메세지가 바뀜
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                phoneAuthViewModel.codeSendingStates.collectLatest { state ->
-                    handlePhoneAuthEvent(state)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            phoneAuthViewModel.codeSendingStates.collectLatest { state ->
+                handlePhoneAuthEvent(state)
             }
         }
         // 인증 코드 검사 요청
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                userRegistrationViewModel.checkAuthCode.collectLatest {
-                    signInWithPhoneAuthCredential()
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            userRegistrationViewModel.checkAuthCode.collectLatest {
+                signInWithPhoneAuthCredential()
             }
         }
         // 타이머 상태
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                phoneAuthViewModel.timerState.collectLatest {
-                    if (it) {
-                        binding.textviewPhoneauthTimer.visibility = View.VISIBLE
-                    } else {
-                        binding.textviewPhoneauthTimer.visibility = View.INVISIBLE
-                        alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            phoneAuthViewModel.timerState.collectLatest {
+                if (it) {
+                    binding.textviewPhoneauthTimer.visibility = View.VISIBLE
+                } else {
+                    binding.textviewPhoneauthTimer.visibility = View.INVISIBLE
+                    alertDialogWithButton(getString(R.string.phoneauth_session_expired_alert))
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // 인증 번호 발송 버튼
-                phoneAuthViewModel.phoneNumber.collectLatest {
-                    setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
-                    setTextInputBackground(R.drawable.text_input_white_background_normal)
-                    if (phoneAuthViewModel.isPhoneNumberCheck()) {
-                        binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
-                        setButtonTextColor(R.color.white)
-                        setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
-                    } else {
-                        setButtonTextColor(R.color.black)
-                        setButtonBackground(R.drawable.button_phone_auth_before_send)
-                    }
+        repeatOnStarted(viewLifecycleOwner) {
+            phoneAuthViewModel.phoneNumber.collectLatest {
+                setPhoneValidInfo(R.string.phoneauth_number_is_valid, R.color.bidderbidder_primary, true)
+                setTextInputBackground(R.drawable.text_input_white_background_normal)
+                if (phoneAuthViewModel.isPhoneNumberCheck()) {
+                    binding.buttonPhoneauthSendCode.setText(R.string.phoneauth_getauthcode)
+                    setButtonTextColor(R.color.white)
+                    setButtonBackground(R.drawable.button_phone_auth_before_send_ready)
+                } else {
+                    setButtonTextColor(R.color.black)
+                    setButtonBackground(R.drawable.button_phone_auth_before_send)
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                // 인증 번호 6자리 되면 다음 버튼 활성화
-                phoneAuthViewModel.authCode.collectLatest {
-                    userRegistrationViewModel.setAuthCode(it)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            // 인증 번호 6자리 되면 다음 버튼 활성화
+            phoneAuthViewModel.authCode.collectLatest {
+                userRegistrationViewModel.setAuthCode(it)
             }
         }
     }
@@ -290,11 +251,6 @@ class PhoneAuthFragment : Fragment() {
         val width = resources.getDimensionPixelSize(R.dimen.alert_dialog_width)
         val height = resources.getDimensionPixelSize(R.dimen.alert_dialog_height)
         alertDialog.window?.setLayout(width, height)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

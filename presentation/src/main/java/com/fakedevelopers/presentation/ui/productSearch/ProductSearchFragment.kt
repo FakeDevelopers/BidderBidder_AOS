@@ -30,11 +30,9 @@ class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        initCollector()
-        initListener()
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.searchWord.collectLatest {
                 findNavController().apply {
@@ -60,7 +58,7 @@ class ProductSearchFragment : BaseFragment<FragmentProductSearchBinding>(
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         viewModel.setSearchBar(args.searchWord)
         binding.edittextToolbarSearch.run {
             // 키보드 올리기 전에 포커싱을 줘야함

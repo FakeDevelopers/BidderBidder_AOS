@@ -42,8 +42,6 @@
             app:layout_constraintStart_toEndOf="@id/imageview_album_select"
             app:layout_constraintBottom_toTopOf="@id/textview_album_select_count"
             app:layout_constraintTop_toTopOf="@id/imageview_album_select"
-            tools:layout_editor_absoluteX="133dp"
-            tools:layout_editor_absoluteY="17dp"
             tools:text="최근 항목"/>
 
         <com.google.android.material.textview.MaterialTextView

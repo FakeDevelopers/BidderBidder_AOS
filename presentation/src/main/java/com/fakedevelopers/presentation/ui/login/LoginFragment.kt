@@ -24,17 +24,15 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        initListener()
-        initCollector()
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.textviewLoginRegistration.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_userRegistrationFragment)
         }
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.loginEvent.collectLatest { result ->
                 if (result.isSuccess && result.getOrThrow() == LOGIN_SUCCESS) {
