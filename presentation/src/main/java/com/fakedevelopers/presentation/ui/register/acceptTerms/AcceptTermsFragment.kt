@@ -4,57 +4,36 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.children
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.fakedevelopers.domain.model.TermItemDto
 import com.fakedevelopers.domain.model.TermListDto
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentAcceptTermsBinding
 import com.fakedevelopers.presentation.databinding.IncludeTermCheckboxBinding
+import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.register.RegistrationProgressState.ACCEPT_TERMS_CONTENTS
 import com.fakedevelopers.presentation.ui.register.UserRegistrationViewModel
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AcceptTermsFragment : Fragment() {
-
-    private var _binding: FragmentAcceptTermsBinding? = null
-
-    private val binding get() = _binding!!
+class AcceptTermsFragment : BaseFragment<FragmentAcceptTermsBinding>(
+    R.layout.fragment_accept_terms
+) {
     private val acceptTermViewModel: AcceptTermsViewModel by viewModels()
     private val viewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_accept_terms,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         binding.includeAcceptTermsTitle.textView4.text =
             SpannableStringBuilder(getString(R.string.accept_terms_title)).apply {
                 setSpan(
@@ -70,33 +49,30 @@ class AcceptTermsFragment : Fragment() {
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.acceptAllState.collectLatest {
-                    binding.checkboxAcceptTermsAcceptAll.isChecked = it
-                    setAllTermsState(it)
-                }
+    }
+
+    override fun initCollector() {
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.acceptAllState.collectLatest {
+                binding.checkboxAcceptTermsAcceptAll.isChecked = it
+                setAllTermsState(it)
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                acceptTermViewModel.termListEvent.collectLatest { result ->
-                    if (result.isSuccess) {
-                        result.getOrNull()?.let { termList ->
-                            setTermView(termList)
-                        }
+        repeatOnStarted(viewLifecycleOwner) {
+            acceptTermViewModel.termListEvent.collectLatest { result ->
+                if (result.isSuccess) {
+                    result.getOrNull()?.let { termList ->
+                        setTermView(termList)
                     }
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                acceptTermViewModel.termContentsEvent.collectLatest { result ->
-                    result.isSuccess.let {
-                        result.getOrNull()?.let { contents ->
-                            viewModel.acceptTermDetail = contents
-                            viewModel.setCurrentStep(ACCEPT_TERMS_CONTENTS)
-                        }
+        repeatOnStarted(viewLifecycleOwner) {
+            acceptTermViewModel.termContentsEvent.collectLatest { result ->
+                result.isSuccess.let {
+                    result.getOrNull()?.let { contents ->
+                        viewModel.acceptTermDetail = contents
+                        viewModel.setCurrentStep(ACCEPT_TERMS_CONTENTS)
                     }
                 }
             }
@@ -115,11 +91,6 @@ class AcceptTermsFragment : Fragment() {
                     checkBox.isChecked = state
                 }
         }
-    }
-
-    override fun onDestroy() {
-        _binding = null
-        super.onDestroy()
     }
 
     private fun setTermView(termList: TermListDto) {
