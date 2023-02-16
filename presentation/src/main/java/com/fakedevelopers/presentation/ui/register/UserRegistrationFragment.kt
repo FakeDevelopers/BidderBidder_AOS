@@ -2,18 +2,10 @@ package com.fakedevelopers.presentation.ui.register
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
@@ -21,23 +13,25 @@ import androidx.navigation.navOptions
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentUserRegistrationBinding
 import com.fakedevelopers.presentation.ui.MainActivity
+import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
-class UserRegistrationFragment : Fragment() {
-
-    private var _binding: FragmentUserRegistrationBinding? = null
-
-    private val binding get() = _binding!!
+class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
+    R.layout.fragment_user_registration
+) {
     private val viewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
     }
+
     private val navController by lazy {
         (childFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
     }
+
     private val singleTopOptions = navOptions {
         launchSingleTop = true
     }
+
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -46,29 +40,11 @@ class UserRegistrationFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_user_registration,
-            container,
-            false
-        )
-
-        viewModel.setInitialStep()
-
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.vm = viewModel
         setProgressBar(viewModel.currentStep)
-
-        initListener()
-        initCollector()
+        viewModel.setInitialStep()
     }
 
     override fun onStart() {
@@ -76,7 +52,7 @@ class UserRegistrationFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
-    private fun initListener() {
+    override fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
             setNextByDestination(destination.id)
@@ -86,6 +62,7 @@ class UserRegistrationFragment : Fragment() {
             viewModel.toPreviousStep()
         }
     }
+
     private fun setRegistrationNextButton(state: Boolean) {
         binding.buttonUserRegistrationNext.let {
             val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
@@ -93,29 +70,23 @@ class UserRegistrationFragment : Fragment() {
             it.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
         }
     }
-    private fun initCollector() {
+
+    override fun initCollector() {
         // 회원가입 단계 관리
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.changeRegistrationStep.collectLatest {
-                    toNextStep(it)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.changeRegistrationStep.collectLatest {
+                toNextStep(it)
             }
         }
         // 실패 토스트 메세지
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.failureMessage.collectLatest {
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.failureMessage.collectLatest {
+                sendSnackBar(it)
             }
         }
-
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.nextStepEnabled.collect() {
-                    setRegistrationNextButton(it)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.nextStepEnabled.collect {
+                setRegistrationNextButton(it)
             }
         }
     }
@@ -169,8 +140,7 @@ class UserRegistrationFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
         backPressedCallback.remove()
+        super.onDestroy()
     }
 }

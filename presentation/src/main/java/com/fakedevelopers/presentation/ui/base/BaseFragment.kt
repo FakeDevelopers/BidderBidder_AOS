@@ -31,7 +31,21 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         }
     }
 
-    fun sendSnackBar(
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initListener()
+        initCollector()
+    }
+
+    protected open fun initListener() {
+        // 호출을 BaseFragment로 위임하기 위한 빈 메소드 입니다.
+    }
+
+    protected open fun initCollector() {
+        // 호출을 BaseFragment로 위임하기 위한 빈 메소드 입니다.
+    }
+
+    protected fun sendSnackBar(
         message: String,
         @IntRange(from = -2) length: Int = Snackbar.LENGTH_SHORT,
         anchorView: View? = null
@@ -47,7 +61,7 @@ abstract class BaseFragment<VB : ViewDataBinding>(
         }.show()
     }
 
-    fun navigateActivity(activity: Class<*>) {
+    protected fun navigateActivity(activity: Class<*>) {
         startActivity(Intent(requireContext(), activity))
         requireActivity().finish()
     }

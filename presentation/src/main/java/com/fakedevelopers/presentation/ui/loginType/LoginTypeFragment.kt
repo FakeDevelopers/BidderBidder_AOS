@@ -61,11 +61,9 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
             }
-        initListener()
-        initCollector()
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.buttonLogintypeGoogle.setOnClickListener {
             googleLogin()
         }
@@ -77,7 +75,7 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
         }
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.loginWithGoogleEvent.collect { result ->
                 if (result.isSuccess) {

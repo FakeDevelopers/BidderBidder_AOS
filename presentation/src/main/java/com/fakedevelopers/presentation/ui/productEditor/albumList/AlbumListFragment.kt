@@ -58,8 +58,6 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             setCompleteTextVisibility(args.selectedImageInfo.uris.size)
         }
         binding.recyclerAlbumList.itemAnimator = null
-        initListener()
-        initCollector()
     }
 
     override fun onStart() {
@@ -88,7 +86,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.toolbarAlbumList.run {
             textviewAlbumComplete.setOnClickListener {
                 toProductEditor(args.selectedImageInfo)
@@ -112,7 +110,7 @@ class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
             .attachToRecyclerView(binding.recyclerSelectedPicture)
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         repeatOnStarted(viewLifecycleOwner) {
             viewModel.event.collect { event ->
                 handleEvent(event)

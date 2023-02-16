@@ -38,8 +38,6 @@ class ChannelListFragment : BaseFragment<FragmentChannelListBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.vm = viewModel
-        initCollector()
-        initListener()
     }
 
     override fun onStart() {
@@ -49,7 +47,7 @@ class ChannelListFragment : BaseFragment<FragmentChannelListBinding>(
         }
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.streamUserTokenEvent.collectLatest { result ->
@@ -65,7 +63,7 @@ class ChannelListFragment : BaseFragment<FragmentChannelListBinding>(
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         binding.channelListChat.setChannelItemClickListener { channel ->
             findNavController().navigate(
                 ChannelListFragmentDirections.actionChannelListFragmentToChattingFragment(channel.cid)

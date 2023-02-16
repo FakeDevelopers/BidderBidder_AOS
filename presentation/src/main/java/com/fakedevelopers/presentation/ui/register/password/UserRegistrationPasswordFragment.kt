@@ -3,50 +3,27 @@ package com.fakedevelopers.presentation.ui.register.password
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentUserRegistrationPasswordBinding
+import com.fakedevelopers.presentation.ui.base.BaseFragment
 import com.fakedevelopers.presentation.ui.register.UserRegistrationViewModel
+import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
 
-class UserRegistrationPasswordFragment : Fragment() {
-
-    private var _binding: FragmentUserRegistrationPasswordBinding? = null
-
-    private val binding get() = _binding!!
+class UserRegistrationPasswordFragment : BaseFragment<FragmentUserRegistrationPasswordBinding>(
+    R.layout.fragment_user_registration_password
+) {
     private val viewModel: UserRegistrationViewModel by lazy {
         ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_user_registration_password,
-            container,
-            false
-        )
-        return binding.run {
-            vm = viewModel
-            lifecycleOwner = viewLifecycleOwner
-            root
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initListener()
-        initCollector()
+        binding.vm = viewModel
         if (viewModel.userPasswordConditionLengthState.value &&
             viewModel.userPasswordConditionAlphabetState.value &&
             viewModel.userPasswordConditionAlphabetState.value
@@ -55,9 +32,9 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
     }
 
-    private fun initListener() {
+    override fun initListener() {
         // 만료 시간 필터 등록
-        binding.apply {
+        binding.run {
             edittextPassword.setOnFocusChangeListener { _, hasFocus ->
                 passwordClearButton.visibility = getVisibility(
                     hasFocus && edittextPassword.text.isNullOrBlank().not()
@@ -79,7 +56,7 @@ class UserRegistrationPasswordFragment : Fragment() {
                     hasFocus && edittextPasswordConfirm.text.isNullOrBlank().not()
                 )
             }
-            passwordConfirmClearButton.setOnClickListener() {
+            passwordConfirmClearButton.setOnClickListener {
                 edittextPasswordConfirm.text?.clear()
                 passwordConfirmClearButton.visibility = View.GONE
             }
@@ -93,75 +70,59 @@ class UserRegistrationPasswordFragment : Fragment() {
         }
     }
 
-    private fun initCollector() {
+    override fun initCollector() {
         // 비밀번호 길이 조건
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConditionLengthState.collectLatest {
-                    setTextViewColor(binding.textviewPasswordConditionLength, getColorId(it))
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.userPasswordConditionLengthState.collectLatest {
+                setTextViewColor(binding.textviewPasswordConditionLength, getColorId(it))
             }
         }
         // 비밀번호 문자 조건
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConditionAlphabetState.collectLatest {
-                    setTextViewColor(binding.textviewPasswordConditionAlphabet, getColorId(it))
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.userPasswordConditionAlphabetState.collectLatest {
+                setTextViewColor(binding.textviewPasswordConditionAlphabet, getColorId(it))
             }
         }
         // 비밀번호 숫자 조건
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConditionNumberState.collectLatest {
-                    setTextViewColor(binding.textviewPasswordConditionNumber, getColorId(it))
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.userPasswordConditionNumberState.collectLatest {
+                setTextViewColor(binding.textviewPasswordConditionNumber, getColorId(it))
             }
         }
         // 비밀번호 확인 visible
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConfirmVisible.collectLatest {
-                    binding.textviewPasswordConfirmInfo.visibility = getVisibility(it)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.userPasswordConfirmVisible.collectLatest {
+                binding.textviewPasswordConfirmInfo.visibility = getVisibility(it)
             }
         }
         // 비밀번호 확인 텍스트
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userPasswordConfirmState.collectLatest {
-                    setPasswordConfirmInfo(it)
-                }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.userPasswordConfirmState.collectLatest {
+                setPasswordConfirmInfo(it)
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.inputUserPassword.collectLatest {
-                    checkPasswordsSame()
-
-                    binding.apply {
-                        if (it.isBlank()) {
-                            passwordPasswordToggle.visibility = View.GONE
-                        } else {
-                            passwordPasswordToggle.visibility = View.VISIBLE
-                            passwordClearButton.visibility = View.VISIBLE
-                        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.inputUserPassword.collectLatest {
+                checkPasswordsSame()
+                binding.apply {
+                    if (it.isBlank()) {
+                        passwordPasswordToggle.visibility = View.GONE
+                    } else {
+                        passwordPasswordToggle.visibility = View.VISIBLE
+                        passwordClearButton.visibility = View.VISIBLE
                     }
                 }
             }
         }
-        lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.inputConfirmUserPassword.collectLatest {
-                    checkPasswordsSame()
-
-                    binding.apply {
-                        if (it.isBlank()) {
-                            passwordConfirmPasswordToggle.visibility = View.GONE
-                        } else {
-                            passwordConfirmPasswordToggle.visibility = View.VISIBLE
-                            passwordConfirmClearButton.visibility = View.VISIBLE
-                        }
+        repeatOnStarted(viewLifecycleOwner) {
+            viewModel.inputConfirmUserPassword.collectLatest {
+                checkPasswordsSame()
+                binding.apply {
+                    if (it.isBlank()) {
+                        passwordConfirmPasswordToggle.visibility = View.GONE
+                    } else {
+                        passwordConfirmPasswordToggle.visibility = View.VISIBLE
+                        passwordConfirmClearButton.visibility = View.VISIBLE
                     }
                 }
             }
@@ -204,10 +165,6 @@ class UserRegistrationPasswordFragment : Fragment() {
         tv.isSelected = colorId == R.color.bidderbidder_primary
         tv.isEnabled = viewModel.inputUserPassword.value.isNotEmpty()
     }
-    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+    private fun getColorId(state: Boolean) = if (state) R.color.bidderbidder_primary else R.color.edit_text_hint
 }
