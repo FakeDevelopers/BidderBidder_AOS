@@ -29,93 +29,93 @@ import com.fakedevelopers.domain.repository.ProductSearchRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
-object MainModule {
+@InstallIn(ActivityRetainedComponent::class)
+class MainModule {
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideProductListService(@DataObject retrofit: Retrofit): ProductListService =
+    fun provideProductListService(@NetworkObject retrofit: Retrofit): ProductListService =
         retrofit.create(ProductListService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideProductListRepository(service: ProductListService): ProductListRepository =
         ProductListRepositoryImpl(service)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideProductEditorService(@AuthDataObject retrofit: Retrofit): ProductEditorService =
+    fun provideProductEditorService(@AuthNetworkObject retrofit: Retrofit): ProductEditorService =
         retrofit.create(ProductEditorService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideProductEditorRepository(service: ProductEditorService): ProductEditorRepository =
         ProductEditorRepositoryImpl(service)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideProductDetailService(@DataObject retrofit: Retrofit): ProductDetailService =
+    fun provideProductDetailService(@NetworkObject retrofit: Retrofit): ProductDetailService =
         retrofit.create(ProductDetailService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideProductDetailRepository(service: ProductDetailService): ProductDetailRepository =
         ProductDetailRepositoryImpl(service)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideImageRepository(@ApplicationContext context: Context): ImageRepository =
         ImageRepositoryImpl(context.contentResolver)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideLocalStorageRepository(localStorageDataSource: LocalStorageDataSource): LocalStorageRepository =
         LocalStorageRepositoryImpl(localStorageDataSource)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideLocalStorageDataSource(@ApplicationContext context: Context): LocalStorageDataSource =
         LocalStorageDataSource(context)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideProductCategoryService(@DataObject retrofit: Retrofit): ProductCategoryService =
+    fun provideProductCategoryService(@NetworkObject retrofit: Retrofit): ProductCategoryService =
         retrofit.create(ProductCategoryService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideProductCategoryRepository(service: ProductCategoryService): ProductCategoryRepository =
         ProductCategoryRepositoryImpl(service)
 
     // 스트림 유저 토큰
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideChatService(@DataObject retrofit: Retrofit): ChatService =
+    fun provideChatService(@NetworkObject retrofit: Retrofit): ChatService =
         retrofit.create(ChatService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideChatRepository(service: ChatService): ChatRepository =
         ChatRepositoryImpl(service)
 
     // 인기 검색어 요청
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideProductSearchService(@DataObject retrofit: Retrofit): ProductSearchService =
+    fun provideProductSearchService(@NetworkObject retrofit: Retrofit): ProductSearchService =
         retrofit.create(ProductSearchService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideProductSearchRepository(service: ProductSearchService): ProductSearchRepository =
         ProductSearchRepositoryImpl(service)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideAlbumRepository(): AlbumRepository =
         AlbumRepositoryImpl()
