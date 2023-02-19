@@ -32,10 +32,6 @@ annotation class AuthNetworkObject
 object ApiModule {
 
     @NetworkObject
-    @Provides
-    fun provideBaseUrl() = BASE_URL
-
-    @NetworkObject
     @Singleton
     @Provides
     fun provideNormalOkHttpClient(): OkHttpClient =
@@ -54,12 +50,11 @@ object ApiModule {
     @Provides
     fun provideNormalRetrofit(
         @NetworkObject okHttpClient: OkHttpClient,
-        @NetworkObject gson: Gson,
-        @NetworkObject baseUrl: String
+        @NetworkObject gson: Gson
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(baseUrl)
+            .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -89,12 +84,11 @@ object ApiModule {
     @Provides
     fun provideAuthRetrofit(
         @AuthNetworkObject okHttpClient: OkHttpClient,
-        @NetworkObject gson: Gson,
-        @NetworkObject baseUrl: String
+        @NetworkObject gson: Gson
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl(baseUrl)
+            .baseUrl(BASE_URL)
             .addConverterFactory(ScalarsConverterFactory.create())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
