@@ -21,21 +21,21 @@ import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class DataObject
+annotation class NetworkObject
 
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
-annotation class AuthDataObject
+annotation class AuthNetworkObject
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    @DataObject
+    @NetworkObject
     @Provides
     fun provideBaseUrl() = BASE_URL
 
-    @DataObject
+    @NetworkObject
     @Singleton
     @Provides
     fun provideNormalOkHttpClient(): OkHttpClient =
@@ -49,13 +49,13 @@ object ApiModule {
             OkHttpClient.Builder().build()
         }
 
-    @DataObject
+    @NetworkObject
     @Singleton
     @Provides
     fun provideNormalRetrofit(
-        @DataObject okHttpClient: OkHttpClient,
-        @DataObject gson: Gson,
-        @DataObject baseUrl: String
+        @NetworkObject okHttpClient: OkHttpClient,
+        @NetworkObject gson: Gson,
+        @NetworkObject baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
@@ -65,11 +65,11 @@ object ApiModule {
             .build()
     }
 
-    @AuthDataObject
+    @AuthNetworkObject
     @Singleton
     @Provides
     fun provideAuthOkHttpClient(
-        @DataObject authInterceptor: LoginAuthInterceptor
+        @NetworkObject authInterceptor: LoginAuthInterceptor
     ): OkHttpClient =
         if (BuildConfig.DEBUG.not()) {
             val loggingInterceptor = HttpLoggingInterceptor()
@@ -84,13 +84,13 @@ object ApiModule {
                 .build()
         }
 
-    @AuthDataObject
+    @AuthNetworkObject
     @Singleton
     @Provides
     fun provideAuthRetrofit(
-        @AuthDataObject okHttpClient: OkHttpClient,
-        @DataObject gson: Gson,
-        @DataObject baseUrl: String
+        @AuthNetworkObject okHttpClient: OkHttpClient,
+        @NetworkObject gson: Gson,
+        @NetworkObject baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
             .client(okHttpClient)
@@ -100,12 +100,12 @@ object ApiModule {
             .build()
     }
 
-    @DataObject
+    @NetworkObject
     @Singleton
     @Provides
     fun provideGson(): Gson = GsonBuilder().setLenient().create()
 
-    @DataObject
+    @NetworkObject
     @Singleton
     @Provides
     fun provideFirebaseAuth(): FirebaseAuth {
@@ -114,7 +114,7 @@ object ApiModule {
         }
     }
 
-    @DataObject
+    @NetworkObject
     @Singleton
     @Provides
     fun provideAuthInterceptor(auth: FirebaseAuth) = LoginAuthInterceptor(auth)
