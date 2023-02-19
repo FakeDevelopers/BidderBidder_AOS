@@ -13,42 +13,41 @@ import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.android.scopes.ActivityRetainedScoped
 import retrofit2.Retrofit
-import javax.inject.Singleton
 
 @Module
-@InstallIn(SingletonComponent::class)
-object LoginModule {
-
-    @Singleton
+@InstallIn(ActivityRetainedComponent::class)
+class LoginModule {
+    @ActivityRetainedScoped
     @Provides
-    fun provideLoginWithEmailService(@DataObject retrofit: Retrofit): LoginWithEmailService =
+    fun provideLoginWithEmailService(@NetworkObject retrofit: Retrofit): LoginWithEmailService =
         retrofit.create(LoginWithEmailService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideLoginWithEmailRepository(service: LoginWithEmailService): LoginWithEmailRepository =
         LoginWithEmailRepositoryImpl(service)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideLoginWithSocialService(@AuthDataObject retrofit: Retrofit): LoginWithSocialService =
+    fun provideLoginWithSocialService(@AuthNetworkObject retrofit: Retrofit): LoginWithSocialService =
         retrofit.create(LoginWithSocialService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideLoginWithSocialRepository(
         service: LoginWithSocialService,
-        @DataObject auth: FirebaseAuth
+        @NetworkObject auth: FirebaseAuth
     ): LoginWithSocialRepository = LoginWithSocialRepositoryImpl(service, auth)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
-    fun provideTermsService(@DataObject retrofit: Retrofit): RegistrationTermService =
+    fun provideTermsService(@NetworkObject retrofit: Retrofit): RegistrationTermService =
         retrofit.create(RegistrationTermService::class.java)
 
-    @Singleton
+    @ActivityRetainedScoped
     @Provides
     fun provideTermsRepository(service: RegistrationTermService): RegistrationTermRepository =
         RegistrationTermRepositoryImpl(service)
