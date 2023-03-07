@@ -18,8 +18,8 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private var essentialTerms = mutableListOf<Boolean>()
-    private var optionalTerms = mutableListOf<Boolean>()
+    private var essentialTerms = arrayOf<Boolean>()
+    private var optionalTerms = arrayOf<Boolean>()
     val acceptAllState = _acceptAllState.asEventFlow()
     var acceptTermDetail: String = ""
 
@@ -81,8 +81,8 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     fun setTermSize(essentialSize: Int, optionalSize: Int) {
-        essentialTerms = MutableList(essentialSize) { false }
-        optionalTerms = MutableList(optionalSize) { false }
+        essentialTerms = Array(essentialSize) { false }
+        optionalTerms = Array(optionalSize) { false }
     }
 
     // 약관 선택 상태 변경
