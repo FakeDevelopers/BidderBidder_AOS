@@ -2,9 +2,9 @@ package com.fakedevelopers.presentation.ui.register
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
@@ -53,7 +53,7 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
     fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
-            setNextByDestination(destination.id)
+            binding.buttonUserRegistrationNext.isVisible = destination.id != R.id.acceptTermsFragmentContents
         }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
@@ -88,13 +88,6 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
                 R.id.acceptTermsFragmentContents -> setText(R.string.registration_toolbar_accept_term_detail)
                 else -> setText(R.string.registration_toolbar_user_registration)
             }
-        }
-    }
-
-    private fun setNextByDestination(destinationId: Int) {
-        binding.buttonUserRegistrationNext.visibility = when (destinationId) {
-            R.id.acceptTermsFragmentContents -> View.INVISIBLE
-            else -> View.VISIBLE
         }
     }
 
