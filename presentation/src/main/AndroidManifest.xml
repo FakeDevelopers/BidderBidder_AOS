@@ -20,5 +20,8 @@
         <activity
             android:name="com.fakedevelopers.presentation.ui.MainActivity"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.fakedevelopers.presentation.ui.register.UserRegistrationActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

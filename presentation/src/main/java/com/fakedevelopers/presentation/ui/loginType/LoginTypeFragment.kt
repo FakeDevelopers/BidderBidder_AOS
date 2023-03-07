@@ -14,6 +14,7 @@ import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentLoginTypeBinding
 import com.fakedevelopers.presentation.ui.MainActivity
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.register.UserRegistrationActivity
 import com.fakedevelopers.presentation.ui.util.ApiErrorHandler
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import com.google.android.gms.auth.api.Auth
@@ -71,7 +72,7 @@ class LoginTypeFragment : BaseFragment<FragmentLoginTypeBinding>(
             findNavController().navigate(R.id.action_loginTypeFragment_to_loginFragment)
         }
         binding.textViewLogintypeRegistration.setOnClickListener {
-            findNavController().navigate(R.id.action_loginTypeFragment_to_userRegistrationFragment)
+            navigateActivity(UserRegistrationActivity::class.java)
         }
     }
 
