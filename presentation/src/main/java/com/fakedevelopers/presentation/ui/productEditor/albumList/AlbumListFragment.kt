@@ -9,6 +9,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,13 +22,24 @@ import com.fakedevelopers.presentation.ui.productEditor.DragAndDropCallback
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AlbumListFragment : BaseFragment<FragmentAlbumListBinding>(
     R.layout.fragment_album_list
 ) {
 
-    private val viewModel: AlbumListViewModel by viewModels()
+    @Inject
+    lateinit var viewModelFactory: AlbumListViewModel.PathAssistedFactory
+
+    private val viewModel by viewModels<AlbumListViewModel> {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return viewModelFactory.create(args.albumPath) as T
+            }
+        }
+    }
+
     private val args: AlbumListFragmentArgs by navArgs()
 
     private val backPressedCallback by lazy {

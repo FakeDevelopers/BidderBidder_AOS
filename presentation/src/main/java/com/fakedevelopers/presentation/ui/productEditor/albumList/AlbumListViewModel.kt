@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.productEditor.albumList
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fakedevelopers.domain.model.AlbumItem
@@ -13,22 +12,22 @@ import com.fakedevelopers.presentation.ui.productEditor.SelectedPictureListAdapt
 import com.fakedevelopers.presentation.ui.util.MutableEventFlow
 import com.fakedevelopers.presentation.ui.util.ROTATE_DEGREE
 import com.fakedevelopers.presentation.ui.util.asEventFlow
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Collections
-import javax.inject.Inject
 import kotlin.math.roundToInt
 
-@HiltViewModel
-class AlbumListViewModel @Inject constructor(
-    args: SavedStateHandle,
+class AlbumListViewModel @AssistedInject constructor(
     isValidUriUseCase: IsValidUriUseCase,
     private val getDateModifiedFromUriUseCase: GetDateModifiedByUriUseCase,
     private val getValidUrisUseCase: GetValidUrisUseCase,
     private val getImagesUseCase: GetImagesUseCase,
-    private val getImageObserverUseCase: GetImageObserverUseCase
+    private val getImageObserverUseCase: GetImageObserverUseCase,
+    @Assisted private val path: String
 ) : ViewModel() {
     private val _albumViewMode = MutableStateFlow(AlbumViewState.GRID)
     val albumViewMode: StateFlow<AlbumViewState> get() = _albumViewMode
@@ -51,8 +50,12 @@ class AlbumListViewModel @Inject constructor(
     var currentViewPagerIdx = 0
         private set
 
-    private val path = args.get<String>("albumPath") ?: ""
     val title = path.substringAfterLast('/')
+
+    @AssistedFactory
+    interface PathAssistedFactory {
+        fun create(path: String): AlbumListViewModel
+    }
 
     init {
         viewModelScope.launch {
