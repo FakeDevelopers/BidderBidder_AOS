@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="vm"
             type="com.fakedevelopers.presentation.ui.register.UserRegistrationViewModel" />
@@ -49,23 +48,16 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button_user_registration_next"
-            android:layout_width="match_parent"
+            style="@style/ButtonUserRegistration"
+            android:layout_width="0dp"
             android:layout_height="@dimen/registration_button_next_step_height"
-            android:background="#D6D6D6"
-            android:enabled="@{vm.nextStepEnabled}"
             android:onClick="@{() -> vm.moveNextStep()}"
-            android:shadowColor="#111111"
-            android:text="@string/registration_button_to_next"
-            android:textColor="@color/white"
-            android:textSize="@dimen/registration_button_next_step_text_size"
-            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
-            tools:ignore="SpUsage" />
+            app:layout_constraintVertical_bias="1.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

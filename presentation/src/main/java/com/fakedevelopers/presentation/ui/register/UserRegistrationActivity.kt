@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
@@ -62,14 +61,6 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
         }
     }
 
-    private fun setRegistrationNextButton(state: Boolean) {
-        binding.buttonUserRegistrationNext.let {
-            val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
-            it.isEnabled = state
-            it.setBackgroundColor(ContextCompat.getColor(this, color))
-        }
-    }
-
     fun initCollector() {
         // 회원가입 단계 관리
         repeatOnStarted(this) {
@@ -85,7 +76,7 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
         }
         repeatOnStarted(this) {
             viewModel.nextStepEnabled.collect {
-                setRegistrationNextButton(it)
+                binding.buttonUserRegistrationNext.isEnabled = it
             }
         }
     }
