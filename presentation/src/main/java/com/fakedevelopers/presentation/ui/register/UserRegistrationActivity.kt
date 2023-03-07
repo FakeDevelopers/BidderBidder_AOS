@@ -1,6 +1,5 @@
 package com.fakedevelopers.presentation.ui.register
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -38,7 +37,8 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding.vm = viewModel
-        navController = (supportFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
+        navController =
+            (supportFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
         setProgressBar(viewModel.currentStep)
         viewModel.setInitialStep()
         initListener()
@@ -53,7 +53,8 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
     fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
-            binding.buttonUserRegistrationNext.isVisible = destination.id != R.id.acceptTermsFragmentContents
+            binding.buttonUserRegistrationNext.isVisible =
+                destination.id != R.id.acceptTermsFragmentContents
         }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
@@ -71,7 +72,7 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
         // 실패 토스트 메세지
         repeatOnStarted(this) {
             viewModel.failureMessage.collectLatest {
-                // sendSnackBar(it)
+                sendSnackBar(it)
             }
         }
         repeatOnStarted(this) {
@@ -109,8 +110,7 @@ class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
         }
 
         if (state.checkLastStep()) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            navigateActivity(MainActivity::class.java)
         }
 
         state.navigationId?.let { navId ->
