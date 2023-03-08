@@ -3,12 +3,12 @@ package com.fakedevelopers.presentation.ui.login
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.navigation.fragment.findNavController
 import com.fakedevelopers.domain.secret.Constants.Companion.LOGIN_SUCCESS
 import com.fakedevelopers.presentation.R
 import com.fakedevelopers.presentation.databinding.FragmentLoginBinding
 import com.fakedevelopers.presentation.ui.MainActivity
 import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.register.UserRegistrationActivity
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
 import dagger.hilt.android.AndroidEntryPoint
 import io.getstream.logging.helper.stringify
@@ -28,7 +28,7 @@ class LoginFragment : BaseFragment<FragmentLoginBinding>(
 
     override fun initListener() {
         binding.textviewLoginRegistration.setOnClickListener {
-            findNavController().navigate(R.id.action_loginFragment_to_userRegistrationFragment)
+            navigateActivity(UserRegistrationActivity::class.java)
         }
     }
 

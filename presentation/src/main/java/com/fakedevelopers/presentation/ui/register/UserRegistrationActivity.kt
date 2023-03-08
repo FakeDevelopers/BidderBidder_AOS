@@ -1,33 +1,27 @@
 package com.fakedevelopers.presentation.ui.register
 
-import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
+import androidx.core.view.isVisible
+import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.fakedevelopers.presentation.R
-import com.fakedevelopers.presentation.databinding.FragmentUserRegistrationBinding
+import com.fakedevelopers.presentation.databinding.ActivityUserRegistrationBinding
 import com.fakedevelopers.presentation.ui.MainActivity
-import com.fakedevelopers.presentation.ui.base.BaseFragment
+import com.fakedevelopers.presentation.ui.base.BaseActivity
 import com.fakedevelopers.presentation.ui.util.repeatOnStarted
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
-class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
-    R.layout.fragment_user_registration
+@AndroidEntryPoint
+class UserRegistrationActivity : BaseActivity<ActivityUserRegistrationBinding>(
+    ActivityUserRegistrationBinding::inflate
 ) {
-    private val viewModel: UserRegistrationViewModel by lazy {
-        ViewModelProvider(requireActivity())[UserRegistrationViewModel::class.java]
-    }
-
-    private val navController by lazy {
-        (childFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
-    }
-
+    private val viewModel: UserRegistrationViewModel by viewModels()
+    private lateinit var navController: NavController
     private val singleTopOptions = navOptions {
         launchSingleTop = true
     }
@@ -40,22 +34,27 @@ class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         binding.vm = viewModel
+        navController =
+            (supportFragmentManager.findFragmentById(R.id.navigation_user_registration) as NavHostFragment).navController
         setProgressBar(viewModel.currentStep)
         viewModel.setInitialStep()
+        initListener()
+        initCollector()
     }
 
     override fun onStart() {
         super.onStart()
-        requireActivity().onBackPressedDispatcher.addCallback(backPressedCallback)
+        onBackPressedDispatcher.addCallback(backPressedCallback)
     }
 
-    override fun initListener() {
+    fun initListener() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             setToolbarTitleByDestination(destination.id)
-            setNextByDestination(destination.id)
+            binding.buttonUserRegistrationNext.isVisible =
+                destination.id != R.id.acceptTermsFragmentContents
         }
         // 뒤로버튼
         binding.includeUserRegistrationToolbar.buttonBack.setOnClickListener {
@@ -63,30 +62,22 @@ class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
         }
     }
 
-    private fun setRegistrationNextButton(state: Boolean) {
-        binding.buttonUserRegistrationNext.let {
-            val color = if (state) R.color.bidderbidder_primary else R.color.bidderbidder_gray
-            it.isEnabled = state
-            it.setBackgroundColor(ContextCompat.getColor(requireActivity(), color))
-        }
-    }
-
-    override fun initCollector() {
+    fun initCollector() {
         // 회원가입 단계 관리
-        repeatOnStarted(viewLifecycleOwner) {
+        repeatOnStarted(this) {
             viewModel.changeRegistrationStep.collectLatest {
                 toNextStep(it)
             }
         }
         // 실패 토스트 메세지
-        repeatOnStarted(viewLifecycleOwner) {
+        repeatOnStarted(this) {
             viewModel.failureMessage.collectLatest {
                 sendSnackBar(it)
             }
         }
-        repeatOnStarted(viewLifecycleOwner) {
+        repeatOnStarted(this) {
             viewModel.nextStepEnabled.collect {
-                setRegistrationNextButton(it)
+                binding.buttonUserRegistrationNext.isEnabled = it
             }
         }
     }
@@ -98,13 +89,6 @@ class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
                 R.id.acceptTermsFragmentContents -> setText(R.string.registration_toolbar_accept_term_detail)
                 else -> setText(R.string.registration_toolbar_user_registration)
             }
-        }
-    }
-
-    private fun setNextByDestination(destinationId: Int) {
-        binding.buttonUserRegistrationNext.visibility = when (destinationId) {
-            R.id.acceptTermsFragmentContents -> View.INVISIBLE
-            else -> View.VISIBLE
         }
     }
 
@@ -122,12 +106,11 @@ class UserRegistrationFragment : BaseFragment<FragmentUserRegistrationBinding>(
         setProgressBar(state)
 
         if (state.checkCancelStep()) {
-            findNavController().popBackStack()
+            navController.popBackStack()
         }
 
         if (state.checkLastStep()) {
-            startActivity(Intent(requireContext(), MainActivity::class.java))
-            requireActivity().finish()
+            navigateActivity(MainActivity::class.java)
         }
 
         state.navigationId?.let { navId ->

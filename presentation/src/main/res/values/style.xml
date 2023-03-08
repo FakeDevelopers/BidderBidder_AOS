@@ -81,6 +81,17 @@
         <item name="iconPadding">-23dp</item>
     </style>
 
+    <style name="ButtonUserRegistration" parent="Widget.AppCompat.Button">
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:background">@drawable/selector_long_button</item>
+        <item name="android:text">@string/registration_button_to_next</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/registration_button_next_step_text_size</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="CustomTextInputLayoutShapeAppearanceOverlay" parent="">
         <item name="cornerSizeBottomLeft">4dp</item>
         <item name="cornerSizeBottomRight">4dp</item>
