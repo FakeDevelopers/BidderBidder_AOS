@@ -18,8 +18,8 @@ class UserRegistrationViewModel : ViewModel() {
 
     /* AcceptTermsFragment */
     private val _acceptAllState = MutableEventFlow<Boolean>()
-    private var essentialTerms = mutableListOf<Boolean>()
-    private var optionalTerms = mutableListOf<Boolean>()
+    private var essentialTerms = arrayOf<Boolean>()
+    private var optionalTerms = arrayOf<Boolean>()
     val acceptAllState = _acceptAllState.asEventFlow()
     var acceptTermDetail: String = ""
 
@@ -81,8 +81,8 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     fun setTermSize(essentialSize: Int, optionalSize: Int) {
-        essentialTerms = MutableList(essentialSize) { false }
-        optionalTerms = MutableList(optionalSize) { false }
+        essentialTerms = Array(essentialSize) { false }
+        optionalTerms = Array(optionalSize) { false }
     }
 
     // 약관 선택 상태 변경
@@ -91,26 +91,20 @@ class UserRegistrationViewModel : ViewModel() {
             TYPE_ESSENTIAL -> essentialTerms[idx] = isChecked
             TYPE_OPTIONAL -> optionalTerms[idx] = isChecked
         }
-        if (essentialTerms.all { !it } && optionalTerms.all { !it }) {
+        if (essentialTerms.none { it } && optionalTerms.none { it }) {
             setAcceptAllState(false)
         }
-        setNextStepEnabled(checkAcceptTerms())
+        setNextStepEnabled(essentialTerms.all { it })
     }
 
     // 필수 약관에 모두 동의 했다면 폰 인증 화면으로 넘어갑니다.
-    private fun checkAcceptTerms(): Boolean {
-        return essentialTerms.all { it }
-    }
-
-    // 필수 약관에 모두 동의 했다면 폰 인증 화면으로 넘어갑니다.
-    private fun getNextStepOfAccetTerms(): RegistrationProgressState {
+    private fun getNextStepOfAcceptTerms(): RegistrationProgressState =
         if (essentialTerms.all { it }) {
-            return INPUT_ID
+            INPUT_ID
         } else {
             sendFailureMessage(NOT_AGREE_TO_ESSENTIAL_TERMS)
-            return EMPTY_STATE
+            EMPTY_STATE
         }
-    }
 
     // 코드 조건 확인
     private fun checkNextAuthCode(): Boolean {
@@ -163,14 +157,13 @@ class UserRegistrationViewModel : ViewModel() {
     private fun checkUserId() = !lastDuplicationState && userId == inputUserId.value
 
     // 이미 중복 체크된 아이디거나 중복 체크를 통과한 아이디면 다음 단계 반환
-    private fun getNextStepOfInputId(): RegistrationProgressState {
+    private fun getNextStepOfInputId(): RegistrationProgressState =
         if (checkUserId()) {
-            return INPUT_PASSWORD
+            INPUT_PASSWORD
         } else {
             sendFailureMessage(NOT_ID_DUPLICATION_CHECK)
-            return EMPTY_STATE
+            EMPTY_STATE
         }
-    }
 
     // 유효한 아이디 여부 표시
     private fun setUserIdValidationState(state: Boolean) {
@@ -227,14 +220,13 @@ class UserRegistrationViewModel : ViewModel() {
     }
 
     //  비밀번호 조건 확인 후 다음 단계 반환
-    private fun getNextStepOfInputPassword(): RegistrationProgressState {
+    private fun getNextStepOfInputPassword(): RegistrationProgressState =
         if (checkUserPassword()) {
-            return PHONE_AUTH_BEFORE_SENDING
+            PHONE_AUTH_BEFORE_SENDING
         } else {
             sendFailureMessage(INVALID_REGEX)
-            return EMPTY_STATE
+            EMPTY_STATE
         }
-    }
 
     // 다음 단계 버튼 활성화
     fun setNextStepEnabled(state: Boolean) {
@@ -246,7 +238,7 @@ class UserRegistrationViewModel : ViewModel() {
     // 현재 단계 조건 충족시 다음 단계로 이동
     fun moveNextStep() {
         when (currentStep) {
-            ACCEPT_TERMS -> getNextStepOfAccetTerms()
+            ACCEPT_TERMS -> getNextStepOfAcceptTerms()
             INPUT_ID -> getNextStepOfInputId()
             INPUT_PASSWORD -> getNextStepOfInputPassword()
             PHONE_AUTH_BEFORE_SENDING -> {
@@ -254,10 +246,7 @@ class UserRegistrationViewModel : ViewModel() {
                 EMPTY_STATE
             }
             PHONE_AUTH_CHECK_AUTH_CODE -> getNextStepOfAuthCheck()
-            else -> {
-                // 여긴 갈 일 없어!
-                EMPTY_STATE
-            }
+            else -> EMPTY_STATE
         }.let {
             setCurrentStep(it)
         }
